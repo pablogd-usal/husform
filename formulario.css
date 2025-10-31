@@ -1,0 +1,259 @@
+/* --- Global & Layout --- */
+body {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden; /* Prevents horizontal scroll */
+}
+
+#container {
+    width: 100%;
+    height: 100%;
+}
+
+.cuadrado {
+    border: 2px solid black;
+    border-radius: 5px;
+    /* height: 200px;  Keep commented if not in use */
+}
+
+.carta {
+    width: 100%;
+    padding: 20px;
+    background-color: rgb(241, 241, 241);
+    border-radius: 5px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    margin: 0 auto; /* Centers the element horizontally */
+}
+
+.textito {
+    width: 100%;
+}
+
+.textito .estudio-item {
+    flex: 1 1 calc(50% - 10px);
+    min-width: 200px;
+    margin-bottom: 10px;
+}
+
+.hr {
+    display: block !important; /* Ensure visibility */
+    height: 1px;
+    border: none;
+    background-color: black;
+    margin-top: 10px;
+    margin-bottom: -5px; /* Adjust as needed */
+}
+
+/* --- Visibility & Hiding --- */
+.paciente,
+#sexoSeleccionado,
+.h4otrosEstudios,
+#notaSindromeMielodisplasico {
+    display: none; /* Hide these elements by default */
+}
+
+.vista-impresion {
+    display: none; /* Hidden by default, likely shown in @media print */
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* --- Header & Images --- */
+.headerImg {
+    max-width: 100%;
+    height: auto; /* Ensures image scales proportionally */
+}
+
+/* --- Input & Label Adjustments --- */
+.labelSexo {
+    margin-left: 10px;
+}
+
+/* Consolidate .inputInfiltracion properties */
+.inputInfiltracion {
+    width: 25%; /* More specific width, so this takes precedence */
+    /* Original width: 140%; was less specific and overridden. Review if 140% is ever desired. */
+}
+
+.porcentajeInfiltracion {
+    margin-top: -32px;
+    margin-left: 60px;
+}
+
+.porcentaje {
+    margin-left: 40px;
+    margin-top: -30px;
+}
+
+.otrosInput,
+.inputMuestra {
+    margin-top: 10px;
+}
+
+/* --- Text & Font Sizes --- */
+.comentarios {
+    font-size: 13px;
+}
+
+.notasFinales {
+    font-size: 14px;
+}
+
+/* --- Buttons & Dropdowns --- */
+.btnImprimir {
+    margin-left: 20px;
+    display: block; /* Ensure it's a block element */
+    visibility: visible;
+    position: relative;
+    z-index: 1;
+    background-color: #e9ecef; /* Apply default background */
+}
+
+.btnImprimir:hover {
+    background-color: #d8d8d8;
+}
+
+.botones,
+.colImprimir {
+    display: flex; /* Use flexbox for button layout */
+}
+
+.dropdown-item {
+    cursor: pointer;
+    padding: 8px 15px;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.dropdown-item.selected {
+    background-color: #e9ecef;
+    font-weight: bold;
+    position: relative;
+}
+
+.dropdown-item.selected::after {
+    content: "✓";
+    position: absolute;
+    right: 10px;
+    color: #28a745;
+}
+
+.seleccionarEstudio {
+    width: 100%; /* Default width for select study */
+    text-align: left;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+.btn.dropdown-toggle.seleccionarEstudio {
+    margin-right: 20px;
+    max-width: 100%;
+}
+
+.dropdown-menu {
+    z-index: 9999;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    display: none; /* Hidden by default, shown with JavaScript */
+    float: left; /* Old-school float, often better replaced with flex/grid for modern layouts */
+    min-width: 10rem;
+    padding: 0.5rem 0;
+    margin: 0.125rem 0 0;
+    font-size: 1rem;
+    color: #212529;
+    text-align: left;
+    list-style: none;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 0.25rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+}
+
+.seleccionarEnsayo,
+.seleccionarCandidato {
+    font-size: 1.6w;
+}
+
+/* --- Section Titles --- */
+.tituloParte0,
+.tituloParte1,
+.tituloParte2,
+.tituloParte3 {
+    padding: 4px; /* Common padding */
+}
+
+.tituloParte0 {
+    background-color: #e4acac;
+    border-bottom: 2px solid #842727;
+}
+
+.tituloParte1 {
+    background-color: #bfcbe6;
+    border-bottom: 2px solid #6084d6;
+}
+
+.tituloParte2,
+.tituloParte3,
+.labelMomentoEvolutivo,
+.labelTipoMuestra {
+    display: block;
+    width: 100%;
+    margin-top: 5px; /* Specific margin */
+    background-color: #97bda0;
+    border-bottom: 2px solid #216a32;
+    font-size: 1.1rem;
+}
+
+.tituloParte3 {
+    background-color: #dcbfb2;
+    border-bottom: 2px solid #b37355;
+}
+
+/* --- Textareas & Inputs (Common Styles) --- */
+#justificacionOtrosEstudiosTexto {
+    display: block;
+    width: 100%;
+    min-height: 120px;
+    padding: 10px;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    background-color: transparent;
+}
+
+/* Group common form control styles */
+.form-control#marcadorMolecular,
+.form-control#otrosInputEvolutivo,
+.form-control#otrosInputMuestra,
+.form-control#ensayoClinicoTexto,
+.form-control#justificacionOtrosEstudiosTexto {
+    background-color: #f8f9fa;
+    border: none;
+    padding: 8px;
+    transition: background-color 0.3s ease;
+}
+
+/* Group common focus styles for form controls */
+.form-control#marcadorMolecular:focus,
+.form-control#otrosInputEvolutivo:focus,
+.form-control#otrosInputMuestra:focus,
+.form-control#ensayoClinicoTexto:focus,
+.form-control#justificacionOtrosEstudiosTexto:focus {
+    background-color: #e9ecef;
+    outline: none;
+}
+
+/* --- Column Adjustments --- */
+.colDerecha {
+    margin-left: -110px;
+}

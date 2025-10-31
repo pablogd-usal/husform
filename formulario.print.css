@@ -1,0 +1,389 @@
+@media print {
+    /* --- Global Print Styles --- */
+
+    /* nunogallego@gmail.com */
+    
+    body {
+        font-family: Arial, sans-serif; /* Specify a common, print-friendly font */
+        color: black; /* Ensure text is black for readability */
+        background-color: white; /* Force white background to save ink */
+        -webkit-print-color-adjust: exact; /* Ensure background colors are printed */
+        print-color-adjust: exact;
+    }
+
+    /* Reset default input/textarea styles for print */
+    input,
+    textarea,
+    .form-control,
+    .seleccionarCandidato,
+    .seleccionarEnsayo,
+    .descripcion {
+        outline: none;
+        border: none;
+        background-color: transparent;
+        color: black;
+        font-size: 1rem;
+    }
+
+    /* Hide elements not relevant for printing */
+    .botones,
+    .btnImprimir,
+    #checkboxMasculino,
+    #checkboxFemenino,
+    #sexo input[type="checkbox"],
+    .diagnosticoTexto, /* Consider if you always want to hide this, or only specific cases */
+    .justificacionEstudios {
+        display: none !important;
+        visibility: hidden !important; /* Adding visibility hidden for stronger hiding */
+    }
+
+    /* Force background colors to print for specific elements */
+    .tituloParte0,
+    .tituloParte1,
+    .tituloParte2,
+    .tituloParte3,
+    .vista-impresion,
+    .labelMomentoEvolutivo,
+    .labelTipoMuestra,
+    #vistaImpresion,
+    #diagnosticoTexto,
+    #otrosInputEvolutivo,
+    #otrosInputMuestra,
+    #marcadorMolecular,
+    #ensayoClinicoTexto,
+    #justificacionOtrosEstudiosTexto {
+        background-color: #A9CBDB; /* Use inherit or set specific color if needed */
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important; /* Added for broader browser support */
+    }
+
+    .tituloParte2,
+    .tituloParte3{
+        margin-left: 1.4vw;
+        margin-right: 1.3vw;
+    }
+
+    /* --- Layout & Spacing --- */
+    .carta,
+    .container-fluid,
+    .row,
+    .col-10 {
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+        box-shadow: none; /* Remove shadows for print */
+        border-bottom: #f1f1f1 solid 1px; 
+    }
+
+    .carta {
+        padding: 20px;
+        margin-top: -50px; /* Specific adjustment */
+    }
+    .container-fluid {
+        padding: 0 20px; /* Add some padding for readability */
+    }
+
+    .headerImg {
+        max-width: 100%;
+        height: auto;
+    }
+    /* Apply common font size to multiple elements */
+    .nombre,
+    .fechaNacimiento,
+    .nHistoria,
+    #sexoSeleccionado,
+    .labelNombre,
+    .labelHistoria,
+    .labelFecha,
+    .labelSexo,
+    .labelSolicitante,
+    .labelHospital,
+    .labelEmail,
+    .labelTelefono,
+    .inputMedico,
+    .inputHospital,
+    .inputEmail,
+    .inputTelefono,
+    .inputMuestraa,
+    .inputOtros,
+    .inputEmr,
+    .inputEnsayoClinico,
+    .inputInfiltracion,
+    .notasFinales,
+    .inputMuestra,
+    .otrosInput,
+    #emrMarker {
+        font-size: .9rem;
+    }
+    /* Override for specific larger fonts */
+    .tituloFormulario,
+    .seleccionarEstudio {
+        font-size: 14px;
+    }
+    .tituloParte0,
+    .tituloParte1,
+    .tituloParte2,
+    .tituloParte3 {
+        font-size: 1.1rem;
+        padding: .4vw .7vw;
+    }
+    .h4otrosEstudios {
+        font-size: 20px;
+        margin-left: -10px;
+    }
+
+    /* Specific margin adjustments */
+    
+    #sexoSeleccionado { margin-top: -5px; }
+    
+    .labelFechaExtraccion { margin-top: 10px; }
+    
+    .pDiagnostico,
+    .pSospechaDiagnostico {
+        display: block;
+        margin-top: -20px;
+    }
+    .inputDiagnostico {
+        margin-top: -46px;
+        margin-left: 80px;
+    }
+    .inputSospechaDiagnostico {
+        margin-top: -46px;
+        margin-left: 155px;
+    }
+    .labelMomentoEvolutivo {
+        display: inline-block;
+        margin-right: 10px;
+    }
+    .otrosInput {
+        margin-left: 300px; /* This conflicts with the other .otrosInput definition; reconsider if both are needed */
+        margin-top: 20px;
+        width: 200px;
+    }
+    .form-check-inline {
+        display: inline-block;
+        margin-right: 10px;
+    }
+    .labelInfiltracion { display: block; }
+    .estudios { margin-top: 10px; }
+    .labelEstudios {
+        display: block;
+        margin-top: -20px;
+    }
+    .dividirlosEn4 {
+        width: 150%;
+        margin-left: 420px;
+        margin-top: -135px;
+    }
+    .descripcion {
+        margin-top: -10px;
+        margin-left: -20px;
+    }
+    .colDerecha { margin-left: 500px; }
+    .labelFechaExtraccion,
+    .labelMomentoEvolutivo,
+    .labelTipoMuestra,
+    .pFechaExtraccion {
+        display: block;
+    }
+    .otrosInput {
+        margin-left: -5px;
+        width: 200px;
+        margin-top: -10px;
+    }
+    .pFechaExtraccion {
+        margin-top: 20px;
+        margin-bottom: 5px;
+        page-break-inside: avoid;
+    }
+    #diagnosticoTexto { margin-left: 4px; }
+
+    .form-control {
+        margin-bottom: -.4rem;
+    }
+
+    /* --- Specific Element Styling --- */
+    .cuadrado {
+        border: 2px solid black;
+        margin: 10px 0;
+        width: 100%;
+    }
+
+    .seleccionarEstudio {
+        width: 90%;
+        text-align: left;
+        color: black;
+        background: none;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        height: auto;
+        display: inline-block;
+        line-height: 1.5;
+        margin: .1vw;
+        
+    }
+
+    .btn.dropdown-toggle.seleccionarEstudio {
+        width: 65%;
+        text-align: left;
+        white-space: normal;
+        word-wrap: break-word;
+    }
+
+    #dropdownBtn {
+        color: black;
+    }
+
+    #textoSeleccionado {
+        margin-left: -10px;
+        width: 100%;
+        max-width: none;
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        display: block;
+        visibility: visible;
+        page-break-inside: avoid;
+    }
+
+    .radioDiagnostico,
+    .radioSospecha,
+    .radioDiagnosticoMmento,
+    .radioRecaida,
+    .radioEmr,
+    .radioEvolutivo,
+    .radioOtros,
+    .checkboxSp,
+    .checkboxMo,
+    .checkboxGanglio,
+    .checkboxParafina,
+    .checkboxTejidos,
+    .checkboxLiquido,
+    .checkboxClonalidadB,
+    .checkboxClonalidadT,
+    .checkboxMieloide,
+    .checkboxLinfoide,
+    .checkboxMutaciones,
+    .checkboxExon {
+        transform: scale(0.7); /* Scale down radio/checkboxes for print */
+        -webkit-transform: scale(0.7);
+        -moz-transform: scale(0.7);
+    }
+
+    .form-check-input[type="radio"],
+    .form-check-input[type="checkbox"] {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        width: 15px;
+        height: 15px;
+        border: 2px solid #000;
+        border-radius: 50%; /* Radios are round */
+        margin-right: 5px;
+        position: relative;
+        vertical-align: middle;
+        background-color: #fff;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        color-adjust: exact;
+    }
+
+    .form-check-input[type="checkbox"] {
+        border-radius: 3px; /* Checkboxes are square */
+    }
+
+    .form-check-input[type="radio"]:checked::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 6px;
+        height: 6px;
+        background-color: #000;
+        border-radius: 50%;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        color-adjust: exact;
+    }
+
+    .form-check-input[type="checkbox"]:checked::before {
+        content: "✓";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 12px;
+        color: #000;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        color-adjust: exact;
+    }
+
+    .form-check-label {
+        vertical-align: middle;
+        margin-left: 5px;
+    }
+
+    .textito {
+        font-size: 15px; /* Re-defined font-size, check for conflicts */
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        display: block; /* Overrides flex, if flex is desired for print, reconsider */
+        /* Original flex properties if needed:
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+        */
+    }
+
+    .textito .estudio-item {
+        flex: 1 1 calc(50% - 10px);
+        min-width: 200px;
+        margin-bottom: 10px;
+    }
+
+    #justificacionOtrosEstudiosTexto {
+        width: 100%;
+        min-height: 120px;
+        padding: 10px;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        background-color: transparent;
+    }
+
+    /* Common styling for transparent backgrounds */
+    .otrosInput,
+    .inputMuestra,
+    #ensayoClinicoDetalles {
+        background-color: transparent;
+    }
+
+    /* Specific styling for grey backgrounds on print */
+    .form-control#otrosInputEvolutivo,
+    .form-control#otrosInputMuestra,
+    .form-control#ensayoClinicoTexto,
+    .form-control#justificacionOtrosEstudiosTexto,
+    #diagnosticoTexto,
+    #marcadorMolecular {
+        background-color: #f1f1f1;
+        border: none;
+        padding: 8px;
+        margin: 0;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        display: block;
+        box-sizing: border-box;
+        height: auto;
+        /* Removed transition and focus styles as they are not relevant for print */
+    }
+}
