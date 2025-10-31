@@ -1,0 +1,55 @@
+# 🔬 husform: Módulo de Solicitud Digital para Oncohematología (USAL)
+
+Este repositorio contiene los archivos fuente para el desarrollo y mantenimiento del formulario digital de solicitud de estudios de Citogenética y Biología Molecular para la **Unidad de Diagnóstico Integrado y Medicina Personalizada de Precisión en Oncohematología** de la Universidad de Salamanca (USAL).
+
+El objetivo principal es digitalizar y optimizar el proceso de solicitud de pruebas diagnósticas, mejorando la gestión y el flujo de trabajo entre los solicitantes (médicos) y el laboratorio.
+
+## 🎯 Objetivo del Proyecto
+
+El proyecto busca proporcionar una interfaz web que permita a los profesionales sanitarios:
+
+1. **Registrar** los datos del paciente (nombre, historia clínica, fecha de nacimiento, sexo).
+2. **Identificar** al solicitante y su hospital de origen.
+3. **Detallar** los datos clínicos de la enfermedad y de la muestra (fecha de extracción, diagnóstico confirmado o de sospecha, momento evolutivo, tipo de muestra, % de infiltración).
+4. **Seleccionar** los estudios protocolizados y/o complementarios de Citogenética y Biología Molecular necesarios (ej. Aplasia medular, Leucemia, Mieloma Múltiple, Paneles NGS, Clonalidad B/T, etc.).
+5. **Imprimir** la solicitud generada para acompañar la muestra física.
+
+## 📁 Estructura del Repositorio
+
+La estructura de este repositorio se centra en los archivos necesarios para la funcionalidad del formulario.
+
+## 🛠️ Tecnologías Utilizadas
+
+El formulario actual está implementado principalmente con tecnologías frontend básicas para garantizar la compatibilidad y facilidad de distribución:
+
+* **HTML5:** Estructura del formulario.
+* **CSS3:** Estilos y maquetación.
+* **JavaScript ():** Para validaciones o interacción dinámica ().
+
+## ⚠️ Nota Importante sobre los Datos
+
+Es crucial entender que:
+
+> **La información registrada en el formulario online no queda almacenada en el sistema de solicitud.**
+
+La funcionalidad principal del formulario es generar una vista imprimible de los datos introducidos para el envío físico junto con la muestra. Este repositorio es el código fuente del formulario en sí, no la base de datos de los resultados o las solicitudes.
+
+## 👨‍💻 Contribución
+
+Si eres parte del equipo de desarrollo, consulta las ramas y las *issues* abiertas para conocer las tareas pendientes.
+
+Para cualquier modificación o actualización, sigue las siguientes pautas:
+
+1.  Crea una nueva rama (`feature/nombre-de-la-mejora`).
+2.  Realiza tus cambios y *commits*.
+3.  Abre un *Pull Request* para su revisión.
+
+---
+
+### Contacto y Soporte
+
+Para consultas relacionadas con el funcionamiento o la información contenida en el formulario, contacta con:
+
+* **UNIDAD DE DIAGNÓSTICO INTEGRADO**
+* **Laboratorio de Citogenética y Biología Molecular**
+* *Mails de contacto ()*: [Sin especificar]
