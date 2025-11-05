@@ -72,7 +72,7 @@
 
                                         <div class="col-5">
 
-                                            <label for="nombreApellidos" class="form-label labelNombre"> NOMBRE Y APELL.:
+                                            <label for="nombreApellidos" class="form-label labelNombre"> Nombre y Apellidos
                                             </label>
 
                                         </div>
@@ -166,7 +166,7 @@
 
                                         <div class="col-4">
 
-                                            <label for="medico" class="form-label labelSolicitante"> SOLICITANTE:
+                                            <label for="medico" class="form-label labelSolicitante required-asterisk"> SOLICITANTE:
                                             </label>
 
                                         </div>
@@ -184,7 +184,7 @@
 
                                         <div class="col-3">
 
-                                            <label for="hospital" class="form-labe labelHospital mt-2"> HOSPITAL:
+                                            <label for="hospital" class="form-labe labelHospital mt-2 required-asterisk"> HOSPITAL:
                                             </label>
 
                                         </div>
@@ -202,7 +202,7 @@
 
                                         <div class="col-4">
 
-                                            <label for="email" class="form-label labelEmail mt-2"> EMAIL: </label>
+                                            <label for="email" class="form-label labelEmail mt-2 required-asterisk"> EMAIL: </label>
 
                                         </div>
 
@@ -239,7 +239,7 @@
 
                         </div>
 
-                        <h4 class="tituloParte2 px-2"> DATOS DE LA ENFERMEDAD Y DE LA MUESTRA </h4>
+                        <h4 class="tituloParte2 px-2 required-asterisk"> DATOS DE LA ENFERMEDAD Y DE LA MUESTRA </h4>
 
                         <!-- FECHA EXTRACCIÓN -->
 
@@ -286,7 +286,7 @@
 
                                 <textarea class="form-control diagnosticoTexto" id="diagnosticoTexto"
                                     oninput="actualizarVista(this, 'vistaDiagnostico')" rows="3"
-                                    placeholder="Especificar diagnóstico..."></textarea>
+                                    placeholder="Especificar diagnóstico.."></textarea>
 
                                 <div id="vistaDiagnostico" class="vista-impresion"></div>
 
@@ -309,7 +309,7 @@
 
                                     <div class="col-12">
 
-                                        <p class="form-label labelMomentoEvolutivo px-2"> MOMENTO
+                                        <p class="form-label labelMomentoEvolutivo px-2 required-asterisk"> MOMENTO
                                             EVOLUTIVO</p>
 
                                     </div>
@@ -341,11 +341,10 @@
                                             <label class="form-check-label" for="emr"> EMR </label>
                                         </div>
 
+                                        <!-- Postrasplante -->
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input radioEvolutivo" type="radio"
-                                                name="momentoEvolutivo" id="evolutivo"
-                                                onclick="guardarMomentoEvolutivo()">
-                                            <label class="form-check-label" for="evolutivo"> Evolutivo </label>
+                                        <input class="form-check-input" type="radio" name="momentoEvolutivo" id="postransplante" onclick="guardarMomentoEvolutivo()">
+                                        <label class="form-check-label" for="postransplante"> Postrasplante </label>
                                         </div>
 
                                         <div class="form-check form-check-inline">
@@ -359,17 +358,23 @@
 
                                 </div>
 
+                                <!-- Cuadro de días post-trasplante (oculto por defecto) -->
+                                <div id="postTxDiasDiv" style="display:none; margin-top:8px;">
+                                <label for="postTxDias" class="form-label">Días desde el trasplante</label>
+                                <input type="number" id="postTxDias" class="form-control" min="0" step="1" inputmode="numeric">
+                                </div>
+                                
                                 <div class="otrosInput" style="display: none;">
 
                                     <input type="text" id="otrosInputEvolutivo" class="form-control inputOtros"
-                                        placeholder="Especificar...">
+                                        placeholder="Especificar..">
 
                                 </div>
 
                                 <div id="emrMarker" class="emrMarker" style="display: none;">
 
                                     <input type="text" class="form-control inputEmr" id="marcadorMolecular"
-                                        placeholder="Marcador molecular de seguimiento...">
+                                        placeholder="Marcador molecular de seguimiento..">
 
                                 </div>
 
@@ -382,48 +387,44 @@
 
                             <div class="col-6">
 
-                                <p class="form-label labelTipoMuestra px-2"> TIPO DE MUESTRA</p>
+                                <p class="form-label labelTipoMuestra px-2 required-asterisk"> TIPO DE MUESTRA</p>
 
-                                <div class="d-flex flex-wrap gap-3">
+                                <fieldset  id="tipoMuestra" class="d-flex flex-wrap gap-3">
 
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input checkboxSp" type="checkbox" name="tipoMuestra"
-                                            id="sp">
+                                            id="sp" value="SP">
                                         <label class="form-check-label" for="sp"> SP </label>
                                     </div>
 
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input checkboxMo" type="checkbox" name="tipoMuestra"
-                                            id="mo">
-                                        <label class="form-check-label" for="mo"> Mo </label>
+                                            id="mo" value="MO">
+                                        <label class="form-check-label" for="mo"> MO </label>
                                     </div>
 
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input checkboxGanglio" type="checkbox"
-                                            name="tipoMuestra" id="ganglio">
+                                            name="tipoMuestra" id="ganglio" value="Ganglio">
                                         <label class="form-check-label" for="ganglio"> Ganglio </label>
                                     </div>
 
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input checkboxParafina" type="checkbox"
-                                            name="tipoMuestra" id="parafina">
+                                            name="tipoMuestra" id="parafina" value="Parafina">
                                         <label class="form-check-label" for="parafina"> Parafina </label>
                                     </div>
 
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input checkboxTejidos" type="checkbox"
-                                            name="tipoMuestra" id="otrosTejidos">
-                                        <label class="form-check-label" for="otrosTejidos"> Otros tejidos </label>
+                                            name="tipoMuestra" id="otrasMuestras" value="Otras Muestras">
+                                        <label class="form-check-label" for="otrasMuestras"> Otras muestras </label>
                                     </div>
 
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input checkboxLiquido" type="checkbox"
-                                            name="tipoMuestra" id="liquido">
-                                        <label class="form-check-label" for="liquido"> Líquido </label>
-                                    </div>
-                                </div>
-
-                                <div class="form-check d-flex align-items-center gap-2 mt-3">
+                                </fieldset>
+                                
+                                <!--form-check d-flex align-items-center gap-2 mt-3 -->
+                                <div id="bloqueInfiltracion" class="d-none">
                                     <input type="number" class="form-control inputInfiltracion" id="infiltracion"
                                         name="infiltracion" min="0" max="100">
                                     <label for="infiltracion" class="form-check-label"> infiltración de la muestra (%)
@@ -432,7 +433,7 @@
 
                                 <div class="inputMuestra" style="display: none;">
                                     <input type="text" id="otrosInputMuestra" class="form-control inputMuestraa"
-                                        placeholder="Especificar...">
+                                        placeholder="Especificar..">
                                 </div>
 
                                 <div id="errorMensajeMuestra" style="color: red; display: none; font-size: 13px;">
@@ -473,13 +474,13 @@
                                 </div>
                                 <div id="ensayoClinicoDetalles" style="display: none; margin-top: 10px;">
                                     <input type="text" class="form-control inputEnsayoClinico" id="ensayoClinicoTexto"
-                                        placeholder="Especificar ensayo o protocolo...">
+                                        placeholder="Especificar ensayo o protocolo..">
                                 </div>
                                 <input type="hidden" id="ensayoSeleccionado" value="">
                             </div>
                         </div>
 
-                        <h4 class="tituloParte3"> SOLICITUD DE ESTUDIOS </h4>
+                        <h4 class="tituloParte3 required-asterisk"> SOLICITUD DE ESTUDIOS </h4>
 
                         <!-- ESTUDIOS PROTOCOLIZADOS -->
 
@@ -488,7 +489,7 @@
                             <div class="col-6 colEstudiosProtocolizados">
 
                                 <button class="btn btn-primary dropdown-toggle seleccionarEstudio" type="button"
-                                    data-bs-toggle="dropdown" id="dropdownEstudios">
+                                    data-bs-toggle="dropdown" data-bs-auto-close="outside" id="dropdownEstudios">
                                     ESTUDIOS PROTOCOLIZADOS:
                                 </button>
 
@@ -503,9 +504,9 @@
                                     <a class="dropdown-item" href="#"
                                         onclick="guardarOpcionEstudio('Hemofilia y Von Willebrand', event)">Hemofilia y Von Willebrand</a>
                                     <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Leucemia aguda linfoblástica', event)">Leucemia aguda linfoblástica</a>
+                                        onclick="guardarOpcionEstudio('Leucemia linfoblástica aguda', event)">Leucemia linfoblástica aguda </a>
                                     <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Leucemia aguda mieloblástica', event)">Leucemia aguda mieloblástica</a>
+                                        onclick="guardarOpcionEstudio('Leucemia mieloblástica aguda', event)">Leucemia mieloblástica aguda </a>
                                     <a class="dropdown-item" href="#"
                                         onclick="guardarOpcionEstudio('Leucemia de linfocitos grandes granulares', event)">Leucemia de linfocitos grandes granulares</a>
                                     <a class="dropdown-item" href="#"
@@ -546,12 +547,13 @@
                                 </div>
 
                                 <input type="hidden" id="estudiosSeleccionados" value="">
+                                <input type="hidden" id="subtipoLLASeleccionado" value="">
 
                                 <div id="textoSeleccionado" class="p-3 border bg-light mt-3">
 
                                     <!-- Aquí aparecerá el contenido dinámico -->
 
-                                    Selecciona una opción para ver los detalles.
+                                    Selecciona una opción para ver los detalles
 
                                 </div>
 
@@ -576,34 +578,64 @@
                                 </div>
 
                                 <div class="form-check">
+                                    <input class="form-check-input checkboxEstudioAG" type="checkbox" id="estudioAG"
+                                        name="otrosEstudios">
+                                    <label class="form-check-label" for="estudioAG">Estudio de alteraciones germinales</label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input checkboxExon" type="checkbox" id="exon12"
+                                        name="exon12">
+                                    <label class="form-check-label" for="exon12">Exón 12 de <em>JAK2</em></label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input checkboxMutaciones" type="checkbox"
+                                        name="otrosEstudios" id="mutacionesABL">
+                                    <label class="form-check-label" for="mutacionesABL"> Mutaciones de <em>ABL</em> </label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input checkboxLinfoide" type="checkbox"
+                                        name="otrosEstudios" id="panelNGSLinfoideB">
+                                    <label class="form-check-label" for="panelNGSLinfoideB"> Panel NGS
+                                        linfoide B </label>
+                                </div>
+
+                                <div class="form-check">
                                     <input class="form-check-input checkboxMieloide" type="checkbox"
                                         name="otrosEstudios" id="panelNGSMieloide">
                                     <label class="form-check-label" for="panelNGSMieloide">Panel NGS mieloide </label>
                                 </div>
 
                                 <div class="form-check">
-                                    <input class="form-check-input checkboxLinfoide" type="checkbox"
-                                        name="otrosEstudios" id="panelNGSLinfoideBResistencias">
-                                    <label class="form-check-label" for="panelNGSLinfoideBResistencias"> Panel NGS
-                                        linfoide B de resistencias a iBTK y iBCL2 </label>
+                                    <input class="form-check-input checkboxPanelTrombo" type="checkbox" id="panelNGSTrombo"
+                                        name="otrosEstudios">
+                                    <label class="form-check-label" for="panelNGSTrombo">Panel NGS de trombopatías</label>
+                                </div>
+                                                                
+                                <div class="form-check">
+                                    <input class="form-check-input checkboxResistencias" type="checkbox"
+                                        name="otrosEstudios" id="panelResistencias">
+                                    <label class="form-check-label" for="panelResistencias"> Panel de resistencias a iBTK y iBCL2 </label>
                                 </div>
 
                                 <div class="form-check">
-                                    <input class="form-check-input checkboxMutaciones" type="checkbox"
-                                        name="otrosEstudios" id="mutacionesABL">
-                                    <label class="form-check-label" for="mutacionesABL"> Mutaciones de ABL </label>
+                                    <input class="form-check-input checkboxQuimerismoL" type="checkbox" id="quimerismoL"
+                                        name="otrosEstudios">
+                                    <label class="form-check-label" for="quimerismoL">Quimerismo de línea</label>
                                 </div>
 
                                 <div class="form-check">
-                                    <input class="form-check-input checkboxExon" type="checkbox" id="exon12"
-                                        name="exon12">
-                                    <label class="form-check-label" for="exon12"> JAK2 (Exón 12) </label>
+                                    <input class="form-check-input checkboxQuimerismoT" type="checkbox" id="quimerismoT"
+                                        name="otrosEstudios">
+                                    <label class="form-check-label" for="quimerismoT">Quimerismo total</label>
                                 </div>
 
                                 <div id="notaExon12"
                                     style="display: none; color: #666; font-size: 0.9em; margin-top: 5px; margin-left: 20px;">
                                     Nota: Solo se realizará en muestras de médula ósea o si hay una justificación
-                                    clínica adecuada.
+                                    clínica adecuada
                                 </div>
 
                                 <div id="justificacionOtrosEstudios" style="display: none;">
@@ -613,7 +645,7 @@
                                     <textarea class="form-control justificacionEstudios"
                                         id="justificacionOtrosEstudiosTexto"
                                         oninput="actualizarVista(this, 'vistaJustificacion')" rows="2"
-                                        placeholder="Especificar justificación..."></textarea>
+                                        placeholder="Especificar justificación.."></textarea>
 
                                     <div id="vistaJustificacion" class="vista-impresion"></div>
 
@@ -677,13 +709,13 @@
                 <p> Datos: </p>
 
                 <ul>
-
-                    <li> Solo se harán los estudios en tejidos que estén infiltrados por el linfoma (rogamos confirmar %
-                        de infiltración) </li>
-                    <li> Se guardará DNA de todas las muestras de MO </li>
-                    <li> Mails de contacto: Lista de distribución y mail de Ricardo </li>
                     <li> La información registrada en el formulario online no quedará almacenada en el sistema de
-                        solicitud </li>
+                        solicitud </li> 
+                    <li> Mails de contacto: hematólogos (citogenbm@saludcastillayleon.onmicrosoft.com), administrativo (rgarciaeg.ibsal@saludcastillayleon.es) </li>  
+                    <li> Se guardará DNA de todas las muestras de MO </li>                    
+                    <li> Solo se harán los estudios en muestras que estén infiltradas por el linfoma (rogamos confirmar %
+                        de infiltración) </li>
+                    <li>Solo se realizarán estudios marcados o solicitados por escrito </li>
 
                 </ul>
 

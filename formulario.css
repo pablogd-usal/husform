@@ -75,7 +75,7 @@ body {
 /* Consolidate .inputInfiltracion properties */
 .inputInfiltracion {
     width: 25%; /* More specific width, so this takes precedence */
-    /* Original width: 140%; was less specific and overridden. Review if 140% is ever desired. */
+    /* Original width: 140%; was less specific and overridden Review if 140% is ever desired */
 }
 
 .porcentajeInfiltracion {
@@ -257,3 +257,23 @@ body {
 .colDerecha {
     margin-left: -110px;
 }
+
+/* Asterisco en labels, leyendas y botones que actúan como control
+.legend-obligatorio::after,
+.btn-obligatorio::after {
+  content: " *";
+  color: #d00;
+  font-weight: 700;
+}*/
+
+/* Asterisco para obligatorios */
+.required-asterisk::after {
+  content: " *";
+  color: #c62828;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+/* estilo común para mensajes de error */
+.error-msg { color: #d00; font-size: 13px; }
+
