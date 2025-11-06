@@ -386,4 +386,249 @@
         height: auto;
         /* Removed transition and focus styles as they are not relevant for print */
     }
+
+    @media print {
+        /* Evita solapamiento entre los dropdowns de tratamiento y ensayo */
+        .seleccionarCandidato,
+        .seleccionarEnsayo {
+            display: block !important;
+            width: 100% !important;
+            margin-bottom: 12px !important; /* separa verticalmente */
+        }
+
+        /* Asegura que las dos columnas se apilen si no cabe en una línea */
+        .row.mb-3 {
+            display: flex;
+            flex-wrap: wrap !important;
+        }
+
+        .row.mb-3 > .col-6 {
+            flex: 1 1 100% !important; /* fuerza que cada dropdown use línea completa */
+            max-width: 100% !important;
+        }
+    }
+
+    @media print {
+        /* Reducir un punto el tamaño de fuente en las secciones iniciales */
+        .tituloParte0,
+        .tituloParte1,
+        .tituloParte2,
+        .labelNombre,
+        .labelHistoria,
+        .labelFecha,
+        .labelSexo,
+        .labelSolicitante,
+        .labelHospital,
+        .labelEmail,
+        .labelTelefono,
+        .labelFechaExtraccion,
+        .labelMomentoEvolutivo,
+        .labelTipoMuestra,
+        .form-control.nombre,
+        .form-control.inputMedico,
+        .form-control.inputHospital,
+        .form-control.inputEmail,
+        .form-control.inputTelefono,
+        .form-control.inputFechaExtraccion,
+        .form-control.inputInfiltracion,
+        #otrosInputEvolutivo,
+        #otrosInputMuestra,
+        #marcadorMolecular {
+            font-size: 0.85rem !important; /* antes 0.9rem */
+            line-height: 1.1;
+        }
+    }  
+
+    @media print {
+        /* Reducir 2 puntos la letra en todo el apartado "Solicitud de estudios" */
+        .tituloParte3,
+        .colEstudiosProtocolizados,
+        .colOtrosEstudios,
+        #textoSeleccionado,
+        #justificacionOtrosEstudiosTexto,
+        .dropdown-menu .dropdown-item {
+            font-size: 0.75rem !important; /* antes aprox. 0.9rem → baja 2pt */
+            line-height: 1.2 !important;
+        }
+
+        /* Forzar que "Solicitud de estudios" empiece en la segunda página */
+        .tituloParte3 {
+            page-break-before: always !important;
+            margin-top: 0.5cm !important;
+        }
+
+        /* Evita que su contenido se corte entre páginas */
+        .colEstudiosProtocolizados,
+        .colOtrosEstudios,
+        #textoSeleccionado {
+            page-break-inside: avoid !important;
+        }
+    }
+}
+
+/* Asterisco en labels, leyendas y botones que actúan como control */
+.label-obligatorio::after,
+.legend-obligatorio::after,
+.btn-obligatorio::after {
+  content: " *";
+  color: #d00;
+  font-weight: 700;
+}
+
+@media print {
+  /* Mostrar los espejos y permitir salto de línea */
+  .vista-impresion {
+    display: block !important;
+    white-space: normal !important;     /* permite múltiples líneas */
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    line-height: 1.2;                   /* cabe mejor en 2 renglones */
+  }
+
+  /* Ocultar el input en la hoja impresa */
+  .nombre { 
+    display: none !important;
+  }
+}
+
+@media print {
+  .vista-impresion {
+    display: block !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    line-height: 1.2;
+  }
+
+  /* ocultar inputs en el volante impreso */
+  .inputMedico,
+  .inputHospital,
+  .inputEmail,
+  .inputTelefono {
+    display: none !important;
+  }
+}
+
+@media print {
+  /* Solo para la fila de SOLICITUD DE ESTUDIOS */
+  .row.mb-3 {
+    display: flex;
+    flex-wrap: wrap !important;
+  }
+
+  /* Apilar y forzar ancho completo */
+  .colEstudiosProtocolizados,
+  .colOtrosEstudios {
+    flex: 1 1 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Orden: primero Protocolizados, luego Otros */
+  .colEstudiosProtocolizados { order: 1; }
+  .colOtrosEstudios         { order: 2; }
+
+  /* Evitar cortes raros entre ambos bloques */
+  .colEstudiosProtocolizados,
+  .colOtrosEstudios,
+  #textoSeleccionado {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}
+
+@media print {
+  /* Reducir 3 puntos la letra y el interlineado en "Instrucciones y datos" */
+  .textito {
+    font-size: 12px !important;   /* antes 15px → baja 3 puntos */
+    line-height: 1.2 !important;  /* interlineado más compacto */
+    margin-top: 2mm;
+  }
+
+  /* Ajustar también el texto dentro si lo hubiera */
+  .textito p,
+  .textito li,
+  .textito .estudio-item {
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+  }
+}
+
+/*Hemograma en "Diagnóstico de sospecha" (solo impresión)*/
+@media print {
+  #inputsDiagnostico {
+    margin-top: 6pt;
+  }
+
+  /* Rompe el stacking de Bootstrap en impresión y pon todo en línea */
+  #inputsDiagnostico .row {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center;
+    gap: 6pt;
+  }
+
+  /* Anula las columnas de Bootstrap dentro de este bloque en impresión */
+  #inputsDiagnostico [class*="col-"] {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Texto e inputs compactos */
+  #inputsDiagnostico .input-group-text,
+  #inputsDiagnostico .form-control {
+    font-size: 9pt;       
+    line-height: 1.1;
+    padding: 2pt 6pt;
+  }
+
+  /* Anchura fija y pequeña de los campos numéricos */
+  #inputsDiagnostico .form-control {
+    width: 40pt;
+  }
+
+  /* "Plaquetas" suele ser el más largo: un poco más de ancho */
+  #inputsDiagnostico #Plaquetas {
+    width: 52pt;
+  }
+
+  /* Reduce los márgenes verticales entre chips */
+  #inputsDiagnostico .my-1 {
+    margin-top: 2pt !important;
+    margin-bottom: 2pt !important;
+  }
+}
+
+/*  Ajuste de márgenes globales para impresión */
+@page {
+  size: A4;
+  margin: 10mm 12mm 10mm 12mm;
+}
+
+@media print {
+  /* Ajuste general del body */
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Contenedor principal del formulario */
+  .container,
+  .container-fluid,
+  .contenedor-principal {
+    margin: 0 !important;
+    padding: 4mm 6mm !important; 
+    width: 100% !important;
+  }
+
+  /* Elimina márgenes de filas y columnas */
+  .row {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+  }
+  [class*="col-"] {
+    padding-right: 4px !important;
+    padding-left: 4px !important;
+  }
 }

@@ -32,6 +32,46 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    const inpNombre = document.getElementById('nombreApellidos');
+    const vistaNombre = document.getElementById('vistaNombre');
+    if (inpNombre && vistaNombre) {
+    const syncNombre = () => { vistaNombre.textContent = inpNombre.value || ""; };
+    inpNombre.addEventListener('input', syncNombre);
+    syncNombre(); // estado inicial
+    }
+
+    const inpSolic = document.getElementById('medico');
+    const vistaSolic = document.getElementById('vistaSolicitante');
+    if (inpSolic && vistaSolic) {
+        const sync = () => { vistaSolic.textContent = inpSolic.value || ""; };
+        inpSolic.addEventListener('input', sync);
+        sync();
+    }
+
+    const inpHosp = document.getElementById('hospital');
+    const vistaHosp = document.getElementById('vistaHospital');
+    if (inpHosp && vistaHosp) {
+        const sync = () => { vistaHosp.textContent = inpHosp.value || ""; };
+        inpHosp.addEventListener('input', sync);
+        sync();
+    }
+
+    const inpEmail = document.getElementById('email');
+    const vistaEmail = document.getElementById('vistaEmail');
+    if (inpEmail && vistaEmail) {
+        const sync = () => { vistaEmail.textContent = inpEmail.value || ""; };
+        inpEmail.addEventListener('input', sync);
+        sync();
+    }
+
+    const inpTel = document.getElementById('telefono');
+    const vistaTel = document.getElementById('vistaTelefono');
+    if (inpTel && vistaTel) {
+        const sync = () => { vistaTel.textContent = inpTel.value || ""; };
+        inpTel.addEventListener('input', sync);
+        sync();
+    }
+
     // Event listeners para los checkboxes de sexo
     // document.getElementById("checkboxMasculino").addEventListener("change", actualizarSexoSeleccionado);
     // document.getElementById("checkboxFemenino").addEventListener("change", actualizarSexoSeleccionado);
@@ -71,6 +111,42 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Mostrar/ocultar "Estudios protocolizados" según Momento evolutivo
+    function actualizarVisibilidadProtocolizados() {
+    const seleccionado = document.querySelector('input[name="momentoEvolutivo"]:checked')?.id || '';
+    const permite = (seleccionado === 'diagnostico' || seleccionado === 'recaidaProgresion');
+
+    const colProtocolizados = document.querySelector('.colEstudiosProtocolizados'); // columna izq.
+    const detalles = document.getElementById('textoSeleccionado');                  // panel detalle
+    const boton = document.getElementById('dropdownEstudios');
+    const input = document.getElementById('estudiosSeleccionados');
+    const hiddenSubtipo = document.getElementById('subtipoLLASeleccionado');
+
+    if (!colProtocolizados) return;
+
+    if (permite) {
+        colProtocolizados.style.display = ''; // mostrar
+    } else {
+        // ocultar y limpiar estado
+        colProtocolizados.style.display = 'none';
+        if (detalles) detalles.innerHTML = '';
+        if (boton) boton.textContent = 'ESTUDIOS PROTOCOLIZADOS:';
+        if (input) input.value = '';
+        if (hiddenSubtipo) hiddenSubtipo.value = '';
+
+        // quitar selección visual del dropdown
+        document.querySelectorAll('.dropdown-menu .dropdown-item.selected')
+        .forEach(it => it.classList.remove('selected'));
+    }
+    }
+
+    // engancha al cambio de momento evolutivo
+    document.querySelectorAll('input[name="momentoEvolutivo"]').forEach(r => {
+    r.addEventListener('change', actualizarVisibilidadProtocolizados);
+    });
+
+    // estado inicial
+    actualizarVisibilidadProtocolizados();
 
 
     // Event listeners para los radio buttons de tipo de muestra
@@ -105,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const bloqueInfiltracion = document.getElementById('bloqueInfiltracion');
-    if (!bloqueInfiltracion) return; // por si el bloque no existe en alguna vista
+    if (!bloqueInfiltracion) return; 
 
     // Primero checkboxes dentro de #tipoMuestra, si no, por name
     let checkboxesMuestra = document.querySelectorAll('#tipoMuestra input[type="checkbox"]');
@@ -1127,7 +1203,7 @@ function mostrarCampoTextoEMR() {
     }
 }
 
-// === Gestión de errores (antiduplicados) ===
+// Gestión de errores (antiduplicados)
 function clearErrors() {
   document.querySelectorAll('.error-msg').forEach(n => n.remove());
 }
@@ -1267,7 +1343,7 @@ function validarFormulario() {
     removeError('err-infiltracion');
 
     if ((spMarcado || moMarcado)) {
-        // Mostrar/ocultar ya lo haces en actualizarInfiltracion(); aquí solo validamos valor
+        // aquí solo validamos valor
         const invalida = infValRaw === '' || Number.isNaN(infValNum) || infValNum < 0 || infValNum > 100;
         if (invalida) {
             const anchor = infInput.parentElement; // #bloqueInfiltracion
@@ -1346,7 +1422,6 @@ function validarFormulario() {
     const ensayoSeleccionado = document.getElementById("ensayoSeleccionado").value;
     const ensayoClinicoTexto = document.getElementById("ensayoClinicoTexto").value.trim();
 
-    // Elimina mensajes previos
     document.querySelectorAll("#errorEnsayo, #errorEnsayoTexto").forEach(e => e.remove());
 
     //No se ha seleccionado "Sí" ni "No"
@@ -1386,7 +1461,7 @@ function validarFormulario() {
     }
 
     // VALIDAR SELECCIÓN DE ESTUDIOS 
-    const tieneProtocolizado = (document.getElementById("estudiosSeleccionados")?.value || "").trim() !== "";
+    /*const tieneProtocolizado = (document.getElementById("estudiosSeleccionados")?.value || "").trim() !== "";
     const otrosMarcados = document.querySelectorAll('input[name="otrosEstudios"]:checked').length > 0;
 
     if (!tieneProtocolizado && !otrosMarcados) {
@@ -1396,6 +1471,36 @@ function validarFormulario() {
         formularioValido = false;
     } else {
         removeError('err-estudios');
+    }*/
+    const seleccionadoMomento = document.querySelector('input[name="momentoEvolutivo"]:checked')?.id || '';
+    const permiteProtocolizados = (seleccionadoMomento === 'diagnostico' || seleccionadoMomento === 'recaidaProgresion');
+
+    const tieneProtocolizado = (document.getElementById("estudiosSeleccionados")?.value || "").trim() !== "";
+    const otrosMarcados = document.querySelectorAll('input[name="otrosEstudios"]:checked').length > 0;
+
+    // elimina error anterior si lo hubiera
+    document.getElementById('err-estudios')?.remove();
+
+    if (permiteProtocolizados) {
+        // regla original: al menos uno en total
+        if (!tieneProtocolizado && !otrosMarcados) {
+            const err = document.createElement('span');
+            err.id = 'err-estudios';
+            err.className = 'error-msg';
+            err.textContent = "Debe seleccionar al menos un estudio";
+            (document.querySelector(".tituloParte3") || document.body).appendChild(err);
+            formularioValido = false;
+    }
+    } else {
+        // si NO se permite Protocolizados, exige que haya "Otros estudios" si el depto. quiere alguno
+        if (!otrosMarcados) {
+            const err = document.createElement('span');
+            err.id = 'err-estudios';
+            err.className = 'error-msg';
+            err.textContent = "Para este momento evolutivo seleccione al menos un ítem en 'Otros estudios'";
+            (document.querySelector(".tituloParte3") || document.body).appendChild(err);
+            formularioValido = false;
+        }
     }
 
     return formularioValido;

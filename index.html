@@ -72,7 +72,7 @@
 
                                         <div class="col-5">
 
-                                            <label for="nombreApellidos" class="form-label labelNombre"> Nombre y Apellidos
+                                            <label for="nombreApellidos" class="form-label labelNombre"> NOMBRE Y APELLIDOS
                                             </label>
 
                                         </div>
@@ -81,6 +81,7 @@
 
                                             <input type="text" class="form-control nombre" id="nombreApellidos" name="nombreApellidos"
                                                 maxlength="45">
+                                            <div id="vistaNombre" class="vista-impresion"></div>
 
                                         </div>
 
@@ -167,7 +168,7 @@
                                         <div class="col-4">
 
                                             <label for="medico" class="form-label labelSolicitante required-asterisk"> SOLICITANTE:
-                                            </label>
+                                            </label>                                            
 
                                         </div>
 
@@ -175,6 +176,7 @@
 
                                             <input type="text" class="form-control inputMedico" id="medico"
                                                 maxlength="56">
+                                            <div id="vistaSolicitante" class="vista-impresion"></div>
 
                                         </div>
 
@@ -193,6 +195,7 @@
 
                                             <input type="text" class="form-control inputHospital" id="hospital"
                                                 maxlength="56">
+                                            <div id="vistaHospital" class="vista-impresion"></div>
 
                                         </div>
 
@@ -202,7 +205,7 @@
 
                                         <div class="col-4">
 
-                                            <label for="email" class="form-label labelEmail mt-2 required-asterisk"> EMAIL: </label>
+                                            <label for="email" class="form-label labelEmail mt-2 required-asterisk"> EMAIL: </label>                                            
 
                                         </div>
 
@@ -210,6 +213,7 @@
 
                                             <input type="email" class="form-control inputEmail" id="email"
                                                 maxlength="56">
+                                            <div id="vistaEmail" class="vista-impresion"></div>
 
                                         </div>
 
@@ -228,6 +232,7 @@
 
                                             <input type="tel" class="form-control inputTelefono" id="telefono"
                                                 maxlength="56">
+                                            <div id="vistaTelefono" class="vista-impresion"></div>
 
                                         </div>
 
@@ -280,14 +285,16 @@
 
 
                                 <!-- Contenedor donde aparecerán los 4 inputs -->
-                                <div id="inputsDiagnostico" class="mt-3">
 
-                                </div>
 
                                 <textarea class="form-control diagnosticoTexto" id="diagnosticoTexto"
                                     oninput="actualizarVista(this, 'vistaDiagnostico')" rows="3"
                                     placeholder="Especificar diagnóstico.."></textarea>
 
+                                <div id="inputsDiagnostico" class="mt-3">
+
+                                </div>
+                                
                                 <div id="vistaDiagnostico" class="vista-impresion"></div>
 
                                 <div id="notaSospecha" style="display: none; color: red; margin-top: 5px;">
