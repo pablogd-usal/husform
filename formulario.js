@@ -1472,36 +1472,33 @@ function validarFormulario() {
     } else {
         removeError('err-estudios');
     }*/
+    //VALIDAR SELECCIÓN DE ESTUDIOS (OR lógico entre Protocolizados y Otros)
     const seleccionadoMomento = document.querySelector('input[name="momentoEvolutivo"]:checked')?.id || '';
-    const permiteProtocolizados = (seleccionadoMomento === 'diagnostico' || seleccionadoMomento === 'recaidaProgresion');
+    const protocolizadosPermitidos = (seleccionadoMomento === 'diagnostico' || seleccionadoMomento === 'recaidaProgresion');
 
     const tieneProtocolizado = (document.getElementById("estudiosSeleccionados")?.value || "").trim() !== "";
     const otrosMarcados = document.querySelectorAll('input[name="otrosEstudios"]:checked').length > 0;
 
-    // elimina error anterior si lo hubiera
+    // limpia mensaje previo (antiduplicados)
     document.getElementById('err-estudios')?.remove();
 
-    if (permiteProtocolizados) {
-        // regla original: al menos uno en total
-        if (!tieneProtocolizado && !otrosMarcados) {
-            const err = document.createElement('span');
-            err.id = 'err-estudios';
-            err.className = 'error-msg';
-            err.textContent = "Debe seleccionar al menos un estudio";
-            (document.querySelector(".tituloParte3") || document.body).appendChild(err);
-            formularioValido = false;
-    }
+    let cumple = false;
+    if (protocolizadosPermitidos) {
+        cumple = (tieneProtocolizado || otrosMarcados);
     } else {
-        // si NO se permite Protocolizados, exige que haya "Otros estudios" si el depto. quiere alguno
-        if (!otrosMarcados) {
-            const err = document.createElement('span');
-            err.id = 'err-estudios';
-            err.className = 'error-msg';
-            err.textContent = "Para este momento evolutivo seleccione al menos un ítem en 'Otros estudios'";
-            (document.querySelector(".tituloParte3") || document.body).appendChild(err);
-            formularioValido = false;
-        }
+        // Si no se permiten protocolizados (porque no es Diagnóstico/Recaída), solo cuentan "Otros"
+        cumple = otrosMarcados;
     }
+
+    if (!cumple) {
+        const err = document.createElement('span');
+        err.id = 'err-estudios';
+        err.className = 'error-msg';
+        err.textContent = "Debe seleccionar al menos un estudio";
+        (document.querySelector(".tituloParte3") || document.body).appendChild(err);
+        formularioValido = false;
+    }
+
 
     return formularioValido;
 }
