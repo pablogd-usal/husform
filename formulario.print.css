@@ -553,53 +553,6 @@
   }
 }
 
-/*Hemograma en "Diagnóstico de sospecha" (solo impresión)*/
-@media print {
-  #inputsDiagnostico {
-    margin-top: 6pt;
-  }
-
-  /* Rompe el stacking de Bootstrap en impresión y pon todo en línea */
-  #inputsDiagnostico .row {
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    align-items: center;
-    gap: 6pt;
-  }
-
-  /* Anula las columnas de Bootstrap dentro de este bloque en impresión */
-  #inputsDiagnostico [class*="col-"] {
-    flex: 0 0 auto !important;
-    width: auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  /* Texto e inputs compactos */
-  #inputsDiagnostico .input-group-text,
-  #inputsDiagnostico .form-control {
-    font-size: 9pt;       
-    line-height: 1.1;
-    padding: 2pt 6pt;
-  }
-
-  /* Anchura fija y pequeña de los campos numéricos */
-  #inputsDiagnostico .form-control {
-    width: 40pt;
-  }
-
-  /* "Plaquetas" suele ser el más largo: un poco más de ancho */
-  #inputsDiagnostico #Plaquetas {
-    width: 52pt;
-  }
-
-  /* Reduce los márgenes verticales entre chips */
-  #inputsDiagnostico .my-1 {
-    margin-top: 2pt !important;
-    margin-bottom: 2pt !important;
-  }
-}
-
 /*  Ajuste de márgenes globales para impresión */
 @page {
   size: A4;
@@ -631,4 +584,41 @@
     padding-right: 4px !important;
     padding-left: 4px !important;
   }
+
+  @media print {
+  /* Hemograma en una sola línea al imprimir */
+  #inputsDiagnostico {
+    display: flex !important;
+    flex-wrap: nowrap !important;  
+    align-items: flex-end !important;
+    gap: 6pt !important;
+    page-break-inside: avoid !important;
+  }
+
+  #inputsDiagnostico .hemo-field {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 80pt !important;         
+  }
+
+  #inputsDiagnostico .hemo-field label {
+    margin: 0 0 2pt 0 !important;
+    font-size: 9pt !important;
+    line-height: 1.1 !important;
+  }
+
+  #inputsDiagnostico .hemo-field input {
+    width: 100% !important;
+    text-align: center !important;
+    font-size: 9pt !important;
+    line-height: 1.1 !important;
+    padding: 2pt 4pt !important;
+  }
+
+  /* Plaquetas suele necesitar algo más de ancho */
+  #inputsDiagnostico #plaquetasValor {
+    width: 92% !important; /* dentro de su .hemo-field */
+  }
+}
+
 }

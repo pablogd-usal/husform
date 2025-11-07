@@ -72,7 +72,7 @@
 
                                         <div class="col-5">
 
-                                            <label for="nombreApellidos" class="form-label labelNombre"> NOMBRE Y APELLIDOS
+                                            <label for="nombreApellidos" class="form-label labelNombre"> NOMBRE Y APELLIDOS:
                                             </label>
 
                                         </div>
@@ -294,7 +294,7 @@
                                 <div id="inputsDiagnostico" class="mt-3">
 
                                 </div>
-                                
+
                                 <div id="vistaDiagnostico" class="vista-impresion"></div>
 
                                 <div id="notaSospecha" style="display: none; color: red; margin-top: 5px;">
@@ -429,7 +429,7 @@
                                     </div>
 
                                 </fieldset>
-                                
+
                                 <!--form-check d-flex align-items-center gap-2 mt-3 -->
                                 <div id="bloqueInfiltracion" class="d-none">
                                     <input type="number" class="form-control inputInfiltracion" id="infiltracion"
@@ -442,11 +442,10 @@
                                     <input type="text" id="otrosInputMuestra" class="form-control inputMuestraa"
                                         placeholder="Especificar..">
                                 </div>
-
+                                
                                 <div id="errorMensajeMuestra" style="color: red; display: none; font-size: 13px;">
                                     Seleccione una opción </div>
-                            </div>
-
+                                </div>
                         </div>
 
                         <!-- CAMDIDATO A TRATAMIENTO INTENSIVO -->
@@ -457,7 +456,7 @@
                                 <div class="dropdown w-100">
                                     <button class="btn btn-primary dropdown-toggle w-100 seleccionarCandidato" type="button"
                                         data-bs-toggle="dropdown" id="tratamiento">
-                                        CANDIDATO A TRATAMIENTO INTENSIVO:
+                                        CANDIDATO A TRATAMIENTO INTENSIVO:<span class="asterisk">*</span>
                                     </button>
                                     <ul class="dropdown-menu w-100">
                                         <li><a class="dropdown-item" href="#" onclick="guardarOpcion('Si', event)">Sí</a></li>
@@ -472,7 +471,7 @@
                                 <div class="dropdown w-100">
                                     <button class="btn btn-primary dropdown-toggle w-100 seleccionarEnsayo" type="button"
                                         data-bs-toggle="dropdown" id="ensayo">
-                                        ENSAYO CLÍNICO/PROTOCOLO:
+                                        ENSAYO CLÍNICO/PROTOCOLO:<span class="asterisk">*</span>
                                     </button>
                                     <ul class="dropdown-menu w-100">
                                         <li><a class="dropdown-item" href="#" onclick="guardarOpcionEnsayo('Si', event)">Sí</a></li>

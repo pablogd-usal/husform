@@ -111,6 +111,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // hemograma
+    ['hbValor','leucocitosValor','neulinfValor','plaquetasValor','blastosValor'].forEach(id => {
+    const el = document.getElementById(id);
+    el?.addEventListener('input', () => removeError(`err-hemo-${id}`));
+    });
+
+    // EMR marcador
+    document.getElementById('marcadorMolecular')?.addEventListener('input', () => removeError('err-emr-marker'));
+
+
     // Mostrar/ocultar "Estudios protocolizados" según Momento evolutivo
     function actualizarVisibilidadProtocolizados() {
     const seleccionado = document.querySelector('input[name="momentoEvolutivo"]:checked')?.id || '';
@@ -1073,56 +1083,25 @@ function mostrarInputs() {
 
     if (radioSospecha.checked) {
         contenedorInputs.innerHTML = `
-        <div class="row align-items-center">
-
-            <div class="col-sm-1 my-1">
-                
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <div class="input-group-text">Hb</div>
-                    </div>
-                    <input type="text" class="form-control" id="inputHb" placeholder="00">
-                </div>
-            </div>
-            <div class="col-sm-2 my-1">
-                
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <div class="input-group-text">Leucocitos</div>
-                    </div>
-                    <input type="text" class="form-control" id="Leucocitos" placeholder="00">
-                </div>
-            </div>
-
-            <div class="col-sm-2 my-1">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                    <div class="input-group-text">Neu/Linf</div>
-                    </div>
-                    <input type="text" class="form-control" id="N_L" placeholder="00">
-                </div>
-            </div>
-            
-            <div class="col-sm-3 my-1">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                    <div class="input-group-text">Plaquetas</div>
-                    </div>
-                    <input type="text" class="form-control" id="Plaquetas" placeholder="00">
-                </div>
-            </div>
-            
-
-            <div class="col-sm-2 my-1">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                    <div class="input-group-text">Blastos</div>
-                    </div>
-                    <input type="text" class="form-control" id="Blastos" placeholder="00">
-                </div>
-            </div>
-
-            
+        <div class="hemo-field">
+            <label>Hb</label>
+            <input type="number" class="form-control" id="hbValor">
+        </div>
+        <div class="hemo-field">
+            <label>Leucocitos</label>
+            <input type="number" class="form-control" id="leucocitosValor">
+        </div>
+        <div class="hemo-field">
+            <label>Neu/Linf</label>
+            <input type="number" class="form-control" id="neulinfValor">
+        </div>
+        <div class="hemo-field">
+            <label>Plaquetas</label>
+            <input type="number" class="form-control" id="plaquetasValor">
+        </div>
+        <div class="hemo-field">
+            <label>Blastos</label>
+            <input type="number" class="form-control" id="blastosValor">
         </div>
         `;
     } else {
@@ -1258,6 +1237,46 @@ function validarFormulario() {
         document.getElementById("diagnosticoTexto").parentElement.appendChild(errorDiagnostico);
     }
 
+    // HEMOGRAMA obligatorio cuando "Diagnóstico de sospecha"
+    const esSospecha = document.getElementById('diagnosticoSospecha')?.checked;
+    if (esSospecha) {
+    // intenta coger por IDs habituales; si no existen, coge todos los inputs dentro del bloque
+    const campos = [
+        { id: 'hbValor',         nombre: 'Hb' },
+        { id: 'leucocitosValor', nombre: 'Leucocitos' },
+        { id: 'neulinfValor',    nombre: 'Neu/Linf' },
+        { id: 'plaquetasValor',  nombre: 'Plaquetas' },
+        { id: 'blastosValor',    nombre: 'Blastos' },
+    ];
+
+    let huboErrorHemo = false;
+
+    campos.forEach(c => {
+        const input = document.getElementById(c.id) 
+                || document.querySelector(`#inputsDiagnostico input[aria-label="${c.nombre}"]`) 
+                || document.querySelector(`#inputsDiagnostico .hemo-field label:contains("${c.nombre}") + input`);
+        if (!input) return;
+
+        // limpia error previo
+        removeError(`err-hemo-${c.id}`);
+
+        const val = (input.value ?? '').toString().trim();
+        if (val === '') {
+            const anchor = input.parentElement; // .hemo-field
+            const err = getOrCreateError(`err-hemo-${c.id}`, anchor);
+            err.textContent = `Complete ${c.nombre}`;
+            huboErrorHemo = true;
+        }
+    });
+
+    if (huboErrorHemo) formularioValido = false;
+    } else {
+        // si no es sospecha, limpia cualquier error previo del hemograma
+        ['hbValor','leucocitosValor','neulinfValor','plaquetasValor','blastosValor']
+            .forEach(id => removeError(`err-hemo-${id}`));
+    }
+
+
     // VALIDAR MEDICO
     const medico = document.getElementById("medico").value.trim();
     if (!medico) {
@@ -1314,13 +1333,17 @@ function validarFormulario() {
         }
     });
 
+    if (document.getElementById("err-tipo-muestra")) {
+        document.getElementById("err-tipo-muestra").remove();
+    }
+
     if (!seleccionadoMuestra) {
         formularioValido = false;
         errorTipoMuestra = document.createElement("span");
         errorTipoMuestra.style.color = "red";
         errorTipoMuestra.style.fontSize = "13px";
         errorTipoMuestra.textContent = "Debe seleccionar al menos un tipo de muestra";
-        document.querySelector('.labelTipoMuestra').appendChild(errorTipoMuestra);
+        document.getElementById('tipoMuestra').after(errorTipoMuestra);
     }
 
     //Otras muestras: texto obligatorio si está marcado
@@ -1417,6 +1440,23 @@ function validarFormulario() {
         errorInput.textContent = "Debe especificar el momento evolutivo";
         otrosInputEvolutivo.parentElement.appendChild(errorInput);
     }
+
+    //  Marcador molecular obligatorio si "EMR" 
+    const esEMR = document.getElementById('emr')?.checked;
+    const inputMarcador = document.getElementById('marcadorMolecular');
+
+    removeError('err-emr-marker');
+
+    if (esEMR) {
+    const val = (inputMarcador?.value ?? '').trim();
+        if (!val) {
+            const anchor = document.getElementById('emrMarker') || inputMarcador.parentElement;
+            const err = getOrCreateError('err-emr-marker', anchor);
+            err.textContent = 'Indique marcador molecular de seguimiento';
+            formularioValido = false;
+        }
+    }
+
 
     // VALIDAR ENSAYO CLÍNICO
     const ensayoSeleccionado = document.getElementById("ensayoSeleccionado").value;

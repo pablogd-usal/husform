@@ -274,6 +274,34 @@ body {
   margin-left: 4px;
 }
 
+.asterisk {
+  color: #c62828;
+  font-weight: 700;
+  margin-left: 4px;
+  font-size: 15px;
+  position: relative;
+  top: -1px; /* Opcional para alinearlo perfectamente */
+}
+
+/* Alinear los campos del hemograma en una sola línea */
+#inputsDiagnostico {
+    display: flex;
+    flex-wrap: nowrap;    /* evitar saltos a nueva línea */
+    gap: 12px;            /* separación entre bloques */
+    align-items: center;
+}
+
+#inputsDiagnostico .hemo-field {
+    display: flex;
+    flex-direction: column; 
+    width: 110px;         
+}
+
+#inputsDiagnostico .hemo-field input {
+    width: 100%;
+    text-align: center;
+}
+
 /* estilo común para mensajes de error */
 .error-msg { color: #d00; font-size: 13px; }
 
