@@ -72,7 +72,7 @@
 
                                         <div class="col-5">
 
-                                            <label for="nombreApellidos" class="form-label labelNombre"> NOMBRE Y APELLIDOS:
+                                            <label for="nombreApellidos" class="form-label labelNombre"> NOMBRE Y APELLIDOS
                                             </label>
 
                                         </div>
@@ -93,7 +93,7 @@
                                         <div class="col-6">
 
                                             <label for="nHistoriaClinica" class="form-label labelHistoria mt-2"> Nº
-                                                HISTORIA CLÍNICA: </label>
+                                                HISTORIA CLÍNICA </label>
 
                                         </div>
 
@@ -111,7 +111,7 @@
                                         <div class="col-7">
 
                                             <label for="fechaNacimiento" class="form-label labelFecha mt-1"> FECHA DE
-                                                NACIMIENTO: </label>
+                                                NACIMIENTO </label>
 
                                         </div>
 
@@ -130,7 +130,7 @@
 
                                         <div class="col-3">
 
-                                            <p class="form-label labelSexo mt-2"> SEXO: </p>
+                                            <p class="form-label labelSexo mt-2"> SEXO </p>
 
                                         </div>
 
@@ -167,7 +167,7 @@
 
                                         <div class="col-4">
 
-                                            <label for="medico" class="form-label labelSolicitante required-asterisk"> SOLICITANTE:
+                                            <label for="medico" class="form-label labelSolicitante required-asterisk"> SOLICITANTE
                                             </label>                                            
 
                                         </div>
@@ -186,7 +186,7 @@
 
                                         <div class="col-3">
 
-                                            <label for="hospital" class="form-labe labelHospital mt-2 required-asterisk"> HOSPITAL:
+                                            <label for="hospital" class="form-labe labelHospital mt-2 required-asterisk"> HOSPITAL
                                             </label>
 
                                         </div>
@@ -205,7 +205,7 @@
 
                                         <div class="col-4">
 
-                                            <label for="email" class="form-label labelEmail mt-2 required-asterisk"> EMAIL: </label>                                            
+                                            <label for="email" class="form-label labelEmail mt-2"> EMAIL </label>                                            
 
                                         </div>
 
@@ -223,7 +223,7 @@
 
                                         <div class="col-4">
 
-                                            <label for="telefono" class="form-label labelTelefono mt-2"> TELÉFONO:
+                                            <label for="telefono" class="form-label labelTelefono mt-2"> TELÉFONO
                                             </label>
 
                                         </div>
@@ -250,7 +250,7 @@
 
                         <div class="form-group d-flex align-items-center mx-sm-3 my-1 mx-1">
                             <label for="fechaExtraccion" class="mb-0 mr-2 labelFechaExtraccion">FECHA
-                                EXTRACCIÓN:</label>
+                                EXTRACCIÓN</label>
                             <input type="date" class="form-control inputFechaExtraccion" id="fechaExtraccion"
                                 style="width:auto;">
                         </div>
@@ -267,7 +267,7 @@
                                             <input class="form-check-input" type="radio" name="diagnosticoTipo"
                                                 id="diagnosticoConfirmado" value="confirmado">
                                             <label class="form-check-label" for="diagnosticoConfirmado">
-                                                Diagnóstico confirmado<br /><small>(Según OMS/ICC)</small>
+                                                Diagnóstico confirmado (y observaciones)<br /><small>(Según OMS/ICC)</small>
                                             </label>
                                         </div>
                                     </div>
@@ -277,7 +277,7 @@
                                             <input class="form-check-input" type="radio" name="diagnosticoTipo"
                                                 id="diagnosticoSospecha" value="sospecha">
                                             <label class="form-check-label" for="diagnosticoSospecha">
-                                                Diagnóstico de Sospecha<br /><small>(indicar cifras de hemograma si procede)</small>
+                                                Diagnóstico de Sospecha (y observaciones)<br /><small>(indicar cifras de hemograma si procede)</small>
                                             </label>
                                         </div>
                                     </div>
@@ -286,16 +286,14 @@
 
                                 <!-- Contenedor donde aparecerán los 4 inputs -->
 
-
                                 <textarea class="form-control diagnosticoTexto" id="diagnosticoTexto"
                                     oninput="actualizarVista(this, 'vistaDiagnostico')" rows="3"
                                     placeholder="Especificar diagnóstico.."></textarea>
 
-                                <div id="inputsDiagnostico" class="mt-3">
-
-                                </div>
-
                                 <div id="vistaDiagnostico" class="vista-impresion"></div>
+
+                                <div id="inputsDiagnostico" class="mt-3">
+                                </div>
 
                                 <div id="notaSospecha" style="display: none; color: red; margin-top: 5px;">
                                     Se ruega que una vez se tenga el diagnóstico se envíe la confirmación al mail
@@ -434,7 +432,7 @@
                                 <div id="bloqueInfiltracion" class="d-none">
                                     <input type="number" class="form-control inputInfiltracion" id="infiltracion"
                                         name="infiltracion" min="0" max="100">
-                                    <label for="infiltracion" class="form-check-label"> infiltración de la muestra (%)
+                                    <label for="infiltracion" class="form-check-label"> Infiltración de la muestra (%)
                                     </label>
                                 </div>
 
@@ -456,7 +454,7 @@
                                 <div class="dropdown w-100">
                                     <button class="btn btn-primary dropdown-toggle w-100 seleccionarCandidato" type="button"
                                         data-bs-toggle="dropdown" id="tratamiento">
-                                        CANDIDATO A TRATAMIENTO INTENSIVO:<span class="asterisk">*</span>
+                                        CANDIDATO A TRATAMIENTO INTENSIVO<span class="asterisk">*</span>
                                     </button>
                                     <ul class="dropdown-menu w-100">
                                         <li><a class="dropdown-item" href="#" onclick="guardarOpcion('Si', event)">Sí</a></li>
@@ -471,7 +469,7 @@
                                 <div class="dropdown w-100">
                                     <button class="btn btn-primary dropdown-toggle w-100 seleccionarEnsayo" type="button"
                                         data-bs-toggle="dropdown" id="ensayo">
-                                        ENSAYO CLÍNICO/PROTOCOLO:<span class="asterisk">*</span>
+                                        ENSAYO CLÍNICO/PROTOCOLO<span class="asterisk">*</span>
                                     </button>
                                     <ul class="dropdown-menu w-100">
                                         <li><a class="dropdown-item" href="#" onclick="guardarOpcionEnsayo('Si', event)">Sí</a></li>
@@ -496,7 +494,7 @@
 
                                 <button class="btn btn-primary dropdown-toggle seleccionarEstudio" type="button"
                                     data-bs-toggle="dropdown" data-bs-auto-close="outside" id="dropdownEstudios">
-                                    ESTUDIOS PROTOCOLIZADOS:
+                                    ESTUDIOS PROTOCOLIZADOS
                                 </button>
 
                                 <div class="dropdown-menu" aria-labelledby="dropdownEstudios">
@@ -569,7 +567,7 @@
 
                             <div class="col-6 colOtrosEstudios">
 
-                                <p class="pOtrosEstudios"> OTROS ESTUDIOS: </p>
+                                <p class="pOtrosEstudios"> OTROS ESTUDIOS </p>
 
                                 <div class="form-check">
                                     <input class="form-check-input checkboxClonalidadB" type="checkbox"
@@ -596,6 +594,11 @@
                                 </div>
 
                                 <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="ogm" name="otrosEstudios">
+                                    <label class="form-check-label" for="ogm">Mapeo óptico del genoma (OGM)</label>
+                                </div>
+
+                                <div class="form-check">
                                     <input class="form-check-input checkboxMutaciones" type="checkbox"
                                         name="otrosEstudios" id="mutacionesABL">
                                     <label class="form-check-label" for="mutacionesABL"> Mutaciones de <em>ABL</em> </label>
@@ -605,7 +608,12 @@
                                     <input class="form-check-input checkboxLinfoide" type="checkbox"
                                         name="otrosEstudios" id="panelNGSLinfoideB">
                                     <label class="form-check-label" for="panelNGSLinfoideB"> Panel NGS
-                                        linfoide B </label>
+                                        linfoide (linfomas) </label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="panelNGSLLAB" name="otrosEstudios">
+                                    <label class="form-check-label" for="panelNGSLLAB">Panel NGS LLA-B</label>
                                 </div>
 
                                 <div class="form-check">
@@ -623,7 +631,7 @@
                                 <div class="form-check">
                                     <input class="form-check-input checkboxResistencias" type="checkbox"
                                         name="otrosEstudios" id="panelResistencias">
-                                    <label class="form-check-label" for="panelResistencias"> Panel de resistencias a iBTK y iBCL2 </label>
+                                    <label class="form-check-label" for="panelResistencias"> Panel NGS de resistencias a iBTK y iBCL2 </label>
                                 </div>
 
                                 <div class="form-check">
@@ -636,6 +644,11 @@
                                     <input class="form-check-input checkboxQuimerismoT" type="checkbox" id="quimerismoT"
                                         name="otrosEstudios">
                                     <label class="form-check-label" for="quimerismoT">Quimerismo total</label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="otrosEstudiosOtros" name="otrosEstudios">
+                                    <label class="form-check-label" for="otrosEstudiosOtros">Otros</label>
                                 </div>
 
                                 <div id="notaExon12"
@@ -696,11 +709,11 @@
 
             <div class="notasFinales">
 
-                <p> Instrucciones: </p>
+                <p> Instrucciones </p>
 
                 <ul>
 
-                    <li> En todos los casos se enviará un tubo de EDTA y un tubo de heparina (sódica o litio) </li>
+                    <li> En las muestras de MO se enviará un tubo de EDTA y un tubo de heparina (sódica o litio) </li>
 
                 </ul>
 
@@ -712,15 +725,15 @@
 
             <div class="notasFinales">
 
-                <p> Datos: </p>
+                <p> Información </p>
 
                 <ul>
                     <li> La información registrada en el formulario online no quedará almacenada en el sistema de
                         solicitud </li> 
+                    <li>Las ampliaciones de estudios se solicitarán email</li>
                     <li> Mails de contacto: hematólogos (citogenbm@saludcastillayleon.onmicrosoft.com), administrativo (rgarciaeg.ibsal@saludcastillayleon.es) </li>  
+                    <li> No se realizarán estudios en MO no infiltrada (rogamos confirmar infiltración) </li>
                     <li> Se guardará DNA de todas las muestras de MO </li>                    
-                    <li> Solo se harán los estudios en muestras que estén infiltradas por el linfoma (rogamos confirmar %
-                        de infiltración) </li>
                     <li>Solo se realizarán estudios marcados o solicitados por escrito </li>
 
                 </ul>

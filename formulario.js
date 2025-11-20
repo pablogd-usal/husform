@@ -32,6 +32,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    //Ordenar alfabéticamente los estudios protocolizados en el dropdown
+    const menuEstudios = document.querySelector('.colEstudiosProtocolizados .dropdown-menu');
+    if (menuEstudios) {
+        const items = Array.from(menuEstudios.querySelectorAll('.dropdown-item'));
+
+        items
+          .sort((a, b) =>
+            a.textContent.trim().localeCompare(
+              b.textContent.trim(),
+              'es',
+              { sensitivity: 'base' }
+            )
+          )
+          .forEach(item => menuEstudios.appendChild(item)); // reinsertar en orden
+    }
+
+
     const inpNombre = document.getElementById('nombreApellidos');
     const vistaNombre = document.getElementById('vistaNombre');
     if (inpNombre && vistaNombre) {
@@ -84,18 +101,31 @@ document.addEventListener('DOMContentLoaded', function() {
             const emrMarkerDiv = document.getElementById('emrMarker');
             const postTxDiv = document.getElementById('postTxDiasDiv');
             const postTxInput = document.getElementById('postTxDias');
+            const otrosInputEvolutivo = document.getElementById('otrosInputEvolutivo');
+            const marcadorMolecular = document.getElementById('marcadorMolecular');
 
-            // reset de visibilidad y required
+            // reset de visibilidad
             otrosInputDiv.style.display = 'none';
             emrMarkerDiv.style.display = 'none';
             postTxDiv.style.display = 'none';
-            if (postTxInput) { postTxInput.required = false; }
+
+            // reset de required + vaciado de campos
+            if (postTxInput) {
+                postTxInput.required = false;
+                postTxInput.value = '';
+            }
+            if (otrosInputEvolutivo) {
+                otrosInputEvolutivo.value = '';
+            }
+            if (marcadorMolecular) {
+                marcadorMolecular.value = '';
+            }
 
             if (this.id === 'emr') {
                 mostrarCampoTextoEMR();
             } else if (this.id === 'otrosEvolutivos') {
                 otrosInputDiv.style.display = 'block';
-                document.getElementById('otrosInputEvolutivo').focus();
+                otrosInputEvolutivo?.focus();
             } else if (this.id === 'postransplante') {
                 postTxDiv.style.display = 'block';
                 if (postTxInput) {
@@ -106,10 +136,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         document.getElementById('postTxDias')?.addEventListener('input', () => {
-        const old = document.getElementById('err-posttx');
-        if (old) old.remove();
+            const old = document.getElementById('err-posttx');
+            if (old) old.remove();
         });
     });
+
 
     // hemograma
     ['hbValor','leucocitosValor','neulinfValor','plaquetasValor','blastosValor'].forEach(id => {
@@ -140,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // ocultar y limpiar estado
         colProtocolizados.style.display = 'none';
         if (detalles) detalles.innerHTML = '';
-        if (boton) boton.textContent = 'ESTUDIOS PROTOCOLIZADOS:';
+        if (boton) boton.textContent = 'ESTUDIOS PROTOCOLIZADOS';
         if (input) input.value = '';
         if (hiddenSubtipo) hiddenSubtipo.value = '';
 
@@ -177,18 +208,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const otrosInput = document.getElementById('otrosInputMuestra');
 
     if (checkboxOtras && inputMuestraDiv) {
-    checkboxOtras.addEventListener('change', () => {
-        const mostrar = checkboxOtras.checked;
-        inputMuestraDiv.style.display = mostrar ? 'block' : 'none';
-        if (mostrar) {
-            otrosInput.required = true;
-            otrosInput.focus();
-        } else {
-            otrosInput.required = false;
-            removeError('err-otros-muestra');
-        }
-    });
+        checkboxOtras.addEventListener('change', () => {
+            const mostrar = checkboxOtras.checked;
+            inputMuestraDiv.style.display = mostrar ? 'block' : 'none';
+
+            if (mostrar) {
+                otrosInput.required = true;
+                otrosInput.focus();
+            } else {
+                otrosInput.required = false;
+                otrosInput.value = '';// limpiar texto
+                removeError('err-otros-muestra');
+            }
+        });
     }
+
 
     const bloqueInfiltracion = document.getElementById('bloqueInfiltracion');
     if (!bloqueInfiltracion) return; 
@@ -201,16 +235,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function actualizarInfiltracion() {
         const seleccionadas = Array.from(checkboxesMuestra)
-        .filter(ch => ch.checked)
-        .map(ch => (ch.value || ch.id || '').toUpperCase().trim());
+            .filter(ch => ch.checked)
+            .map(ch => (ch.value || ch.id || '').toUpperCase().trim());
 
         const mostrar = seleccionadas.includes('SP') || seleccionadas.includes('MO');
 
         bloqueInfiltracion.classList.toggle('d-none', !mostrar);
 
         const input = document.getElementById('infiltracion');
-        if (input) input.required = mostrar;
+        if (input) {
+            input.required = false;
+        }
     }
+
 
     checkboxesMuestra.forEach(ch => ch.addEventListener('change', actualizarInfiltracion));
 
@@ -222,13 +259,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event listeners para los checkboxes de otros estudios
     const otrosEstudiosCheckboxes = document.querySelectorAll('input[name="otrosEstudios"]');
     const justificacionDiv = document.getElementById('justificacionOtrosEstudios');
-    
+
     otrosEstudiosCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', function() {
             const anyChecked = Array.from(otrosEstudiosCheckboxes).some(cb => cb.checked);
             justificacionDiv.style.display = anyChecked ? 'block' : 'none';
+
+            // Si ya no hay ninguno marcado, limpiar el texto
+            if (!anyChecked) {
+                const justInput = document.getElementById('justificacionOtrosEstudiosTexto');
+                const vistaJust = document.getElementById('vistaJustificacion');
+                if (justInput) justInput.value = '';
+                if (vistaJust) vistaJust.textContent = '';
+            }
         });
     });
+
 
     // Event listener para la opción de exón 12
     const exon12Checkbox = document.getElementById('exon12');
@@ -381,14 +427,14 @@ function guardarOpcionEstudio(opcion, event) {
     //# mostrarInformacionEstudio(clickedItem ? clickedItem.textContent.trim() : '');
 
     if (selectedItems.length > 0) {
-        let buttonText = 'ESTUDIOS PROTOCOLIZADOS: ' + selectedItems.join(', ');
+        let buttonText = 'ESTUDIOS PROTOCOLIZADOS ' + selectedItems.join(', ');
         button.textContent = buttonText;
         input.value = selectedItems.join(',');
 
         // Mostrar la información de los estudios
         mostrarInformacionEstudios(selectedItems);
     } else {
-        button.textContent = 'ESTUDIOS PROTOCOLIZADOS:';
+        button.textContent = 'ESTUDIOS PROTOCOLIZADOS';
         input.value = '';
         const textoSeleccionado = document.getElementById('textoSeleccionado');
         textoSeleccionado.textContent = 'Selecciona una opción para ver los detalles.';
@@ -403,7 +449,7 @@ function italicizeGenes(html) {
     "NPM1","FLT3","IDH1","IDH2","WT1","BCR","ABL","TCF3","PBX1",
     "AF4","ETV6","PDGFRA","PDGFRB","FGFR1","JAK2","CALR","MPL",
     "CSF3R","KIT","BRAF","IGHV","BCL2","BCL6","MYC","TP53","SF3B1",
-    "UBA1","SIL", "TAL", "MYD88", "CXCR4"
+    "UBA1","SIL", "TAL", "MYD88", "CXCR4", "ATM"
   ];
 
   // 1) Protege lo que ya esté en <em>...</em> para no re-envolver
@@ -436,24 +482,215 @@ function mostrarInformacionEstudio(estudio) {
     let mensajeHTML = '';
         
     if (estudio === "Leucemia mieloblástica aguda") {
-        
-        mensajeHTML = `<strong>Información específica sobre Leucemia aguda mieloblástica:</strong><br>
-                        Cariotipo<br>
-                        FISH: 5q, 7q, C-8, <em>KMT2A (MLL)</em><br>
-                        Traslocaciones por qRT-PCR:<br>
-                        <ul>
-                            <li>t(15;17) – <em>PML</em>::<em>RARA</em></li>
-                            <li>t(8;21) – <em>RUNX1</em>::<em>RUNX1T1</em></li>
-                            <li>inv(16) – <em>CBFB</em>::<em>MYH11</em></li>
-                        </ul>
-                        Mutaciones de <em>NPM1</em>, <em>FLT3</em> y <em>IDH1/2</em><br>
-                        Expresión WT1 Panel NGS mieloide: si candidato a TPH o si está incluido en la PLATAFO-LMA.<br>
-                        <strong>Nota:</strong> En caso de sospecha morfológica y que se precise conocer el resultado en 24-48h se podrían solicitar los estudios de FISH de t(15;17) o t(8;21) o inv(16)`;
 
+       if (esRecaida) {
+                // Versión para recaída/progresión 
+                mensajeHTML = `
+                    Leucemia mieloblástica aguda<br><br>
+
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            Cariotipo. FISH: 5q, 7q, C-8, KMT2A (MLL).
+                        </div>
+                        <div class="col-6">
+                            Traslocaciones por qRT-PCR: Si se detectó alguna al diagnóstico
+                        </div>
+                    </div>
+
+                    <div class="mt-2 mb-2">
+                        <label class="form-label d-block mb-1">Rango de edad:</label>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="lmaEdad" id="lmaMenor75" value="menor75">
+                            <label class="form-check-label" for="lmaMenor75">Menor o igual de 75 años</label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="lmaEdad" id="lma7585" value="75a85">
+                            <label class="form-check-label" for="lma7585">75 a 85 años</label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="lmaEdad" id="lmaMas85" value="mas85">
+                            <label class="form-check-label" for="lmaMas85">Mayor de 85 años</label>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Contenido ≤75 años -->
+                    <div id="lmaContMenor75" style="display:none; margin-top:10px;">
+                        <div class="row">
+                            <div class="col-3">
+                                En 75 años o menor: Mutaciones de NPM1, FLT3 y IDH1/2.
+                            </div>
+                            <div class="col-3">
+                                En 75 años o menor: qRT-PCR: t(15;17), inv(16) y t(8;21) si han pasado más de 2 años desde el diagnóstico.
+                            </div>
+                            <div class="col-3">
+                                En 75 años o menor: Expresión WT1. Si han pasado más de 2 años desde el diagnóstico.
+                            </div>
+                            <div class="col-3">
+                                En 75 años o menor: Panel NGS mieloide
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenido 75-85 -->
+                    <div id="lmaCont7585" style="display:none; margin-top:10px;">
+                        <div class="row">
+                            <div class="col-6">
+                                Entre 75 y 85 años: Mutaciones de FLT3 y IDH1/2.
+                            </div>
+                            <div class="col-6">
+                                Entre 75 y 85 años: Panel NGS mieloide
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenido >85 -->
+                    <div id="lmaContMas85" style="display:none; margin-top:10px;">
+                        <div class="row">
+                            <div class="col-12">
+                                Mayores de 85 años: Mutaciones de FLT3 y IDH1/2.
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Activar el bloque correspondiente según el rango de edad elegido
+                setTimeout(() => {
+                    const r1 = document.getElementById("lmaMenor75");
+                    const r2 = document.getElementById("lma7585");
+                    const r3 = document.getElementById("lmaMas85");
+
+                    const b1 = document.getElementById("lmaContMenor75");
+                    const b2 = document.getElementById("lmaCont7585");
+                    const b3 = document.getElementById("lmaContMas85");
+
+                    function actualizar() {
+                        b1.style.display = r1.checked ? "block" : "none";
+                        b2.style.display = r2.checked ? "block" : "none";
+                        b3.style.display = r3.checked ? "block" : "none";
+                    }
+
+                    if (r1) r1.addEventListener("change", actualizar);
+                    if (r2) r2.addEventListener("change", actualizar);
+                    if (r3) r3.addEventListener("change", actualizar);
+                }, 50);
+
+            } else {
+                // Versión para diagnóstico
+                mensajeHTML = `
+                    <strong>Leucemia mieloblástica aguda – Seleccione rango de edad:</strong><br><br>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="lmaEdad" id="lmaMenor75" value="menor75">
+                        <label class="form-check-label" for="lmaMenor75">Menor de 75 años</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="lmaEdad" id="lma7585" value="75a85">
+                        <label class="form-check-label" for="lma7585">75 a 85 años</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="lmaEdad" id="lmaMas85" value="mas85">
+                        <label class="form-check-label" for="lmaMas85">Mayor de 85 años</label>
+                    </div>
+
+                    <hr>
+
+                    <!-- Contenido Menor 75 -->
+                    <div id="lmaContMenor75" style="display:none; margin-top:10px;">
+                        <div class="row">
+                            <div class="col-3">
+                                Cariotipo. FISH: 5q, 7q, C-8, KMT2A (MLL)
+                                <br>
+                                Traslocaciones por qRT-PCR:
+                                <br>
+                                t(15;17) – PML::RARA
+                                <br>
+                                t(8;21) – RUNX1::RUNX1T1
+                                <br>
+                                inv(16) – CBFB::MYH11
+                            </div>
+
+                            <div class="col-3">
+                                Mutaciones:
+                                <br>
+                                - NPM1
+                                <br>
+                                - FLT3
+                                <br>
+                                - IDH1/2
+                            </div>
+
+                            <div class="col-3">
+                                Expresión WT1
+                            </div>
+
+                            <div class="col-3">
+                                Panel NGS mieloide
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenido 75-85 -->
+                    <div id="lmaCont7585" style="display:none; margin-top:10px;">
+                        <div class="row">
+                            <div class="col-4">
+                                Cariotipo. FISH: 5q, 7q, C-8, KMT2A (MLL)
+                            </div>
+
+                            <div class="col-4">
+                                Mutaciones de IDH1/2
+                            </div>
+
+                            <div class="col-4">
+                                Panel NGS mieloide
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenido mayor 85 -->
+                    <div id="lmaContMas85" style="display:none; margin-top:10px;">
+                        <div class="row">
+                            <div class="col-6">
+                                Cariotipo. FISH: 5q, 7q, C-8, KMT2A (MLL)
+                            </div>
+
+                            <div class="col-6">
+                                Mutaciones de IDH1/2
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Listeners para diagnóstico 
+                setTimeout(() => {
+                    const r1 = document.getElementById("lmaMenor75");
+                    const r2 = document.getElementById("lma7585");
+                    const r3 = document.getElementById("lmaMas85");
+
+                    const b1 = document.getElementById("lmaContMenor75");
+                    const b2 = document.getElementById("lmaCont7585");
+                    const b3 = document.getElementById("lmaContMas85");
+
+                    function actualizar() {
+                        b1.style.display = r1.checked ? "block" : "none";
+                        b2.style.display = r2.checked ? "block" : "none";
+                        b3.style.display = r3.checked ? "block" : "none";
+                    }
+
+                    if (r1) r1.addEventListener("change", actualizar);
+                    if (r2) r2.addEventListener("change", actualizar);
+                    if (r3) r3.addEventListener("change", actualizar);
+                }, 50);
+            }
     } else if (estudio === "Leucemia linfoblástica aguda") {
 
 
-        const subtipoGuardado = document.getElementById('subtipoLLASeleccionado')?.value || '';
+        //const subtipoGuardado = document.getElementById('subtipoLLASeleccionado')?.value || '';
 
         // decide visibilidad inicial de los bloques según lo guardado
         const showB = subtipoGuardado === 'B';
@@ -471,10 +708,6 @@ function mostrarInformacionEstudio(estudio) {
             <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" name="subtipoLLA" id="llaT" value="T" ${showT ? 'checked' : ''}>
                 <label class="form-check-label" for="llaT">T</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="subtipoLLA" id="llaX" value="Desconocido" ${(subtipoGuardado==='Desconocido' || (!showB && !showT && subtipoGuardado!=='B' && subtipoGuardado!=='T')) ? 'checked' : ''}>
-                <label class="form-check-label" for="llaX">Desconocido</label>
             </div>
             </div>
 
@@ -505,8 +738,7 @@ function mostrarInformacionEstudio(estudio) {
         `;
     } else if (estudio === "Síndrome mielodisplásico") {
         mensajeHTML = `<strong>Información específica sobre Síndrome mielodisplásico:</strong><br>
-                        Cariotipo<br>
-                        FISH: 5q, 7q, C-8 y 20q.<br>
+                        Cariotipo. FISH: 5q, 7q, C-8 y 20q.<br>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico1">
                             <label class="form-check-label" for="sindromeMielodisplasico1">Si candidato a ALO-TPH o si está incluido en estudio UMBRELLA: Panel de NGS mieloide</label>
@@ -534,15 +766,13 @@ function mostrarInformacionEstudio(estudio) {
     } else if (estudio === "Leucemia mielomonocítica crónica") {
 
         mensajeHTML = `<strong>Información específica sobre Leucemia mielomonocítica crónica:</strong><br>
-                        Cariotipo<br>
-                        FISH: 5q, 7q, C-8, 20q.<br>
+                        Cariotipo. FISH: 5q, 7q, C-8, 20q.<br>
                         Panel de NGS mieloide en pacientes candidatos a aloTPH`;
 
     } else if (estudio === "Neoplasias mieloproliferativas crónicas no LMC") {
 
         mensajeHTML = `<strong>Información específica sobre Neoplasias mieloproliferativas crónicas no LMC:</strong><br>
-                        Cariotipo<br>
-                        FISH: t(9;22)<br>
+                        Cariotipo. FISH: t(9;22)<br>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="mieloproliferativasOpciones" id="mieloproliferativas1">
                             <label class="form-check-label" for="mieloproliferativas1">Poliglobulia: Mutaciones de JAK2</label>
@@ -571,8 +801,7 @@ function mostrarInformacionEstudio(estudio) {
     } else if (estudio === "Eosinofilia") {
         
         mensajeHTML = `<strong>Información específica sobre Eosinofilia:</strong><br>
-                        Cariotipo<br>
-                        FISH de PDGFRA y PDGFRB`;
+                        Cariotipo. FISH de PDGFRA y PDGFRB`;
 
     } else if (estudio === "Leucemia neutrofílica crónica") {
 
@@ -598,16 +827,31 @@ function mostrarInformacionEstudio(estudio) {
                         Se guarda ADN hasta concretar diagnóstico`;
 
     } else if (estudio === "Leucemia linfática crónica") {
-
-        mensajeHTML = `<strong>Información específica sobre Leucemia linfática crónica:</strong><br>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc1">
-                            <label class="form-check-label" for="llc1">Al diagnóstico: Cariotipo Mutaciones de IGHV</label>
+        if (esRecaida) {
+                mensajeHTML = `
+                    <div class="row">
+                        <div class="col-4">
+                            Se realizará el estudio si cumple criterios de tratamiento.
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc2">
-                            <label class="form-check-label" for="llc2">Antes de tratamiento/recaída: Cariotipo FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53). Mutaciones TP53</label>
-                        </div>`;
+                        <div class="col-4">
+                            Cariotipo. FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53).
+                        </div>
+                        <div class="col-4">
+                            Mutaciones TP53
+                        </div>
+                    </div>
+                `;
+            } else {
+                mensajeHTML = `<strong>Información específica sobre Leucemia linfática crónica:</strong><br>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc1">
+                                    <label class="form-check-label" for="llc1">Al diagnóstico: Cariotipo. FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53)</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc2">
+                                    <label class="form-check-label" for="llc2">Mutaciones TP53</label>
+                                </div>`;
+            }
 
     } else if (estudio === "Tricoleucemia") {
 
@@ -626,7 +870,7 @@ function mostrarInformacionEstudio(estudio) {
                             Nota 1: Solo se harán los estudios en tejidos que estén infiltrados por el linfoma (rogamos confirmar % de infiltración)<br>
                             Nota 2: No se repetirá el estudio de FISH si ya se ha realizado en otro tejido infiltrado de ese paciente, salvo excepción justificada
                         </div>
-                        Cariotipo FISH: BCL2, BCL6, MYC y TP53`;
+                        Cariotipo. FISH: BCL2, BCL6, MYC y TP53`;
 
     } else if (estudio === "Linfoma folicular") {
 
@@ -635,7 +879,7 @@ function mostrarInformacionEstudio(estudio) {
                             Nota 1: Solo se harán los estudios en tejidos que estén infiltrados por el linfoma (rogamos confirmar % de infiltración)<br>
                             Nota 2: No se repetirá el estudio de FISH si ya se ha realizado en otro tejido infiltrado de ese paciente, salvo excepción justificada
                         </div>
-                        Cariotipo FISH: t(14;18)`;
+                        Cariotipo. FISH: t(14;18)`;
 
     } else if (estudio === "Linfoma de células del manto") {
 
@@ -644,7 +888,7 @@ function mostrarInformacionEstudio(estudio) {
                             Nota 1: Solo se harán los estudios en tejidos que estén infiltrados por el linfoma (rogamos confirmar % de infiltración)<br>
                             Nota 2: No se repetirá el estudio de FISH si ya se ha realizado en otro tejido infiltrado de ese paciente, salvo excepción justificada
                         </div>
-                        Cariotipo FISH: t(11;14) y del(17p)<br>
+                        Cariotipo. FISH: t(11;14) y del(17p)<br>
                         Mutaciones de TP53`;
 
     } else if (estudio === "Mieloma Múltiple") {
@@ -656,7 +900,7 @@ function mostrarInformacionEstudio(estudio) {
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="mielomaOpciones" id="mieloma2">
-                            <label class="form-check-label" for="mieloma2">Mutaciones TP53</label>
+                            <label class="form-check-label" for="mieloma2">Mutaciones TP53 (Si se confirma diagnóstico)</label>
                         </div>`;
 
     } else if (estudio === "Macroglobulinemia de Waldestrom") {
@@ -672,7 +916,7 @@ function mostrarInformacionEstudio(estudio) {
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="waldestromOpciones" id="waldestrom3">
-                            <label class="form-check-label" for="waldestrom3">Antes de tratamiento/recaída: Mutaciones de TP53</label>
+                            <label class="form-check-label" for="waldestrom3">Antes de tratamiento/recaída: Mutaciones de TP53 (Si se confirma diagnóstico)</label>
                         </div>`;
 
     } else if (estudio === "Leucemia de linfocitos grandes granulares") {
@@ -736,6 +980,9 @@ function mostrarInformacionEstudios(estudios) {
 
     textoSeleccionado.innerHTML = ''; // Limpiar contenido anterior
     
+    const momentoId = document.querySelector('input[name="momentoEvolutivo"]:checked')?.id || '';
+    const esRecaida = (momentoId === 'recaidaProgresion');
+
     estudios.forEach((estudio, index) => {
         const div = document.createElement('div');
         div.className = 'estudio-item';
@@ -747,21 +994,212 @@ function mostrarInformacionEstudios(estudios) {
         let mensajeHTML = '';
         
         if (estudio === "Leucemia mieloblástica aguda") {
-            
-            mensajeHTML = `<strong>Información específica sobre Leucemia aguda mieloblástica:</strong><br>
-                            Cariotipo<br>
-                            FISH: 5q, 7q, C-8, KMT2A (MLL)<br>
-                            Traslocaciones por qRT-PCR:<br>
-                            <ul>
-                                <li>t(15;17) – PML::RARA</li>
-                                <li>t(8;21) – RUNX1::RUNX1T1</li>
-                                <li>inv(16) – CBFB::MYH11</li>
-                            </ul>
-                            Mutaciones de NPM1, FLT3 y IDH1/2<br>
-                            Expresión WT1 Panel NGS mieloide: si candidato a TPH o si está incluido en la PLATAFO-LMA<br>
-                            <strong>Nota:</strong> En caso de sospecha morfológica y que se precise conocer el resultado en 24-48h se podrían solicitar los estudios de FISH de t(15;17) o t(8;21) o inv(16)`;
 
-        } else if (estudio === "Leucemia linfoblástica aguda") {
+            if (esRecaida) {
+                // Versión para recaída/progresión 
+                mensajeHTML = `
+                    Leucemia mieloblástica aguda<br><br>
+
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            Cariotipo. FISH: 5q, 7q, C-8, KMT2A (MLL).
+                        </div>
+                        <div class="col-6">
+                            Traslocaciones por qRT-PCR: Si se detectó alguna al diagnóstico
+                        </div>
+                    </div>
+
+                    <div class="mt-2 mb-2">
+                        <label class="form-label d-block mb-1">Rango de edad:</label>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="lmaEdad" id="lmaMenor75" value="menor75">
+                            <label class="form-check-label" for="lmaMenor75">Menor o igual de 75 años</label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="lmaEdad" id="lma7585" value="75a85">
+                            <label class="form-check-label" for="lma7585">75 a 85 años</label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="lmaEdad" id="lmaMas85" value="mas85">
+                            <label class="form-check-label" for="lmaMas85">Mayor de 85 años</label>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Contenido ≤75 años -->
+                    <div id="lmaContMenor75" style="display:none; margin-top:10px;">
+                        <div class="row">
+                            <div class="col-3">
+                                En 75 años o menor: Mutaciones de NPM1, FLT3 y IDH1/2.
+                            </div>
+                            <div class="col-3">
+                                En 75 años o menor: qRT-PCR: t(15;17), inv(16) y t(8;21) si han pasado más de 2 años desde el diagnóstico.
+                            </div>
+                            <div class="col-3">
+                                En 75 años o menor: Expresión WT1. Si han pasado más de 2 años desde el diagnóstico.
+                            </div>
+                            <div class="col-3">
+                                En 75 años o menor: Panel NGS mieloide
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenido 75-85 -->
+                    <div id="lmaCont7585" style="display:none; margin-top:10px;">
+                        <div class="row">
+                            <div class="col-6">
+                                Entre 75 y 85 años: Mutaciones de FLT3 y IDH1/2.
+                            </div>
+                            <div class="col-6">
+                                Entre 75 y 85 años: Panel NGS mieloide
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenido >85 -->
+                    <div id="lmaContMas85" style="display:none; margin-top:10px;">
+                        <div class="row">
+                            <div class="col-12">
+                                Mayores de 85 años: Mutaciones de FLT3 y IDH1/2.
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Activar el bloque correspondiente según el rango de edad elegido
+                setTimeout(() => {
+                    const r1 = document.getElementById("lmaMenor75");
+                    const r2 = document.getElementById("lma7585");
+                    const r3 = document.getElementById("lmaMas85");
+
+                    const b1 = document.getElementById("lmaContMenor75");
+                    const b2 = document.getElementById("lmaCont7585");
+                    const b3 = document.getElementById("lmaContMas85");
+
+                    function actualizar() {
+                        b1.style.display = r1.checked ? "block" : "none";
+                        b2.style.display = r2.checked ? "block" : "none";
+                        b3.style.display = r3.checked ? "block" : "none";
+                    }
+
+                    if (r1) r1.addEventListener("change", actualizar);
+                    if (r2) r2.addEventListener("change", actualizar);
+                    if (r3) r3.addEventListener("change", actualizar);
+                }, 50);
+
+            } else {
+                // Versión para diagnóstico
+                mensajeHTML = `
+                    <strong>Leucemia mieloblástica aguda – Seleccione rango de edad:</strong><br><br>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="lmaEdad" id="lmaMenor75" value="menor75">
+                        <label class="form-check-label" for="lmaMenor75">Menor de 75 años</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="lmaEdad" id="lma7585" value="75a85">
+                        <label class="form-check-label" for="lma7585">75 a 85 años</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="lmaEdad" id="lmaMas85" value="mas85">
+                        <label class="form-check-label" for="lmaMas85">Mayor de 85 años</label>
+                    </div>
+
+                    <hr>
+
+                    <!-- Contenido Menor 75 -->
+                    <div id="lmaContMenor75" style="display:none; margin-top:10px;">
+                        <div class="row">
+                            <div class="col-3">
+                                Cariotipo. FISH: 5q, 7q, C-8, KMT2A (MLL)
+                                <br>
+                                Traslocaciones por qRT-PCR:
+                                <br>
+                                t(15;17) – PML::RARA
+                                <br>
+                                t(8;21) – RUNX1::RUNX1T1
+                                <br>
+                                inv(16) – CBFB::MYH11
+                            </div>
+
+                            <div class="col-3">
+                                Mutaciones:
+                                <br>
+                                - NPM1
+                                <br>
+                                - FLT3
+                                <br>
+                                - IDH1/2
+                            </div>
+
+                            <div class="col-3">
+                                Expresión WT1
+                            </div>
+
+                            <div class="col-3">
+                                Panel NGS mieloide
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenido 75-85 -->
+                    <div id="lmaCont7585" style="display:none; margin-top:10px;">
+                        <div class="row">
+                            <div class="col-4">
+                                Cariotipo. FISH: 5q, 7q, C-8, KMT2A (MLL)
+                            </div>
+
+                            <div class="col-4">
+                                Mutaciones de IDH1/2
+                            </div>
+
+                            <div class="col-4">
+                                Panel NGS mieloide
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenido mayor 85 -->
+                    <div id="lmaContMas85" style="display:none; margin-top:10px;">
+                        <div class="row">
+                            <div class="col-6">
+                                Cariotipo. FISH: 5q, 7q, C-8, KMT2A (MLL)
+                            </div>
+
+                            <div class="col-6">
+                                Mutaciones de IDH1/2
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Listeners para diagnóstico 
+                setTimeout(() => {
+                    const r1 = document.getElementById("lmaMenor75");
+                    const r2 = document.getElementById("lma7585");
+                    const r3 = document.getElementById("lmaMas85");
+
+                    const b1 = document.getElementById("lmaContMenor75");
+                    const b2 = document.getElementById("lmaCont7585");
+                    const b3 = document.getElementById("lmaContMas85");
+
+                    function actualizar() {
+                        b1.style.display = r1.checked ? "block" : "none";
+                        b2.style.display = r2.checked ? "block" : "none";
+                        b3.style.display = r3.checked ? "block" : "none";
+                    }
+
+                    if (r1) r1.addEventListener("change", actualizar);
+                    if (r2) r2.addEventListener("change", actualizar);
+                    if (r3) r3.addEventListener("change", actualizar);
+                }, 50);
+            }
+        }else if (estudio === "Leucemia linfoblástica aguda") {
 
             const subtipoGuardado = document.getElementById('subtipoLLASeleccionado')?.value || '';
 
@@ -781,10 +1219,6 @@ function mostrarInformacionEstudios(estudios) {
                 <div class="form-check form-check-inline">
                     <input class="form-check-input" type="radio" name="subtipoLLA" id="llaT" value="T" ${showT ? 'checked' : ''}>
                     <label class="form-check-label" for="llaT">T</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="subtipoLLA" id="llaX" value="Desconocido" ${(subtipoGuardado==='Desconocido' || (!showB && !showT && subtipoGuardado!=='B' && subtipoGuardado!=='T')) ? 'checked' : ''}>
-                    <label class="form-check-label" for="llaX">Desconocido</label>
                 </div>
                 </div>
 
@@ -815,8 +1249,7 @@ function mostrarInformacionEstudios(estudios) {
             `;
         } else if (estudio === "Síndrome mielodisplásico") {
             mensajeHTML = `<strong>Información específica sobre Síndrome mielodisplásico:</strong><br>
-                            Cariotipo<br>
-                            FISH: 5q, 7q, C-8 y 20q<br>
+                            Cariotipo. FISH: 5q, 7q, C-8 y 20q<br>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico1">
                                 <label class="form-check-label" for="sindromeMielodisplasico1">Si candidato a ALO-TPH o si está incluido en estudio UMBRELLA: Panel de NGS mieloide</label>
@@ -844,15 +1277,13 @@ function mostrarInformacionEstudios(estudios) {
         } else if (estudio === "Leucemia mielomonocítica crónica") {
 
             mensajeHTML = `<strong>Información específica sobre Leucemia mielomonocítica crónica:</strong><br>
-                            Cariotipo<br>
-                            FISH: 5q, 7q, C-8, 20q<br>
+                            Cariotipo. FISH: 5q, 7q, C-8, 20q<br>
                             Panel de NGS mieloide en pacientes candidatos a aloTPH`;
 
         } else if (estudio === "Neoplasias mieloproliferativas crónicas no LMC") {
 
             mensajeHTML = `<strong>Información específica sobre Neoplasias mieloproliferativas crónicas no LMC:</strong><br>
-                            Cariotipo<br>
-                            FISH: t(9;22)<br>
+                            Cariotipo. FISH: t(9;22)<br>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="mieloproliferativasOpciones" id="mieloproliferativas1">
                                 <label class="form-check-label" for="mieloproliferativas1">Poliglobulia: Mutaciones de JAK2</label>
@@ -881,8 +1312,7 @@ function mostrarInformacionEstudios(estudios) {
         } else if (estudio === "Eosinofilia") {
             
             mensajeHTML = `<strong>Información específica sobre Eosinofilia:</strong><br>
-                            Cariotipo<br>
-                            FISH de PDGFRA y PDGFRB`;
+                            Cariotipo. FISH de PDGFRA y PDGFRB`;
 
         } else if (estudio === "Leucemia neutrofílica crónica") {
 
@@ -909,16 +1339,31 @@ function mostrarInformacionEstudios(estudios) {
 
         } else if (estudio === "Leucemia linfática crónica") {
 
-            mensajeHTML = `<strong>Información específica sobre Leucemia linfática crónica:</strong><br>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc1">
-                                <label class="form-check-label" for="llc1">Al diagnóstico: Cariotipo Mutaciones de IGHV</label>
+            if (esRecaida) {
+                    mensajeHTML = `
+                        <div class="row">
+                            <div class="col-4">
+                                Se realizará el estudio si cumple criterios de tratamiento.
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc2">
-                                <label class="form-check-label" for="llc2">Antes de tratamiento/recaída: Cariotipo FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53). Mutaciones TP53</label>
-                            </div>`;
-
+                            <div class="col-4">
+                                Cariotipo. FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53).
+                            </div>
+                            <div class="col-4">
+                                Mutaciones TP53
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    mensajeHTML = `<strong>Información específica sobre Leucemia linfática crónica:</strong><br>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc1">
+                                        <label class="form-check-label" for="llc1">Al diagnóstico: Cariotipo. FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53)</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc2">
+                                        <label class="form-check-label" for="llc2">Mutaciones TP53</label>
+                                    </div>`;
+                }
         } else if (estudio === "Tricoleucemia") {
 
             mensajeHTML = `<strong>Información específica sobre Tricoleucemia:</strong><br>
@@ -936,7 +1381,7 @@ function mostrarInformacionEstudios(estudios) {
                                 Nota 1: Solo se harán los estudios en tejidos que estén infiltrados por el linfoma (rogamos confirmar % de infiltración)<br>
                                 Nota 2: No se repetirá el estudio de FISH si ya se ha realizado en otro tejido infiltrado de ese paciente, salvo excepción justificada
                             </div>
-                            Cariotipo FISH: BCL2, BCL6, MYC y TP53`;
+                            Cariotipo. FISH: BCL2, BCL6, MYC y TP53`;
 
         } else if (estudio === "Linfoma folicular") {
 
@@ -945,7 +1390,7 @@ function mostrarInformacionEstudios(estudios) {
                                 Nota 1: Solo se harán los estudios en tejidos que estén infiltrados por el linfoma (rogamos confirmar % de infiltración)<br>
                                 Nota 2: No se repetirá el estudio de FISH si ya se ha realizado en otro tejido infiltrado de ese paciente, salvo excepción justificada
                             </div>
-                            Cariotipo FISH: t(14;18)`;
+                            Cariotipo. FISH: t(14;18)`;
 
         } else if (estudio === "Linfoma de células del manto") {
 
@@ -954,7 +1399,7 @@ function mostrarInformacionEstudios(estudios) {
                                 Nota 1: Solo se harán los estudios en tejidos que estén infiltrados por el linfoma (rogamos confirmar % de infiltración)<br>
                                 Nota 2: No se repetirá el estudio de FISH si ya se ha realizado en otro tejido infiltrado de ese paciente, salvo excepción justificada
                             </div>
-                            Cariotipo FISH: t(11;14) y del(17p)<br>
+                            Cariotipo. FISH: t(11;14) y del(17p)<br>
                             Mutaciones de TP53`;
 
         } else if (estudio === "Mieloma Múltiple") {
@@ -966,7 +1411,7 @@ function mostrarInformacionEstudios(estudios) {
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="mielomaOpciones" id="mieloma2">
-                                <label class="form-check-label" for="mieloma2">Mutaciones TP53</label>
+                                <label class="form-check-label" for="mieloma2">Mutaciones TP53 (Si se confirma diagnóstico)</label>
                             </div>`;
 
         } else if (estudio === "Macroglobulinemia de Waldestrom") {
@@ -982,7 +1427,7 @@ function mostrarInformacionEstudios(estudios) {
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="waldestromOpciones" id="waldestrom3">
-                                <label class="form-check-label" for="waldestrom3">Antes de tratamiento/recaída: Mutaciones de TP53</label>
+                                <label class="form-check-label" for="waldestrom3">Antes de tratamiento/recaída: Mutaciones de TP53 (Si se confirma diagnóstico)</label>
                             </div>`;
 
         } else if (estudio === "Leucemia de linfocitos grandes granulares") {
@@ -1123,12 +1568,17 @@ function guardarOpcionEnsayo(opcion, event) {
     document.getElementById('ensayo').textContent = 'ENSAYO CLÍNICO/PROTOCOLO: ' + opcion;
     
     const detallesDiv = document.getElementById('ensayoClinicoDetalles');
+    const ensayoInput = document.getElementById('ensayoClinicoTexto');
+
     if (opcion === 'Si') {
         detallesDiv.style.display = 'block';
+        ensayoInput?.focus();
     } else {
         detallesDiv.style.display = 'none';
+        if (ensayoInput) ensayoInput.value = '';   // limpiar texto
     }
 }
+
 
 function guardarMomentoEvolutivo() {
     document.getElementById('errorMensaje').style.display = 'none';
@@ -1237,44 +1687,9 @@ function validarFormulario() {
         document.getElementById("diagnosticoTexto").parentElement.appendChild(errorDiagnostico);
     }
 
-    // HEMOGRAMA obligatorio cuando "Diagnóstico de sospecha"
-    const esSospecha = document.getElementById('diagnosticoSospecha')?.checked;
-    if (esSospecha) {
-    // intenta coger por IDs habituales; si no existen, coge todos los inputs dentro del bloque
-    const campos = [
-        { id: 'hbValor',         nombre: 'Hb' },
-        { id: 'leucocitosValor', nombre: 'Leucocitos' },
-        { id: 'neulinfValor',    nombre: 'Neu/Linf' },
-        { id: 'plaquetasValor',  nombre: 'Plaquetas' },
-        { id: 'blastosValor',    nombre: 'Blastos' },
-    ];
-
-    let huboErrorHemo = false;
-
-    campos.forEach(c => {
-        const input = document.getElementById(c.id) 
-                || document.querySelector(`#inputsDiagnostico input[aria-label="${c.nombre}"]`) 
-                || document.querySelector(`#inputsDiagnostico .hemo-field label:contains("${c.nombre}") + input`);
-        if (!input) return;
-
-        // limpia error previo
-        removeError(`err-hemo-${c.id}`);
-
-        const val = (input.value ?? '').toString().trim();
-        if (val === '') {
-            const anchor = input.parentElement; // .hemo-field
-            const err = getOrCreateError(`err-hemo-${c.id}`, anchor);
-            err.textContent = `Complete ${c.nombre}`;
-            huboErrorHemo = true;
-        }
-    });
-
-    if (huboErrorHemo) formularioValido = false;
-    } else {
-        // si no es sospecha, limpia cualquier error previo del hemograma
-        ['hbValor','leucocitosValor','neulinfValor','plaquetasValor','blastosValor']
-            .forEach(id => removeError(`err-hemo-${id}`));
-    }
+    // HEMOGRAMA: campos opcionales
+    ['hbValor','leucocitosValor','neulinfValor','plaquetasValor','blastosValor']
+        .forEach(id => removeError(`err-hemo-${id}`));
 
 
     // VALIDAR MEDICO
@@ -1286,17 +1701,6 @@ function validarFormulario() {
         errorMedico.style.fontSize = "13px";
         errorMedico.textContent = "El médico no puede estar vacío";
         document.getElementById("medico").parentElement.appendChild(errorMedico);
-    }
-
-    // VALIDAR EMAIL
-    const email = document.getElementById("email").value.trim();
-    if (!email) {
-        formularioValido = false;
-        errorEmail = document.createElement("span");
-        errorEmail.style.color = "red";
-        errorEmail.style.fontSize = "13px";
-        errorEmail.textContent = "El email no puede estar vacío";
-        document.getElementById("email").parentElement.appendChild(errorEmail);
     }
 
     // VALIDAR HOSPITAL
@@ -1357,26 +1761,21 @@ function validarFormulario() {
         err.textContent = 'Especifique el tipo de muestra';
         formularioValido = false;
     }
-    //Infiltración: obligatoria si hay SP o MO
-    const spMarcado = document.getElementById('sp')?.checked;
-    const moMarcado = document.getElementById('mo')?.checked;
+    // Infiltración: Si hay valor, solo validar que sea 0–100.
     const infInput  = document.getElementById('infiltracion');
     const infValRaw = infInput?.value ?? '';
     const infValNum = infValRaw === '' ? NaN : Number(infValRaw);
     removeError('err-infiltracion');
 
-    if ((spMarcado || moMarcado)) {
-        // aquí solo validamos valor
-        const invalida = infValRaw === '' || Number.isNaN(infValNum) || infValNum < 0 || infValNum > 100;
+    if (infValRaw !== '') {
+        // Solo comprobamos rango si el usuario ha escrito algo
+        const invalida = Number.isNaN(infValNum) || infValNum < 0 || infValNum > 100;
         if (invalida) {
-            const anchor = infInput.parentElement; // #bloqueInfiltracion
+            const anchor = infInput.parentElement; // 
             const err = getOrCreateError('err-infiltracion', anchor);
-            err.textContent = 'Indique % de infiltración (0–100)';
+            err.textContent = 'Si indica infiltración, debe ser un % entre 0 y 100';
             formularioValido = false;
         }
-    } else {
-    // si no hay SP/MO, no exigimos infiltración
-    removeError('err-infiltracion');
     }
 
     document.getElementById('otrosInputMuestra')?.addEventListener('input', () => removeError('err-otros-muestra'));

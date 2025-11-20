@@ -322,6 +322,32 @@
         color-adjust: exact;
     }
 
+    @media print {
+
+  /* Mostrar solo las opciones marcadas (radios y checkboxes) */
+
+  /* Ocultar por completo inputs no seleccionados y sus etiquetas */
+  .form-check-input[type="radio"]:not(:checked),
+  .form-check-input[type="radio"]:not(:checked) + .form-check-label,
+  .form-check-input[type="checkbox"]:not(:checked),
+  .form-check-input[type="checkbox"]:not(:checked) + .form-check-label {
+    display: none !important;
+  }
+
+  /* Para los que SÍ están marcados: escondemos la cajita del input y dejamos solo el texto del label */
+  .form-check-input[type="radio"]:checked,
+  .form-check-input[type="checkbox"]:checked {
+    position: absolute !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+  }
+}
+
+
     .form-check-label {
         vertical-align: middle;
         margin-left: 5px;
@@ -619,6 +645,19 @@
   #inputsDiagnostico #plaquetasValor {
     width: 92% !important; /* dentro de su .hemo-field */
   }
+}
+
+@media print {
+    /* Diagnóstico y justificación en recuadro, sin fondo azul */
+    #vistaDiagnostico,
+    #vistaJustificacion {
+        background-color: transparent !important;
+        border: 1px solid #000;
+        padding: 4px 6px;
+        margin-top: 6px;
+        margin-bottom: 8px;
+        border-radius: 3px;
+    }
 }
 
 }
