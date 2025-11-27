@@ -44,6 +44,13 @@ body {
     margin-bottom: -5px; /* Adjust as needed */
 }
 
+.tituloFormularioPeticion {
+    font-size: 1.6rem;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
 /* --- Visibility & Hiding --- */
 .paciente,
 #sexoSeleccionado,
@@ -63,8 +70,11 @@ body {
 
 /* --- Header & Images --- */
 .headerImg {
-    max-width: 100%;
-    height: auto; /* Ensures image scales proportionally */
+    max-width: 85%;
+    height: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* --- Input & Label Adjustments --- */
