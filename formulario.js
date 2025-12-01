@@ -351,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Variables para almacenar errores y evitar duplicados
-let errorDiagnostico, errorMedico, errorEmail, errorTelefono, errorHospital, errorTratamiento, errorInput, errorEnsayo, errorTipoMuestra, errorSospechaDiagnostico;
+let errorDiagnostico, errorMedico, errorEmail, errorTelefono, errorHospital, errorTratamiento, errorInput, errorEnsayo, errorTipoMuestra, errorSospechaDiagnostico, errorLabDecision;
 
 function guardarMomentoEvolutivo() {
   const momentoEvolutivoElement = document.querySelector('input[name="momentoEvolutivo"]:checked');
@@ -517,11 +517,12 @@ function mostrarInformacionEstudio(estudio) {
        if (esRecaida) {
                 // Versión para recaída/progresión 
                 mensajeHTML = `
-                    <strong>Leucemia mieloblástica aguda – Seleccione rango de edad:</strong><br><br>
+                    <strong>Información específica sobre Leucemia mieloblástica aguda – Seleccione rango de edad:</strong><br><br>
 
                     <div class="row mb-2">
                         <div class="col-6">
-                            Cariotipo. FISH: 5q, 7q, C-8, KMT2A (MLL).
+                            Cariotipo<br>
+                            FISH: 5q, 7q, C-8, KMT2A (MLL).
                         </div>
                         <div class="col-6">
                             Traslocaciones por qRT-PCR: Si se detectó alguna al diagnóstico
@@ -612,7 +613,7 @@ function mostrarInformacionEstudio(estudio) {
             } else {
                 // Versión para diagnóstico
                 mensajeHTML = `
-                    <strong>Leucemia mieloblástica aguda – Seleccione rango de edad:</strong><br><br>
+                    <strong>Información específica sobre Leucemia mieloblástica aguda – Seleccione rango de edad:</strong><br><br>
 
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="lmaEdad" id="lmaMenor75" value="menor75">
@@ -635,7 +636,8 @@ function mostrarInformacionEstudio(estudio) {
                     <div id="lmaContMenor75" style="display:none; margin-top:10px;">
                         <div class="row">
                             <div class="col-3">
-                                Cariotipo. FISH: 5q, 7q, C-8, KMT2A (MLL)
+                                Cariotipo<br>
+                                FISH: 5q, 7q, C-8, KMT2A (MLL)
                                 <br>
                                 Traslocaciones por qRT-PCR:
                                 <br>
@@ -670,7 +672,8 @@ function mostrarInformacionEstudio(estudio) {
                     <div id="lmaCont7585" style="display:none; margin-top:10px;">
                         <div class="row">
                             <div class="col-4">
-                                Cariotipo. FISH: 5q, 7q, C-8, KMT2A (MLL)
+                                Cariotipo<br>
+                                FISH: 5q, 7q, C-8, KMT2A (MLL)
                             </div>
 
                             <div class="col-4">
@@ -687,7 +690,8 @@ function mostrarInformacionEstudio(estudio) {
                     <div id="lmaContMas85" style="display:none; margin-top:10px;">
                         <div class="row">
                             <div class="col-6">
-                                Cariotipo. FISH: 5q, 7q, C-8, KMT2A (MLL)
+                                Cariotipo<br> 
+                                FISH: 5q, 7q, C-8, KMT2A (MLL)
                             </div>
 
                             <div class="col-6">
@@ -769,7 +773,8 @@ function mostrarInformacionEstudio(estudio) {
         `;
     } else if (estudio === "Síndrome mielodisplásico") {
         mensajeHTML = `<strong>Información específica sobre Síndrome mielodisplásico:</strong><br>
-                        Cariotipo. FISH: 5q, 7q, C-8 y 20q.<br>
+                        Cariotipo<br> 
+                        FISH: 5q, 7q, C-8 y 20q.<br>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico1">
                             <label class="form-check-label" for="sindromeMielodisplasico1">Si candidato a ALO-TPH o si está incluido en estudio UMBRELLA: Panel de NGS mieloide</label>
@@ -797,13 +802,15 @@ function mostrarInformacionEstudio(estudio) {
     } else if (estudio === "Leucemia mielomonocítica crónica") {
 
         mensajeHTML = `<strong>Información específica sobre Leucemia mielomonocítica crónica:</strong><br>
-                        Cariotipo. FISH: 5q, 7q, C-8, 20q.<br>
+                        Cariotipo<br> 
+                        FISH: 5q, 7q, C-8, 20q.<br>
                         Panel de NGS mieloide en pacientes candidatos a aloTPH`;
 
     } else if (estudio === "Neoplasias mieloproliferativas crónicas no LMC") {
 
         mensajeHTML = `<strong>Información específica sobre Neoplasias mieloproliferativas crónicas no LMC:</strong><br>
-                        Cariotipo. FISH: t(9;22)<br>
+                        Cariotipo<br> 
+                        FISH: t(9;22)<br>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="mieloproliferativasOpciones" id="mieloproliferativas1">
                             <label class="form-check-label" for="mieloproliferativas1">Poliglobulia: Mutaciones de JAK2</label>
@@ -832,7 +839,8 @@ function mostrarInformacionEstudio(estudio) {
     } else if (estudio === "Eosinofilia") {
         
         mensajeHTML = `<strong>Información específica sobre Eosinofilia:</strong><br>
-                        Cariotipo. FISH de PDGFRA y PDGFRB`;
+                        Cariotipo<br> 
+                        FISH de PDGFRA y PDGFRB`;
 
     } else if (estudio === "Leucemia neutrofílica crónica") {
 
@@ -862,7 +870,8 @@ function mostrarInformacionEstudio(estudio) {
                 mensajeHTML = `<strong>Se realizará el estudio si cumple criterios de tratamiento.</strong><br>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc1">
-                                    <label class="form-check-label" for="llc1">Cariotipo. FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53).</label>
+                                    <label class="form-check-label" for="llc1">Cariotipo<br> 
+                                    FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53).</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc2">
@@ -881,7 +890,8 @@ function mostrarInformacionEstudio(estudio) {
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc2">
                         <label class="form-check-label" for="llc2">
-                            Antes de tratamiento/recaída: Cariotipo FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53).<br>
+                            Antes de tratamiento/recaída: Cariotipo<br>
+                            FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53).<br>
                             Mutaciones TP53
                         </label>
                     </div>
@@ -905,7 +915,8 @@ function mostrarInformacionEstudio(estudio) {
                             Nota 1: Solo se harán los estudios en tejidos que estén infiltrados por el linfoma (rogamos confirmar % de infiltración)<br>
                             Nota 2: No se repetirá el estudio de FISH si ya se ha realizado en otro tejido infiltrado de ese paciente, salvo excepción justificada
                         </div>
-                        Cariotipo. FISH: BCL2, BCL6, MYC y TP53`;
+                        Cariotipo<br> 
+                        FISH: BCL2, BCL6, MYC y TP53`;
 
     } else if (estudio === "Linfoma folicular") {
 
@@ -914,7 +925,8 @@ function mostrarInformacionEstudio(estudio) {
                             Nota 1: Solo se harán los estudios en tejidos que estén infiltrados por el linfoma (rogamos confirmar % de infiltración)<br>
                             Nota 2: No se repetirá el estudio de FISH si ya se ha realizado en otro tejido infiltrado de ese paciente, salvo excepción justificada
                         </div>
-                        Cariotipo. FISH: t(14;18)`;
+                        Cariotipo<br> 
+                        FISH: t(14;18)`;
 
     } else if (estudio === "Linfoma de células del manto") {
 
@@ -923,36 +935,24 @@ function mostrarInformacionEstudio(estudio) {
                             Nota 1: Solo se harán los estudios en tejidos que estén infiltrados por el linfoma (rogamos confirmar % de infiltración)<br>
                             Nota 2: No se repetirá el estudio de FISH si ya se ha realizado en otro tejido infiltrado de ese paciente, salvo excepción justificada
                         </div>
-                        Cariotipo. FISH: t(11;14) y del(17p)<br>
+                        Cariotipo<br> 
+                        FISH: t(11;14) y del(17p)<br>
                         Mutaciones de TP53`;
 
     } else if (estudio === "Mieloma Múltiple") {
 
         mensajeHTML = `<strong>Información específica sobre Mieloma Múltiple:</strong><br>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="mielomaOpciones" id="mieloma1">
-                            <label class="form-check-label" for="mieloma1">FISH: t(4;14), t(14;16), t(14;20), 1q/1p y 17p</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="mielomaOpciones" id="mieloma2">
-                            <label class="form-check-label" for="mieloma2">Mutaciones TP53 (Si se confirma diagnóstico)</label>
-                        </div>`;
+                        FISH: t(4;14), t(14;16), t(14;20), 1q/1p y 17p<br>
+                        Mutaciones TP53 (si se confirma diagnóstico)
+                        `;
 
     } else if (estudio === "Macroglobulinemia de Waldestrom") {
 
         mensajeHTML = `<strong>Información específica sobre Macroglobulinemia de Waldestrom:</strong><br>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="waldestromOpciones" id="waldestrom1">
-                            <label class="form-check-label" for="waldestrom1">FISH: del(6q), C-4, del(17p)</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="waldestromOpciones" id="waldestrom2">
-                            <label class="form-check-label" for="waldestrom2">Mutaciones de MYD88 y CXCR4</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="waldestromOpciones" id="waldestrom3">
-                            <label class="form-check-label" for="waldestrom3">Antes de tratamiento/recaída: Mutaciones de TP53 (Si se confirma diagnóstico)</label>
-                        </div>`;
+                        FISH: del(6q), C-4, del(17p)<br>
+                        Mutaciones de MYD88 y CXCR4<br>
+                        Antes de tratamiento/recaída: Mutaciones de TP53 (si se confirma diagnóstico)
+                        `;
 
     } else if (estudio === "Leucemia de linfocitos grandes granulares") {
 
@@ -1033,11 +1033,12 @@ function mostrarInformacionEstudios(estudios) {
             if (esRecaida) {
                 // Versión para recaída/progresión 
                 mensajeHTML = `
-                    <strong>Leucemia mieloblástica aguda – Seleccione rango de edad:</strong><br><br>
+                    <strong>Información específica sobre Leucemia mieloblástica aguda – Seleccione rango de edad:</strong><br><br>
 
                     <div class="row mb-2">
                         <div class="col-6">
-                            Cariotipo. FISH: 5q, 7q, C-8, KMT2A (MLL).
+                            Cariotipo<br> 
+                            FISH: 5q, 7q, C-8, KMT2A (MLL).
                         </div>
                         <div class="col-6">
                             Traslocaciones por qRT-PCR: Si se detectó alguna al diagnóstico
@@ -1128,7 +1129,7 @@ function mostrarInformacionEstudios(estudios) {
             } else {
                 // Versión para diagnóstico
                 mensajeHTML = `
-                    <strong>Leucemia mieloblástica aguda – Seleccione rango de edad:</strong><br><br>
+                    <strong>Información específica sobre Leucemia mieloblástica aguda – Seleccione rango de edad:</strong><br><br>
 
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="lmaEdad" id="lmaMenor75" value="menor75">
@@ -1151,7 +1152,8 @@ function mostrarInformacionEstudios(estudios) {
                     <div id="lmaContMenor75" style="display:none; margin-top:10px;">
                         <div class="row">
                             <div class="col-3">
-                                Cariotipo. FISH: 5q, 7q, C-8, KMT2A (MLL)
+                                Cariotipo<br> 
+                                FISH: 5q, 7q, C-8, KMT2A (MLL)
                                 <br>
                                 Traslocaciones por qRT-PCR:
                                 <br>
@@ -1186,7 +1188,8 @@ function mostrarInformacionEstudios(estudios) {
                     <div id="lmaCont7585" style="display:none; margin-top:10px;">
                         <div class="row">
                             <div class="col-4">
-                                Cariotipo. FISH: 5q, 7q, C-8, KMT2A (MLL)
+                                Cariotipo<br> 
+                                FISH: 5q, 7q, C-8, KMT2A (MLL)
                             </div>
 
                             <div class="col-4">
@@ -1203,7 +1206,8 @@ function mostrarInformacionEstudios(estudios) {
                     <div id="lmaContMas85" style="display:none; margin-top:10px;">
                         <div class="row">
                             <div class="col-6">
-                                Cariotipo. FISH: 5q, 7q, C-8, KMT2A (MLL)
+                                Cariotipo<br> 
+                                FISH: 5q, 7q, C-8, KMT2A (MLL)
                             </div>
 
                             <div class="col-6">
@@ -1284,7 +1288,8 @@ function mostrarInformacionEstudios(estudios) {
             `;
         } else if (estudio === "Síndrome mielodisplásico") {
             mensajeHTML = `<strong>Información específica sobre Síndrome mielodisplásico:</strong><br>
-                            Cariotipo. FISH: 5q, 7q, C-8 y 20q<br>
+                            Cariotipo<br> 
+                            FISH: 5q, 7q, C-8 y 20q<br>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico1">
                                 <label class="form-check-label" for="sindromeMielodisplasico1">Si candidato a ALO-TPH o si está incluido en estudio UMBRELLA: Panel de NGS mieloide</label>
@@ -1312,13 +1317,15 @@ function mostrarInformacionEstudios(estudios) {
         } else if (estudio === "Leucemia mielomonocítica crónica") {
 
             mensajeHTML = `<strong>Información específica sobre Leucemia mielomonocítica crónica:</strong><br>
-                            Cariotipo. FISH: 5q, 7q, C-8, 20q<br>
+                            Cariotipo<br> 
+                            FISH: 5q, 7q, C-8, 20q<br>
                             Panel de NGS mieloide en pacientes candidatos a aloTPH`;
 
         } else if (estudio === "Neoplasias mieloproliferativas crónicas no LMC") {
 
             mensajeHTML = `<strong>Información específica sobre Neoplasias mieloproliferativas crónicas no LMC:</strong><br>
-                            Cariotipo. FISH: t(9;22)<br>
+                            Cariotipo<br> 
+                            FISH: t(9;22)<br>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="mieloproliferativasOpciones" id="mieloproliferativas1">
                                 <label class="form-check-label" for="mieloproliferativas1">Poliglobulia: Mutaciones de JAK2</label>
@@ -1361,7 +1368,8 @@ function mostrarInformacionEstudios(estudios) {
         } else if (estudio === "Eosinofilia") {
             
             mensajeHTML = `<strong>Información específica sobre Eosinofilia:</strong><br>
-                            Cariotipo. FISH de PDGFRA y PDGFRB`;
+                            Cariotipo<br> 
+                            FISH de PDGFRA y PDGFRB`;
 
         } else if (estudio === "Leucemia neutrofílica crónica") {
 
@@ -1392,7 +1400,8 @@ function mostrarInformacionEstudios(estudios) {
                     mensajeHTML =`<strong>Se realizará el estudio si cumple criterios de tratamiento.</strong><br>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc1">
-                                    <label class="form-check-label" for="llc1">Cariotipo. FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53).</label>
+                                    <label class="form-check-label" for="llc1">Cariotipo<br> 
+                                    FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53).</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc2">
@@ -1411,7 +1420,8 @@ function mostrarInformacionEstudios(estudios) {
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc2">
                             <label class="form-check-label" for="llc2">
-                                Antes de tratamiento/recaída: Cariotipo FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53).<br>
+                                Antes de tratamiento/recaída: Cariotipo<br> 
+                                FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53).<br>
                                 Mutaciones TP53
                             </label>
                         </div>
@@ -1441,7 +1451,8 @@ function mostrarInformacionEstudios(estudios) {
                                 Nota 1: Solo se harán los estudios en tejidos que estén infiltrados por el linfoma (rogamos confirmar % de infiltración)<br>
                                 Nota 2: No se repetirá el estudio de FISH si ya se ha realizado en otro tejido infiltrado de ese paciente, salvo excepción justificada
                             </div>
-                            Cariotipo. FISH: BCL2, BCL6, MYC y TP53`;
+                            Cariotipo<br> 
+                            FISH: BCL2, BCL6, MYC y TP53`;
             }
 
         } else if (estudio === "Linfoma folicular") {
@@ -1456,7 +1467,8 @@ function mostrarInformacionEstudios(estudios) {
                                     Nota 1: Solo se harán los estudios en tejidos que estén infiltrados por el linfoma (rogamos confirmar % de infiltración)<br>
                                     Nota 2: No se repetirá el estudio de FISH si ya se ha realizado en otro tejido infiltrado de ese paciente, salvo excepción justificada
                                 </div>
-                                Cariotipo. FISH: t(14;18)`;
+                                Cariotipo<br> 
+                                FISH: t(14;18)`;
             }
 
         } else if (estudio === "Linfoma de células del manto") {
@@ -1482,36 +1494,25 @@ function mostrarInformacionEstudios(estudios) {
                                     Nota 1: Solo se harán los estudios en tejidos que estén infiltrados por el linfoma (rogamos confirmar % de infiltración)<br>
                                     Nota 2: No se repetirá el estudio de FISH si ya se ha realizado en otro tejido infiltrado de ese paciente, salvo excepción justificada
                                 </div>
-                                Cariotipo. FISH: t(11;14) y del(17p)<br>
-                                Mutaciones de TP53`;
+                                Cariotipo<br> 
+                                FISH: t(11;14) y del(17p)<br>
+                                Mutaciones de TP53
+                                `;
             }
 
         } else if (estudio === "Mieloma Múltiple") {
 
                 mensajeHTML = `<strong>Información específica sobre Mieloma Múltiple:</strong><br>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="mielomaOpciones" id="mieloma1">
-                                    <label class="form-check-label" for="mieloma1">FISH: t(4;14), t(14;16), t(14;20), 1q/1p y 17p</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="mielomaOpciones" id="mieloma2">
-                                    <label class="form-check-label" for="mieloma2">Mutaciones TP53 (Si se confirma diagnóstico)</label>
-                                </div>`;
+                                FISH: t(4;14), t(14;16), t(14;20), 1q/1p y 17p<br>
+                                Mutaciones TP53 (si se confirma diagnóstico)
+                                `;
             
         } else if (estudio === "Macroglobulinemia de Waldestrom") {
             mensajeHTML = `<strong>Información específica sobre Macroglobulinemia de Waldestrom:</strong><br>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="waldestromOpciones" id="waldestrom1">
-                                <label class="form-check-label" for="waldestrom1">FISH: del(6q), C-4, del(17p)</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="waldestromOpciones" id="waldestrom2">
-                                <label class="form-check-label" for="waldestrom2">Mutaciones de MYD88 y CXCR4</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="waldestromOpciones" id="waldestrom3">
-                                <label class="form-check-label" for="waldestrom3">Antes de tratamiento/recaída: Mutaciones de TP53 (Si se confirma diagnóstico)</label>
-                            </div>`;
+                            FISH: del(6q), C-4, del(17p)<br>
+                            Mutaciones de MYD88 y CXCR4<br>
+                            Antes de tratamiento/recaída: Mutaciones de TP53 (si se confirma diagnóstico)
+                            `;
 
         } else if (estudio === "Leucemia de linfocitos grandes granulares") {
 
@@ -1760,6 +1761,8 @@ function validarFormulario() {
     if (errorEnsayo) errorEnsayo.remove();
     if (errorTipoMuestra) errorTipoMuestra.remove();
     if (errorSospechaDiagnostico) errorSospechaDiagnostico.remove();
+    if (errorLabDecision) errorLabDecision.remove();
+
 
     // VALIDAR DIAGNÓSTICO
     const diagnosticoConfirmado = document.getElementById("diagnosticoConfirmado").checked;
@@ -2001,7 +2004,23 @@ function validarFormulario() {
         formularioValido = false;
     }
 
+    // VALIDAR A CUMPLIMENTAR POR EL LABORATORIO 
+    const labAcepto = document.getElementById('labAcepto');
+    const labRechazo = document.getElementById('labRechazo');
 
+    if (labAcepto && labRechazo) {
+        const algunoMarcado = labAcepto.checked || labRechazo.checked;
+
+        if (!algunoMarcado) {
+            formularioValido = false;
+            const anchor = labRechazo.closest('.col-12') || labRechazo.parentElement;
+            const err = getOrCreateError('err-lab-decision', anchor);
+            err.textContent = 'Debe marcar Acepto o Rechazo';
+        } else {
+            removeError('err-lab-decision');
+        }
+    }
+    
     return formularioValido;
 }
 
@@ -2073,5 +2092,18 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+document.addEventListener('DOMContentLoaded', function () {
+    const labAcepto = document.getElementById('labAcepto');
+    const labRechazo = document.getElementById('labRechazo');
 
+    if (labAcepto && labRechazo) {
+        function hacerExclusivos(origen, otro) {
+            if (origen.checked) {
+                otro.checked = false;
+            }
+        }
 
+        labAcepto.addEventListener('change', () => hacerExclusivos(labAcepto, labRechazo));
+        labRechazo.addEventListener('change', () => hacerExclusivos(labRechazo, labAcepto));
+    }
+});

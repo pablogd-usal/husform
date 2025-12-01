@@ -283,7 +283,7 @@
                                             <input class="form-check-input" type="radio" name="diagnosticoTipo"
                                                 id="diagnosticoSospecha" value="sospecha">
                                             <label class="form-check-label" for="diagnosticoSospecha">
-                                                Diagnóstico de Sospecha (y observaciones)<br /><small>(indicar cifras de hemograma si procede)</small>
+                                                Diagnóstico de Sospecha (y observaciones)<br />
                                             </label>
                                         </div>
                                     </div>
@@ -489,6 +489,31 @@
                                 <input type="hidden" id="ensayoSeleccionado" value="">
                             </div>
                         </div>
+
+                        <!-- A CUMPLIMENTAR POR EL LABORATORIO -->
+                        <div class="cuadrado mt-3">
+
+                            <h6 class="tituloParte2"> A CUMPLIMENTAR POR EL LABORATORIO </h6>
+
+                            <div class="row mt-2 mx-2">
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="labAcepto">
+                                        <label class="form-check-label" for="labAcepto">Acepto</label>
+                                    </div>
+
+                                    <div class="form-check mt-1">
+                                        <input class="form-check-input" type="checkbox" id="labRechazo">
+                                        <label class="form-check-label" for="labRechazo">Rechazo</label>
+                                    </div>
+
+                                    <!-- Espacio en blanco para anotaciones manuscritas -->
+                                    <div style="height: 22px;"></div>
+                                </div>
+                            </div>
+
+                        </div>
+
 
                         <h4 class="tituloParte3 required-asterisk"> SOLICITUD DE ESTUDIOS </h4>
 
@@ -699,6 +724,10 @@
 
                         </div>
 
+                        <div id="codigoFormulario" class="textoCodigoFormulario">
+                            FORM-ITR-PRE-BM-01-01_v01
+                        </div>
+
                     </div>
 
                 </form>
@@ -736,12 +765,10 @@
                 <ul>
                     <li> La información registrada en el formulario online no quedará almacenada en el sistema de
                         solicitud </li> 
-                    <li>Las ampliaciones de estudios se solicitarán email</li>
+                    <li>Las ampliaciones de estudios se solicitarán por email</li>
                     <li> Mails de contacto: hematólogos (citogenbm@saludcastillayleon.onmicrosoft.com), administrativo (rgarciaeg.ibsal@saludcastillayleon.es) </li>  
                     <li> No se realizarán estudios en MO no infiltrada (rogamos confirmar infiltración) </li>
                     <li> Se guardará DNA de todas las muestras de MO </li>                    
-                    <li>Solo se realizarán estudios marcados o solicitados por escrito </li>
-
                 </ul>
 
             </div>

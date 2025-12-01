@@ -373,24 +373,18 @@
     }
 
     .textito {
-        font-size: 15px; /* Re-defined font-size, check for conflicts */
+        display: flex !important;
+        flex-direction: column;
+        gap: 4px;
         width: 100%;
-        max-width: none;
         margin: 0;
         padding: 0;
-        display: block; /* Overrides flex, if flex is desired for print, reconsider */
-        /* Original flex properties if needed:
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 20px;
-        */
+        max-width: none;
     }
 
     .textito .estudio-item {
-        flex: 1 1 calc(50% - 10px);
-        min-width: 200px;
-        margin-bottom: 10px;
+        margin-bottom: 2px;
+        flex: none !important;
     }
 
     #justificacionOtrosEstudiosTexto {
@@ -441,10 +435,28 @@
             margin-bottom: 12px !important; /* separa verticalmente */
         }
 
+        /*Reducir tamaño candidato y ensayo*/
+        .seleccionarCandidato,
+        .seleccionarEnsayo,
+        #textoSeleccionadoEnsayoClinico,
+        #ensayoClinicoTexto {
+            font-size: 0.65rem !important;
+            line-height: 1.1 !important;
+            padding: 2px 4px !important;
+        }
+
+        /*Reducir tamaño botó desplegable*/
+        #dropdownCandidato,
+        #dropdownEnsayo {
+            font-size: 0.75rem !important;
+            padding: 2px 6px !important;
+        }
+
         /* Asegura que las dos columnas se apilen si no cabe en una línea */
         .row.mb-3 {
             display: flex;
             flex-wrap: wrap !important;
+            align-items: flex-start !important;
         }
 
         .row.mb-3 > .col-6 {
@@ -565,6 +577,13 @@
     max-width: 100% !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
+  }
+
+  /* Que otros estudios solo ocupe lo marcado */
+  .colOtrosEstudios .form-check {
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 0 !important;  /* anula el min-height de bootstrap */
   }
 
   /* Bloque superior: estudios prot. */
@@ -728,6 +747,47 @@
           padding: 0 !important;
       }
   }
+
+  @media print {
+
+    /* Mostrar input y texto de infiltración en una sola línea */
+    #bloqueInfiltracion {
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+    }
+
+    #bloqueInfiltracion .inputInfiltracion {
+        width: 60px !important;   /* tamaño compacto para que el texto quepa */
+        margin: 0 !important;
+    }
+
+    #bloqueInfiltracion label {
+        margin: 0 !important;
+        padding: 0 !important;
+        white-space: nowrap !important; /* Evita que el texto salte de línea */
+    }
+}
+
+@media print {
+    #codigoFormulario {
+        text-align: center;
+        font-size: 0.7rem;
+        margin-top: 20px;
+        color: #000;
+        width: 100%;
+        display: block;
+        padding-top: 5px;
+    }
+}
+
+@media print {
+
+    #labAcepto,
+    #labRechazo {
+        transform: scale(0.8);
+    }
+}
 
 }
 
