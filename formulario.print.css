@@ -752,9 +752,10 @@
 
     /* Mostrar input y texto de infiltración en una sola línea */
     #bloqueInfiltracion {
-        display: flex !important;
+        display: none !important;
         align-items: center !important;
         gap: 10px !important;
+        visibility: hidden !important;
     }
 
     #bloqueInfiltracion .inputInfiltracion {
@@ -786,6 +787,67 @@
     #labAcepto,
     #labRechazo {
         transform: scale(0.8);
+    }
+}
+
+/* Bloques que solo existen en la hoja impresa */
+.solo-impresion {
+    display: block !important;
+}
+
+/* Acepto / Rechazo */
+.lab-opciones {
+    display: flex;
+    justify-content: flex-start;
+    gap: 40px;         
+    align-items: center;
+}
+
+.lab-opcion {
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+/* Espacio para anotaciones */
+.lab-notas-linea {
+    border-bottom: 1px solid #000;
+    height: 18px;
+    margin-top: 4px;
+}
+
+@media print {
+  #textoSeleccionado {
+    border: none !important;          
+    background: transparent !important;
+    padding: 0 !important;            
+    margin-top: 4px !important;
+    margin-bottom: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
+
+/* Quitar fondo azul en los datos del paciente y solicitante */
+@media print {
+    .vista-impresion {
+        background-color: transparent !important;
+    }
+}
+
+@media print {
+
+    #logoJuntaImpresion {
+        display: block !important;
+        text-align: center;
+        margin-top: 30px;
+        page-break-inside: avoid;
+    }
+
+    .logoJuntaImg {
+        width: 180px;       
+        height: auto;
+        margin: 0 auto;
+        display: block;
     }
 }
 

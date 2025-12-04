@@ -434,7 +434,6 @@
 
                                 </fieldset>
 
-                                <!--form-check d-flex align-items-center gap-2 mt-3 -->
                                 <div id="bloqueInfiltracion" class="d-none">
                                     <input type="number" class="form-control inputInfiltracion" id="infiltracion"
                                         name="infiltracion" min="0" max="100">
@@ -447,6 +446,8 @@
                                         placeholder="Especificar..">
                                 </div>
                                 
+                                <div id="vistaInfiltracion" class="vista-impresion"></div>
+
                                 <div id="errorMensajeMuestra" style="color: red; display: none; font-size: 13px;">
                                     Seleccione una opción </div>
                                 </div>
@@ -490,28 +491,25 @@
                             </div>
                         </div>
 
-                        <!-- A CUMPLIMENTAR POR EL LABORATORIO -->
-                        <div class="cuadrado mt-3">
+                        <!-- A CUMPLIMENTAR POR EL LABORATORIO (SOLO IMPRESIÓN)-->
+                        <div class="solo-impresion">
+                            <div class="cuadrado mt-3">
+                                <h6 class="tituloParte2"> A CUMPLIMENTAR POR EL LABORATORIO </h6>
 
-                            <h6 class="tituloParte2"> A CUMPLIMENTAR POR EL LABORATORIO </h6>
-
-                            <div class="row mt-2 mx-2">
-                                <div class="col-12">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="labAcepto">
-                                        <label class="form-check-label" for="labAcepto">Acepto</label>
+                                <div class="row mt-2 mx-2">
+                                    <div class="col-12 lab-opciones">
+                                        <span class="lab-opcion">□ Acepto</span>
+                                        <span class="lab-opcion">□ Rechazo</span>
                                     </div>
+                                </div>
 
-                                    <div class="form-check mt-1">
-                                        <input class="form-check-input" type="checkbox" id="labRechazo">
-                                        <label class="form-check-label" for="labRechazo">Rechazo</label>
+                                <div class="row mt-2 mx-2">
+                                    <div class="col-12">
+                                        <!-- Espacio para anotaciones manuscritas (~7 palabras) -->
+                                        <div class="lab-notas-linea"></div>
                                     </div>
-
-                                    <!-- Espacio en blanco para anotaciones manuscritas -->
-                                    <div style="height: 22px;"></div>
                                 </div>
                             </div>
-
                         </div>
 
 
@@ -776,6 +774,12 @@
         </div>
 
     </div>
+
+    <!-- LOGO JUNTA CASTILLA Y LEÓN – SOLO IMPRESIÓN -->
+    <div id="logoJuntaImpresion" class="solo-impresion mt-4">
+        <img src="logo_jcyl.png" alt="Junta de Castilla y León" class="logoJuntaImg">
+    </div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="formulario.js"></script>

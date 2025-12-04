@@ -271,13 +271,43 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const mostrar = seleccionadas.includes('SP') || seleccionadas.includes('MO');
 
+        const input = document.getElementById('infiltracion');
+        const vista = document.getElementById('vistaInfiltracion');
+
+        // mostrar/ocultar el bloque del formulario
         bloqueInfiltracion.classList.toggle('d-none', !mostrar);
 
-        const input = document.getElementById('infiltracion');
-        if (input) {
-            input.required = false;
+        if (!mostrar) {
+            // si ya no hay SP/MO marcados borrar todo
+            if (input) {
+                input.required = false;
+                input.value = '';
+            }
+            if (vista) {
+                vista.textContent = '';
+            }
+        } else {
+            // si se muestra, no es obligatorio y la vista se actualizará con el listener del input
+            if (input) {
+                input.required = false;
+            }
+            if (vista && input) {
+                const valor = input.value.trim();
+                vista.textContent = valor ? `Infiltración de la muestra: ${valor}%` : '';
+            }
         }
     }
+
+    document.getElementById("infiltracion")?.addEventListener("input", () => {
+        const vista = document.getElementById("vistaInfiltracion");
+        const valor = document.getElementById("infiltracion").value.trim();
+
+        if (valor !== "") {
+            vista.textContent = "Infiltración de la muestra: " + valor + "%";
+        } else {
+            vista.textContent = "";
+        }
+    });
 
 
     checkboxesMuestra.forEach(ch => ch.addEventListener('change', actualizarInfiltracion));
@@ -552,17 +582,14 @@ function mostrarInformacionEstudio(estudio) {
                     <!-- Contenido ≤75 años -->
                     <div id="lmaContMenor75" style="display:none; margin-top:10px;">
                         <div class="row">
-                            <div class="col-3">
+                            <div class="col-4">
                                 Mutaciones de NPM1, FLT3 y IDH1/2.
                             </div>
-                            <div class="col-3">
+                            <div class="col-4">
                                 qRT-PCR: t(15;17), inv(16) y t(8;21) si han pasado más de 2 años desde el diagnóstico.
                             </div>
-                            <div class="col-3">
-                                Expresión WT1. Si han pasado más de 2 años desde el diagnóstico.
-                            </div>
-                            <div class="col-3">
-                                Panel NGS mieloide
+                            <div class="col-4">
+                                Expresión WT1. Si han pasado más de 2 años desde el diagnóstico. Panel NGS mieloide.
                             </div>
                         </div>
                     </div>
@@ -635,7 +662,7 @@ function mostrarInformacionEstudio(estudio) {
                     <!-- Contenido Menor 75 -->
                     <div id="lmaContMenor75" style="display:none; margin-top:10px;">
                         <div class="row">
-                            <div class="col-3">
+                            <div class="col-4">
                                 Cariotipo<br>
                                 FISH: 5q, 7q, C-8, KMT2A (MLL)
                                 <br>
@@ -648,7 +675,7 @@ function mostrarInformacionEstudio(estudio) {
                                 inv(16) – CBFB::MYH11
                             </div>
 
-                            <div class="col-3">
+                            <div class="col-4">
                                 Mutaciones:
                                 <br>
                                 - NPM1
@@ -658,12 +685,8 @@ function mostrarInformacionEstudio(estudio) {
                                 - IDH1/2
                             </div>
 
-                            <div class="col-3">
-                                Expresión WT1
-                            </div>
-
-                            <div class="col-3">
-                                Panel NGS mieloide
+                            <div class="col-4">
+                                Expresión WT1. Panel NGS mieloide.
                             </div>
                         </div>
                     </div>
@@ -940,20 +963,43 @@ function mostrarInformacionEstudio(estudio) {
                         Mutaciones de TP53`;
 
     } else if (estudio === "Mieloma Múltiple") {
+        const esRecaida = document.getElementById("recaidaProgresion")?.checked;
 
-        mensajeHTML = `<strong>Información específica sobre Mieloma Múltiple:</strong><br>
-                        FISH: t(4;14), t(14;16), t(14;20), 1q/1p y 17p<br>
-                        Mutaciones TP53 (si se confirma diagnóstico)
-                        `;
+        if (esRecaida) {
+            mensajeHTML = `
+                <strong>Información específica sobre Mieloma múltiple:</strong><br><br>
 
+                FISH: t(4;14), t(14;16), t(14;20), 1q/1p y 17p<br>
+                Mutaciones: TP53
+            `;
+        } else {
+            
+            mensajeHTML = `
+                <strong>Información específica sobre Mieloma Múltiple:</strong><br>
+                FISH: t(4;14), t(14;16), t(14;20), 1q/1p y 17p<br>
+                Mutaciones TP53 (si se confirma diagnóstico)
+            `;
+        }
     } else if (estudio === "Macroglobulinemia de Waldestrom") {
+        const esRecaida = document.getElementById("recaidaProgresion")?.checked;
 
-        mensajeHTML = `<strong>Información específica sobre Macroglobulinemia de Waldestrom:</strong><br>
+        if (esRecaida) {
+            mensajeHTML = `
+                <strong>Información específica sobre Macroglobulinemia de Waldeström:</strong><br><br>
+                Se realizará el estudio si cumple criterios de tratamiento.<br><br>
+
+                FISH:< del(6q), C-4, del(17p)<br>
+                Mutaciones: de MYD88 y CXCR4<br>
+                Mutaciones de TP53
+            `;
+        } else {
+            mensajeHTML = `
+                <strong>Información específica sobre Macroglobulinemia de Waldeström:</strong><br>
                         FISH: del(6q), C-4, del(17p)<br>
                         Mutaciones de MYD88 y CXCR4<br>
                         Antes de tratamiento/recaída: Mutaciones de TP53 (si se confirma diagnóstico)
-                        `;
-
+            `;
+        }
     } else if (estudio === "Leucemia de linfocitos grandes granulares") {
 
         mensajeHTML = `<strong>Información específica sobre Leucemia de linfocitos grandes granulares:</strong><br>
@@ -1068,17 +1114,14 @@ function mostrarInformacionEstudios(estudios) {
                     <!-- Contenido ≤75 años -->
                     <div id="lmaContMenor75" style="display:none; margin-top:10px;">
                         <div class="row">
-                            <div class="col-3">
+                            <div class="col-4">
                                 Mutaciones de NPM1, FLT3 y IDH1/2.
                             </div>
-                            <div class="col-3">
+                            <div class="col-4">
                                 qRT-PCR: t(15;17), inv(16) y t(8;21) si han pasado más de 2 años desde el diagnóstico.
                             </div>
-                            <div class="col-3">
-                                Expresión WT1. Si han pasado más de 2 años desde el diagnóstico.
-                            </div>
-                            <div class="col-3">
-                                Panel NGS mieloide
+                            <div class="col-4">
+                                Expresión WT1. Si han pasado más de 2 años desde el diagnóstico. Panel NGS mieloide.
                             </div>
                         </div>
                     </div>
@@ -1151,7 +1194,7 @@ function mostrarInformacionEstudios(estudios) {
                     <!-- Contenido Menor 75 -->
                     <div id="lmaContMenor75" style="display:none; margin-top:10px;">
                         <div class="row">
-                            <div class="col-3">
+                            <div class="col-4">
                                 Cariotipo<br> 
                                 FISH: 5q, 7q, C-8, KMT2A (MLL)
                                 <br>
@@ -1164,7 +1207,7 @@ function mostrarInformacionEstudios(estudios) {
                                 inv(16) – CBFB::MYH11
                             </div>
 
-                            <div class="col-3">
+                            <div class="col-4">
                                 Mutaciones:
                                 <br>
                                 - NPM1
@@ -1174,12 +1217,8 @@ function mostrarInformacionEstudios(estudios) {
                                 - IDH1/2
                             </div>
 
-                            <div class="col-3">
-                                Expresión WT1
-                            </div>
-
-                            <div class="col-3">
-                                Panel NGS mieloide
+                            <div class="col-4">
+                                Expresión WT1. Panel NGS mieloide.
                             </div>
                         </div>
                     </div>
@@ -1287,32 +1326,54 @@ function mostrarInformacionEstudios(estudios) {
                 </div>
             `;
         } else if (estudio === "Síndrome mielodisplásico") {
-            mensajeHTML = `<strong>Información específica sobre Síndrome mielodisplásico:</strong><br>
-                            Cariotipo<br> 
-                            FISH: 5q, 7q, C-8 y 20q<br>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico1">
-                                <label class="form-check-label" for="sindromeMielodisplasico1">Si candidato a ALO-TPH o si está incluido en estudio UMBRELLA: Panel de NGS mieloide</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico2">
-                                <label class="form-check-label" for="sindromeMielodisplasico2">Si trombocitosis/fibrosis medular: Mutación de JAK2</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico3">
-                                <label class="form-check-label" for="sindromeMielodisplasico3">Si eosinofilia: FISH de PDGFRA, PDGFRB, FGFR1, JAK2</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico4">
-                                <label class="form-check-label" for="sindromeMielodisplasico4">Si SMD con del(5q): Mutaciones de TP53</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico5">
-                                <label class="form-check-label" for="sindromeMielodisplasico5">Si bajo % de blastos: Mutaciones de SF3B1</label>
-                            </div>
-                            <div id="notaSindromeMielodisplasico">
-                                Nota: Si al diagnóstico no se conoce esta información, se debe notificar vía mail posteriormente
-                            </div>`;
+            if (esRecaida) {
+                mensajeHTML = `
+                    <strong>Información específica sobre Síndrome mielodisplásico:</strong><br>
+                    Se realizarán los siguientes estudios si hay progresión de la enfermedad de bajo riesgo a alto riesgo.<br>
+                    Cariotipo.<br> 
+                    FISH: 5q, 7q, C-8, 20q.<br>
+                    Si candidato a ALO-TPH o si está incluido en estudio UMBRELLA: Panel de NGS mieloide<br>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico2">
+                        <label class="form-check-label" for="sindromeMielodisplasico2">Si trombocitosis/fibrosis medular: Mutación de JAK2</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico3">
+                        <label class="form-check-label" for="sindromeMielodisplasico3">Si eosinofilia: FISH de PDGFRA, PDGFRB, FGFR1, JAK2</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico4">
+                        <label class="form-check-label" for="sindromeMielodisplasico4">Si SMD con del(5q): Mutaciones de TP53</label>
+                    </div>
+                `;
+            } else {
+                mensajeHTML = `<strong>Información específica sobre Síndrome mielodisplásico:</strong><br>
+                                Cariotipo<br> 
+                                FISH: 5q, 7q, C-8 y 20q<br>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico1">
+                                    <label class="form-check-label" for="sindromeMielodisplasico1">Si candidato a ALO-TPH o si está incluido en estudio UMBRELLA: Panel de NGS mieloide</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico2">
+                                    <label class="form-check-label" for="sindromeMielodisplasico2">Si trombocitosis/fibrosis medular: Mutación de JAK2</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico3">
+                                    <label class="form-check-label" for="sindromeMielodisplasico3">Si eosinofilia: FISH de PDGFRA, PDGFRB, FGFR1, JAK2</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico4">
+                                    <label class="form-check-label" for="sindromeMielodisplasico4">Si SMD con del(5q): Mutaciones de TP53</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico5">
+                                    <label class="form-check-label" for="sindromeMielodisplasico5">Si bajo % de blastos: Mutaciones de SF3B1</label>
+                                </div>
+                                <div id="notaSindromeMielodisplasico">
+                                    Nota: Si al diagnóstico no se conoce esta información, se debe notificar vía mail posteriormente
+                                </div>`;
+            }
             
         } else if (estudio === "Leucemia mielomonocítica crónica") {
 
@@ -1428,10 +1489,13 @@ function mostrarInformacionEstudios(estudios) {
                     `;
                 }
         } else if (estudio === "Tricoleucemia") {
-
+            if(esRecaida){
+                mensajeHTML = `<strong>Información específica sobre Tricoleucemia:</strong><br>
+                Mutaciones de BRAF y panel de NGS de mutaciones de TP53. Si eran negativas al diagnóstico`;
+            }else{
             mensajeHTML = `<strong>Información específica sobre Tricoleucemia:</strong><br>
                             Mutaciones de BRAF`;
-
+            }
         } else if (estudio === "Sospecha de síndrome linfoproliferativo") {
 
             mensajeHTML = `<strong>Información específica sobre Sospecha de síndrome linfoproliferativo:</strong><br>
@@ -1501,19 +1565,41 @@ function mostrarInformacionEstudios(estudios) {
             }
 
         } else if (estudio === "Mieloma Múltiple") {
+            const esRecaida = document.getElementById("recaidaProgresion")?.checked;
 
-                mensajeHTML = `<strong>Información específica sobre Mieloma Múltiple:</strong><br>
-                                FISH: t(4;14), t(14;16), t(14;20), 1q/1p y 17p<br>
-                                Mutaciones TP53 (si se confirma diagnóstico)
-                                `;
-            
+            if (esRecaida) {
+                mensajeHTML = `
+                    <strong>Información específica sobre Mieloma múltiple:</strong><br>
+                    FISH: t(4;14), t(14;16), t(14;20), 1q/1p y 17p<br>
+                    Mutaciones: TP53
+                `;
+            } else {
+                
+                mensajeHTML = `
+                    <strong>Información específica sobre Mieloma Múltiple:</strong><br>
+                    FISH: t(4;14), t(14;16), t(14;20), 1q/1p y 17p<br>
+                    Mutaciones TP53 (si se confirma diagnóstico)
+                `;
+            }
         } else if (estudio === "Macroglobulinemia de Waldestrom") {
-            mensajeHTML = `<strong>Información específica sobre Macroglobulinemia de Waldestrom:</strong><br>
-                            FISH: del(6q), C-4, del(17p)<br>
-                            Mutaciones de MYD88 y CXCR4<br>
-                            Antes de tratamiento/recaída: Mutaciones de TP53 (si se confirma diagnóstico)
-                            `;
+        const esRecaida = document.getElementById("recaidaProgresion")?.checked;
 
+        if (esRecaida) {
+            mensajeHTML = `
+                <strong>Información específica sobre Macroglobulinemia de Waldeström:</strong><br>
+                Se realizará el estudio si cumple criterios de tratamiento.<br>
+                FISH:< del(6q), C-4, del(17p)<br>
+                Mutaciones: de MYD88 y CXCR4<br>
+                Mutaciones de TP53
+            `;
+        } else {
+            mensajeHTML = `
+                <strong>Información específica sobre Macroglobulinemia de Waldeström:</strong><br>
+                        FISH: del(6q), C-4, del(17p)<br>
+                        Mutaciones de MYD88 y CXCR4<br>
+                        Antes de tratamiento/recaída: Mutaciones de TP53 (si se confirma diagnóstico)
+            `;
+        }
         } else if (estudio === "Leucemia de linfocitos grandes granulares") {
 
             mensajeHTML = `<strong>Información específica sobre Leucemia de linfocitos grandes granulares:</strong><br>

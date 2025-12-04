@@ -68,6 +68,12 @@ body {
     box-sizing: border-box;
 }
 
+/* Bloques solo para la hoja de impresión */
+.solo-impresion {
+    display: none !important;
+}
+
+
 /* --- Header & Images --- */
 .headerImg {
     max-width: 85%;
