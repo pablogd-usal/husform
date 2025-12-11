@@ -45,9 +45,9 @@ body {
 }
 
 .tituloFormularioPeticion {
-    font-size: 1.6rem;
-    margin-top: 10px;
-    margin-bottom: 15px;
+    font-size: 1.3rem;
+    margin-top: 8px;
+    margin-bottom: 10px;
     text-align: center;
 }
 
@@ -83,6 +83,32 @@ body {
     margin-right: auto;
 }
 
+/* Alinear verticalmente logo y cabecera */
+.header-row .col-6 {
+    display: flex;
+    align-items: center;
+}
+
+/* Centrar el logo dentro de su columna */
+.header-row .col-6:first-child {
+    justify-content: flex-start;   
+}
+
+/* Ajustar el texto de la cabecera para que quede limpio */
+.tituloFormulario {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.3;
+}
+
+/* Subtítulo citogenética centrado */
+.carta h4:first-of-type {
+    text-align: center;
+    font-size: 1.1rem;   
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
 /* --- Input & Label Adjustments --- */
 .labelSexo {
     margin-left: 10px;
@@ -92,6 +118,24 @@ body {
 .inputInfiltracion {
     width: 25%; /* More specific width, so this takes precedence */
     /* Original width: 140%; was less specific and overridden Review if 140% is ever desired */
+}
+
+/* Infiltración: input + texto en línea */
+#bloqueInfiltracion {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+#bloqueInfiltracion .inputInfiltracion {
+    width: 80px;       /* tamaño compacto para que quepa bien el texto */
+    max-width: 100px;
+    margin: 0;
+}
+
+#bloqueInfiltracion label {
+    margin: 0;
 }
 
 .porcentajeInfiltracion {
@@ -202,6 +246,7 @@ body {
 .tituloParte1,
 .tituloParte2,
 .tituloParte3 {
+    font-size: 0.95rem;
     padding: 4px; /* Common padding */
 }
 
@@ -320,3 +365,104 @@ body {
 
 /* estilo común para mensajes de error */
 .error-msg { color: #d00; font-size: 13px; }
+
+/* --- ESTUDIOS PROTOCOLIZADOS COMO BARRA DE BÚSQUEDA --- */
+
+/* Ocultar el botón de dropdown */
+#dropdownEstudios {
+    display: none !important;
+}
+
+/* El menú se muestra siempre como un panel fijo debajo, no flotante */
+.colEstudiosProtocolizados .dropdown-menu.estudios-menu {
+    display: block !important;
+    position: static !important;
+    transform: none !important;
+    float: none !important;
+    width: 100% !important;
+    max-width: 100%;
+    margin-top: .25rem;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-radius: .5rem;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    background-color: #fff;
+}
+
+/* Cabecera con buscador */
+.dropdown-search-wrapper {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding: 8px 10px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.dropdown-search-icon {
+    border-right: none;
+    font-size: 0.8rem;
+}
+
+.dropdown-search-wrapper .form-control {
+    border-left: none;
+    box-shadow: none;
+}
+
+.dropdown-search-wrapper .form-control:focus {
+    box-shadow: none;
+    border-color: #86b7fe;
+}
+
+.dropdown-search-help {
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+/* Zona scroll de items */
+.estudios-items-wrapper {
+    max-height: 260px;
+    overflow-y: auto;
+    padding: 4px 0;
+}
+
+/* Opciones compactas y profesionales */
+.estudios-items-wrapper .dropdown-item {
+    font-size: 0.9rem;
+    padding: 6px 12px;
+}
+
+/* Opción activa con teclado (autocompletar) */
+.estudios-items-wrapper .dropdown-item.active-estudio {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+/* Chips/resumen de estudios seleccionados */
+#resumenEstudiosSeleccionados {
+    margin-top: .35rem;
+}
+
+.estudio-chip {
+    display: inline-block;
+    background-color: #e9ecef;
+    color: #495057;
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    margin-right: 4px;
+    margin-bottom: 4px;
+    white-space: nowrap;
+}
+
+/* Igualar altura de los dos recuadros de la fila inicial */
+.row.mt-2 > .col-6 {
+    display: flex;
+}
+
+.row.mt-2 > .col-6 .cuadrado {
+    flex: 1;          /* Fuerza a ambos a tener la misma altura */
+    display: flex;
+    flex-direction: column;
+}

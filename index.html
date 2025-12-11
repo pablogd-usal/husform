@@ -27,7 +27,7 @@
 
                     <div class="carta">
 
-                        <div class="row">
+                        <div class="row align-items-center header-row">
 
                             <div class="col-6">
 
@@ -64,7 +64,7 @@
                             </div>
                         </div>
 
-                        <div class="row mt-2">
+                        <div class="row mt-2 fila-datos-inicial">
 
                             <!-- NOMBRE / APELLIDOS / Nº HISTORIA CLÍNICA -->
 
@@ -437,9 +437,11 @@
                                 <div id="bloqueInfiltracion" class="d-none">
                                     <input type="number" class="form-control inputInfiltracion" id="infiltracion"
                                         name="infiltracion" min="0" max="100">
-                                    <label for="infiltracion" class="form-check-label"> Infiltración de la muestra (%)
+                                    <label for="infiltracion" class="form-check-label">
+                                        % de infiltración de la muestra
                                     </label>
                                 </div>
+
 
                                 <div class="inputMuestra" style="display: none;">
                                     <input type="text" id="otrosInputMuestra" class="form-control inputMuestraa"
@@ -455,7 +457,7 @@
 
                         <!-- CAMDIDATO A TRATAMIENTO INTENSIVO -->
 
-                        <div class="row mb-3">
+                        <div class="row mb-3 tratamiento-row">
                             <!-- Columna 1: Tratamiento Intensivo -->
                             <div class="col-6 mb-2">
                                 <div class="dropdown w-100">
@@ -526,61 +528,85 @@
                                     ESTUDIOS PROTOCOLIZADOS
                                 </button>
 
-                                <div class="dropdown-menu" aria-labelledby="dropdownEstudios">
+                                <div class="dropdown-menu estudios-menu" aria-labelledby="dropdownEstudios">
+                                    
+                                    <!-- Cabecera con buscador -->
+                                    <div class="dropdown-search-wrapper">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text dropdown-search-icon">🔍</span>
+                                            <input type="text"
+                                                id="buscadorEstudios"
+                                                class="form-control"
+                                                placeholder="Buscar estudio protocolizado">
+                                        </div>
+                                        <small class="text-muted dropdown-search-help">
+                                            Escriba para filtrar la lista de estudios
+                                        </small>
+                                    </div>
 
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Aplasia medular', event)">Aplasia medular</a>
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Citopenias aisladas', event)">Citopenias aisladas</a>
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Eosinofilia', event)">Eosinofilia</a>
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Hemofilia y Von Willebrand', event)">Hemofilia y Von Willebrand</a>
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Leucemia linfoblástica aguda', event)">Leucemia linfoblástica aguda </a>
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Leucemia mieloblástica aguda', event)">Leucemia mieloblástica aguda </a>
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Leucemia de linfocitos grandes granulares', event)">Leucemia de linfocitos grandes granulares</a>
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Leucemia linfática crónica', event)">Leucemia linfática crónica</a>
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Leucemia mieloide crónica', event)">Leucemia mieloide crónica</a>
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Leucemia mielomonocítica crónica', event)">Leucemia mielomonocítica crónica</a>
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Leucemia neutrofílica crónica', event)">Leucemia neutrofílica crónica</a>
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Linfoma B difuso de célula grande', event)">Linfoma B difuso de célula grande</a>
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Linfoma de células del manto', event)">Linfoma de células del manto</a>
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Linfoma folicular', event)">Linfoma folicular</a>
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Linfoma no hodgkin T', event)">Linfoma no hodgkin T</a>
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Mastocitosis', event)">Mastocitosis</a>
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Macroglobulinemia de Waldestrom', event)">Macroglobulinemia de Waldestrom</a>
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Mieloma Múltiple', event)">Mieloma Múltiple</a>
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Neoplasias mieloproliferativas crónicas no LMC', event)">Neoplasias mieloproliferativas crónicas no LMC</a>
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Síndrome de VEXAS', event)">Síndrome de VEXAS</a>
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Síndrome mielodisplásico', event)">Síndrome mielodisplásico</a>
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Sospecha de síndrome linfoproliferativo', event)">Sospecha de síndrome linfoproliferativo</a>
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Tricoleucemia', event)">Tricoleucemia</a>
-                                    <a class="dropdown-item" href="#"
-                                        onclick="guardarOpcionEstudio('Trombosis de territorios esplácnicos', event)">Trombosis de territorios esplácnicos</a>
+                                    <!-- Contenedor scrollable de items -->
+                                    <div class="estudios-items-wrapper">
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Aplasia medular', event)">Aplasia medular</a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Citopenias aisladas', event)">Citopenias aisladas</a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Eosinofilia', event)">Eosinofilia</a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Hemofilia y Von Willebrand', event)">Hemofilia y Von Willebrand</a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Leucemia linfoblástica aguda', event)">Leucemia linfoblástica aguda </a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Leucemia mieloblástica aguda', event)">Leucemia mieloblástica aguda </a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Leucemia de linfocitos grandes granulares', event)">Leucemia de linfocitos grandes granulares</a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Leucemia linfática crónica', event)">Leucemia linfática crónica</a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Leucemia mieloide crónica', event)">Leucemia mieloide crónica</a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Leucemia mielomonocítica crónica', event)">Leucemia mielomonocítica crónica</a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Leucemia neutrofílica crónica', event)">Leucemia neutrofílica crónica</a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Linfoma B difuso de célula grande', event)">Linfoma B difuso de célula grande</a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Linfoma de células del manto', event)">Linfoma de células del manto</a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Linfoma folicular', event)">Linfoma folicular</a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Linfoma no hodgkin T', event)">Linfoma no hodgkin T</a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Mastocitosis', event)">Mastocitosis</a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Macroglobulinemia de Waldeström', event)">Macroglobulinemia de Waldeström</a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Mieloma Múltiple', event)">Mieloma Múltiple</a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Neoplasias mieloproliferativas crónicas no LMC', event)">Neoplasias mieloproliferativas crónicas no LMC</a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Síndrome de VEXAS', event)">Síndrome de VEXAS</a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Síndrome mielodisplásico', event)">Síndrome mielodisplásico</a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Sospecha de síndrome linfoproliferativo', event)">Sospecha de síndrome linfoproliferativo</a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Tricoleucemia', event)">Tricoleucemia</a>
+                                        <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Trombosis de territorios esplácnicos', event)">Trombosis de territorios esplácnicos</a>
+                                    </div>
 
+                                    <!-- Mensaje "sin resultados" -->
+                                    <div id="sinResultadosEstudios" class="px-3 py-2 text-muted d-none">
+                                        No se han encontrado estudios con ese texto.
+                                    </div>
                                 </div>
 
                                 <input type="hidden" id="estudiosSeleccionados" value="">
                                 <input type="hidden" id="subtipoLLASeleccionado" value="">
+
+                                <!-- Resumen visual de estudios seleccionados -->
+                                <div id="resumenEstudiosSeleccionados" class="mt-2"></div>
 
                                 <div id="textoSeleccionado" class="p-3 border bg-light mt-3">
 
@@ -664,15 +690,8 @@
                                 </div>
 
                                 <div class="form-check">
-                                    <input class="form-check-input checkboxQuimerismoL" type="checkbox" id="quimerismoL"
-                                        name="otrosEstudios">
-                                    <label class="form-check-label" for="quimerismoL">Quimerismo de línea</label>
-                                </div>
-
-                                <div class="form-check">
-                                    <input class="form-check-input checkboxQuimerismoT" type="checkbox" id="quimerismoT"
-                                        name="otrosEstudios">
-                                    <label class="form-check-label" for="quimerismoT">Quimerismo total</label>
+                                    <input class="form-check-input otrosEstudios" type="checkbox" value="Quimerismo" id="quimerismo">
+                                    <label class="form-check-label" for="quimerismo">Quimerismo</label>
                                 </div>
 
                                 <div class="form-check">
@@ -723,7 +742,7 @@
                         </div>
 
                         <div id="codigoFormulario" class="textoCodigoFormulario">
-                            FORM-ITR-PRE-BM-01-01_v01
+                            FORM-PRE-BM-01_01
                         </div>
 
                     </div>
@@ -765,8 +784,7 @@
                         solicitud </li> 
                     <li>Las ampliaciones de estudios se solicitarán por email</li>
                     <li> Mails de contacto: hematólogos (citogenbm@saludcastillayleon.onmicrosoft.com), administrativo (rgarciaeg.ibsal@saludcastillayleon.es) </li>  
-                    <li> No se realizarán estudios en MO no infiltrada (rogamos confirmar infiltración) </li>
-                    <li> Se guardará DNA de todas las muestras de MO </li>                    
+                    <li> No se realizarán estudios en MO no infiltrada (rogamos confirmar infiltración) </li>                
                 </ul>
 
             </div>

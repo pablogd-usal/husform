@@ -1,3 +1,32 @@
+/* MÁRGENES DE IMPRESIÓN */
+@page {
+    size: A4;
+    margin: 5mm !important;
+}
+
+/* Ajuste global del body y contenedores para respetar el margen */
+@media print {
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .container-fluid,
+    .carta,
+    .row,
+    .col-10,
+    .col-12 {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .carta {
+        padding: 6mm !important;
+    }
+}
+
 @media print {
     /* --- Global Print Styles --- */
 
@@ -99,11 +128,11 @@
 
     @media print {
       .tituloFormularioPeticion {
-          font-size: 1.8rem;
+          font-size: 1.3rem;
           font-weight: bold;
           text-align: center;
-          margin-top: 10px;
-          margin-bottom: 20px;
+          margin-top: 4px;
+          margin-bottom: 8px;
       }
     }
 
@@ -137,16 +166,20 @@
         font-size: .9rem;
     }
     /* Override for specific larger fonts */
-    .tituloFormulario,
     .seleccionarEstudio {
         font-size: 14px;
     }
+
+     .tituloFormulario {
+      font-size: 0.8rem !important;
+      line-height: 1.2 !important;
+      }
     .tituloParte0,
     .tituloParte1,
     .tituloParte2,
     .tituloParte3 {
-        font-size: 1.1rem;
-        padding: .4vw .7vw;
+        font-size: 0.85rem;
+        padding: .4vw .7vw 2px 4px;
     }
     .h4otrosEstudios {
         font-size: 20px;
@@ -427,12 +460,23 @@
     }
 
     @media print {
-        /* Evita solapamiento entre los dropdowns de tratamiento y ensayo */
-        .seleccionarCandidato,
-        .seleccionarEnsayo {
-            display: block !important;
+        /* Mantener Candidato y Ensayo en la misma línea solo en esa fila */
+        .row.mb-3.tratamiento-row {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            align-items: flex-start !important;
+        }
+
+        .row.mb-3.tratamiento-row > .col-6 {
+            flex: 0 0 50% !important;
+            max-width: 50% !important;
+        }
+
+        .row.mb-3.tratamiento-row .seleccionarCandidato,
+        .row.mb-3.tratamiento-row .seleccionarEnsayo {
+            display: inline-block !important;
             width: 100% !important;
-            margin-bottom: 12px !important; /* separa verticalmente */
+            margin-bottom: 0 !important;
         }
 
         /*Reducir tamaño candidato y ensayo*/
@@ -445,25 +489,14 @@
             padding: 2px 4px !important;
         }
 
-        /*Reducir tamaño botó desplegable*/
+        /*Reducir tamaño botón desplegable*/
         #dropdownCandidato,
         #dropdownEnsayo {
             font-size: 0.75rem !important;
             padding: 2px 6px !important;
         }
-
-        /* Asegura que las dos columnas se apilen si no cabe en una línea */
-        .row.mb-3 {
-            display: flex;
-            flex-wrap: wrap !important;
-            align-items: flex-start !important;
-        }
-
-        .row.mb-3 > .col-6 {
-            flex: 1 1 100% !important; /* fuerza que cada dropdown use línea completa */
-            max-width: 100% !important;
-        }
     }
+
 
     @media print {
         /* Reducir un punto el tamaño de fuente en las secciones iniciales */
@@ -704,6 +737,11 @@
     line-height: 1.1 !important;
   }
 
+  /* Ocultar en la impresión los campos de hemograma vacíos */
+  #inputsDiagnostico .hemo-field.hemo-empty-print {
+      display: none !important;
+  }
+
   #inputsDiagnostico .hemo-field input {
     width: 100% !important;
     text-align: center !important;
@@ -839,17 +877,74 @@
     #logoJuntaImpresion {
         display: block !important;
         text-align: center;
-        margin-top: 30px;
+        margin-top: 20px;
         page-break-inside: avoid;
     }
 
     .logoJuntaImg {
-        width: 180px;       
+        width: 120px;       
         height: auto;
         margin: 0 auto;
         display: block;
     }
 }
+
+@media print {
+  /* 'citogenética y biología molecular' centrado en la hoja de impresión */
+  .carta h4:first-of-type {
+      text-align: center !important;
+      font-size: 1rem !important;
+      margin-top: 2px !important;
+      margin-bottom: 2px !important;
+  }
+}
+
+  @media print {
+
+      /* Igualar altura solo en la fila de datos inicial (paciente / solicitante) */
+      .row.mt-2.fila-datos-inicial {
+          display: flex !important;
+          align-items: stretch !important;
+          margin-bottom: 8px !important;  /* separación con el bloque de debajo */
+      }
+
+      .row.mt-2.fila-datos-inicial > .col-6 {
+          display: flex !important;
+      }
+
+      .row.mt-2.fila-datos-inicial > .col-6 .cuadrado {
+          flex: 1 1 auto !important;
+          height: 100% !important;
+          display: flex !important;
+          flex-direction: column !important;
+      }
+
+      /* Separación inferior entre los recuadros superiores y el bloque siguiente */
+      .fila-datos-inicial {
+          margin-bottom: 10px !important;
+          padding-bottom: 5px !important;
+      }
+  }
+
+  @media print {
+
+      /* La carta no ocupa todo el ancho físico de la hoja */
+      .carta {
+          max-width: 180mm !important;   /* algo más estrecha que el A4 (210mm) */
+          margin: 0 auto !important;     /* centrada */
+          padding-left: 6mm !important;
+          padding-right: 6mm !important;
+      }
+
+      /* Títulos de secciones sin márgenes laterales extra */
+      .tituloParte2,
+      .tituloParte3 {
+          margin-left: 0 !important;
+          margin-right: 0 !important;
+          width: 100% !important;
+      }
+  }
+
 
 }
 

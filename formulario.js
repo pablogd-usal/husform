@@ -29,31 +29,162 @@ document.addEventListener('DOMContentLoaded', function() {
                 mensajeError.remove();
             }
 
+            // Ocultar temporalmente los campos de hemograma vacíos en la impresión
+            const hemogramaOcultados = [];
+            const contHemo = document.getElementById('inputsDiagnostico');
+
+            if (contHemo) {
+                contHemo.querySelectorAll('.hemo-field').forEach(field => {
+                    const input = field.querySelector('input');
+                    if (input && !input.value) {
+                        hemogramaOcultados.push(field);
+                        // Marcamos el campo como vacío para la impresión
+                        field.classList.add('hemo-empty-print');
+                    }
+                });
+            }
+
             // Ventana emergente antes de imprimir
-            const confirmar = alert(
-                "En las muestras de MO se enviará un tubo de EDTA y un tubo de heparina (sódica o litio)"
+            alert(
+            "En las muestras de MO se enviará un tubo de EDTA y un tubo de heparina (sódica o litio)"
             );
 
             window.print();
+
+            // Restaurar los campos después de imprimir
+            hemogramaOcultados.forEach(field => {
+                field.classList.remove('hemo-empty-print');
+            });
+
         }
     });
 
-    //Ordenar alfabéticamente los estudios protocolizados en el dropdown
-    const menuEstudios = document.querySelector('.colEstudiosProtocolizados .dropdown-menu');
-    if (menuEstudios) {
-        const items = Array.from(menuEstudios.querySelectorAll('.dropdown-item'));
+    // Ordenar alfabéticamente los estudios protocolizados
+    const listaEstudios =
+        document.querySelector('.colEstudiosProtocolizados .estudios-items-wrapper')
+        || document.querySelector('.colEstudiosProtocolizados .dropdown-menu');
+
+    if (listaEstudios) {
+        const items = Array.from(listaEstudios.querySelectorAll('.dropdown-item'));
 
         items
-          .sort((a, b) =>
-            a.textContent.trim().localeCompare(
-              b.textContent.trim(),
-              'es',
-              { sensitivity: 'base' }
+            .sort((a, b) =>
+                a.textContent.trim().localeCompare(
+                    b.textContent.trim(),
+                    'es',
+                    { sensitivity: 'base' }
+                )
             )
-          )
-          .forEach(item => menuEstudios.appendChild(item)); // reinsertar en orden
+            .forEach(item => listaEstudios.appendChild(item)); // reinsertar en el MISMO contenedor
     }
 
+
+    // --- BÚSQUEDA EN ESTUDIOS PROTOCOLIZADOS ---
+    (function () {
+        const buscador = document.getElementById('buscadorEstudios');
+        const botonDropdown = document.getElementById('dropdownEstudios');
+        const contenedorItems = document.querySelector('.colEstudiosProtocolizados .estudios-items-wrapper') || document.querySelector('.colEstudiosProtocolizados .dropdown-menu');
+        const mensajeSinResultados = document.getElementById('sinResultadosEstudios');
+
+        if (!buscador || !contenedorItems) return;
+
+        const obtenerItems = () =>
+            contenedorItems.querySelectorAll('.dropdown-item');
+
+        // Normaliza texto: minúsculas y sin tildes
+        const normalizar = (str) =>
+            str
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+
+        let indiceActivo = -1;
+
+        function limpiarActivo() {
+            obtenerItems().forEach(it => it.classList.remove('active-estudio'));
+        }
+
+        function obtenerVisibles() {
+            return Array.from(obtenerItems()).filter(it => it.style.display !== 'none');
+        }
+
+        function marcarActivo(index) {
+            limpiarActivo();
+            const visibles = obtenerVisibles();
+            if (!visibles.length) {
+                indiceActivo = -1;
+                return;
+            }
+            if (index < 0) index = visibles.length - 1;
+            if (index >= visibles.length) index = 0;
+            indiceActivo = index;
+            visibles[indiceActivo].classList.add('active-estudio');
+            visibles[indiceActivo].scrollIntoView({ block: 'nearest' });
+        }
+
+    function aplicarFiltro() {
+        const filtro = normalizar(buscador.value.trim());
+        const items = obtenerItems();
+        let visibles = 0;
+
+        items.forEach(item => {
+            const texto = normalizar(item.textContent);
+            const coincide = texto.includes(filtro);
+
+            item.style.display = coincide ? '' : 'none';
+            if (coincide) visibles++;
+        });
+
+        if (mensajeSinResultados) {
+            mensajeSinResultados.classList.toggle('d-none', visibles > 0);
+        }
+
+        // Reiniciar selección activa tras filtrar
+        indiceActivo = -1;
+        limpiarActivo();
+    }
+
+
+        // Filtrar según escribe el usuario
+        buscador.addEventListener('input', aplicarFiltro);
+
+        // Navegación tipo autocompletar con flechas + Enter
+        buscador.addEventListener('keydown', function (e) {
+            const visibles = obtenerVisibles();
+            if (!visibles.length) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                marcarActivo(indiceActivo + 1);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                marcarActivo(indiceActivo - 1);
+            } else if (e.key === 'Enter') {
+                if (indiceActivo >= 0 && indiceActivo < visibles.length) {
+                    e.preventDefault();
+                    // Simulamos click sobre el ítem activo para reutilizar guardarOpcionEstudio
+                    visibles[indiceActivo].click();
+                    // Seleccionar el texto del buscador para poder escribir enseguida otro
+                    buscador.select();
+                }
+            }
+        });
+
+        // Si por alguna razón se sigue usando el botón (aunque está oculto), resetea filtro
+        if (botonDropdown) {
+            botonDropdown.addEventListener('click', () => {
+                buscador.value = '';
+                const items = obtenerItems();
+                items.forEach(item => item.style.display = '');
+                if (mensajeSinResultados) {
+                    mensajeSinResultados.classList.add('d-none');
+                }
+                indiceActivo = -1;
+                limpiarActivo();
+                setTimeout(() => buscador.focus(), 120);
+            });
+        }
+    })();
 
     const inpNombre = document.getElementById('nombreApellidos');
     const vistaNombre = document.getElementById('vistaNombre');
@@ -160,16 +291,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // mostrar/ocultar estudios protocolizados según momento evolutivo
     function actualizarVisibilidadProtocolizados() {
-    const seleccionado = document.querySelector('input[name="momentoEvolutivo"]:checked')?.id || '';
-    const permite = (seleccionado === 'diagnostico' || seleccionado === 'recaidaProgresion');
+        const seleccionado = document.querySelector('input[name="momentoEvolutivo"]:checked')?.id || '';
+        const permite = (seleccionado === 'diagnostico' || seleccionado === 'recaidaProgresion');
 
-    const colProtocolizados = document.querySelector('.colEstudiosProtocolizados'); // columna izq.
-    const detalles = document.getElementById('textoSeleccionado');                  // panel detalle
-    const boton = document.getElementById('dropdownEstudios');
-    const input = document.getElementById('estudiosSeleccionados');
-    const hiddenSubtipo = document.getElementById('subtipoLLASeleccionado');
+        const colProtocolizados = document.querySelector('.colEstudiosProtocolizados'); // columna izq.
+        const detalles = document.getElementById('textoSeleccionado');                  // panel detalle
+        const boton = document.getElementById('dropdownEstudios');
+        const input = document.getElementById('estudiosSeleccionados');
+        const hiddenSubtipo = document.getElementById('subtipoLLASeleccionado');
 
-    if (!colProtocolizados) return;
+        if (!colProtocolizados) return;
 
         if (permite) {
             // mostrar la columna de estudios protocolizados
@@ -211,6 +342,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
     }
+
+    function actualizarAsteriscoEstudios() {
+        const momento = document.querySelector('input[name="momentoEvolutivo"]:checked')?.id;
+        const tituloEstudios = document.querySelector('.tituloParte3');
+
+        if (!tituloEstudios) return;
+
+        if (momento === 'emr') {
+            // Quitar asterisco
+            tituloEstudios.classList.remove('required-asterisk');
+        } else {
+            // Volver a activar asterisco
+            tituloEstudios.classList.add('required-asterisk');
+        }
+    }
+
+    // Ejecutar cuando cambie el momento evolutivo
+    document.querySelectorAll('input[name="momentoEvolutivo"]').forEach(r =>{
+        r.addEventListener('change', actualizarAsteriscoEstudios);
+    });
+
+    // Ejecutar al cargar por si hubiera algo seleccionado
+    actualizarAsteriscoEstudios();
+
 
     // engancha al cambio de momento evolutivo
     document.querySelectorAll('input[name="momentoEvolutivo"]').forEach(r => {
@@ -269,7 +424,11 @@ document.addEventListener('DOMContentLoaded', function() {
             .filter(ch => ch.checked)
             .map(ch => (ch.value || ch.id || '').toUpperCase().trim());
 
-        const mostrar = seleccionadas.includes('SP') || seleccionadas.includes('MO');
+        const mostrar =
+            seleccionadas.includes('SP') ||
+            seleccionadas.includes('MO') ||
+            seleccionadas.includes('GANGLIO');
+
 
         const input = document.getElementById('infiltracion');
         const vista = document.getElementById('vistaInfiltracion');
@@ -293,7 +452,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             if (vista && input) {
                 const valor = input.value.trim();
-                vista.textContent = valor ? `Infiltración de la muestra: ${valor}%` : '';
+                vista.textContent = valor ? `${valor}% de infiltración de la muestra` : '';
             }
         }
     }
@@ -303,11 +462,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const valor = document.getElementById("infiltracion").value.trim();
 
         if (valor !== "") {
-            vista.textContent = "Infiltración de la muestra: " + valor + "%";
+            vista.textContent = valor + "% de infiltración de la muestra";
         } else {
             vista.textContent = "";
         }
     });
+
 
 
     checkboxesMuestra.forEach(ch => ch.addEventListener('change', actualizarInfiltracion));
@@ -500,6 +660,17 @@ function guardarOpcionEstudio(opcion, event) {
         const textoSeleccionado = document.getElementById('textoSeleccionado');
         textoSeleccionado.textContent = 'Selecciona una opción para ver los detalles.';
     }
+
+    const resumen = document.getElementById('resumenEstudiosSeleccionados');
+    if (resumen) {
+        if (selectedItems.length > 0) {
+            resumen.innerHTML = selectedItems
+                .map(nombre => `<span class="estudio-chip">${nombre}</span>`)
+                .join('');
+        } else {
+            resumen.innerHTML = '';
+        }
+    }
 }
 
 //Cursiva automática de genes
@@ -552,7 +723,7 @@ function mostrarInformacionEstudio(estudio) {
                     <div class="row mb-2">
                         <div class="col-6">
                             Cariotipo<br>
-                            FISH: 5q, 7q, C-8, KMT2A (MLL).
+                            FISH: 5q, 7q, C-8, 11q23 (KMT2A)
                         </div>
                         <div class="col-6">
                             Traslocaciones por qRT-PCR: Si se detectó alguna al diagnóstico
@@ -583,13 +754,13 @@ function mostrarInformacionEstudio(estudio) {
                     <div id="lmaContMenor75" style="display:none; margin-top:10px;">
                         <div class="row">
                             <div class="col-4">
-                                Mutaciones de NPM1, FLT3 y IDH1/2.
+                                Mutaciones de NPM1, FLT3 y IDH1/2
                             </div>
                             <div class="col-4">
-                                qRT-PCR: t(15;17), inv(16) y t(8;21) si han pasado más de 2 años desde el diagnóstico.
+                                qRT-PCR: t(15;17), inv(16) y t(8;21) si han pasado más de 2 años desde el diagnóstico
                             </div>
                             <div class="col-4">
-                                Expresión WT1. Si han pasado más de 2 años desde el diagnóstico. Panel NGS mieloide.
+                                Expresión WT1. Si han pasado más de 2 años desde el diagnóstico. Panel NGS mieloide
                             </div>
                         </div>
                     </div>
@@ -598,7 +769,7 @@ function mostrarInformacionEstudio(estudio) {
                     <div id="lmaCont7585" style="display:none; margin-top:10px;">
                         <div class="row">
                             <div class="col-6">
-                                Mutaciones de FLT3 y IDH1/2.
+                                Mutaciones de FLT3 y IDH1/2
                             </div>
                             <div class="col-6">
                                 Panel NGS mieloide
@@ -610,7 +781,7 @@ function mostrarInformacionEstudio(estudio) {
                     <div id="lmaContMas85" style="display:none; margin-top:10px;">
                         <div class="row">
                             <div class="col-12">
-                                Mutaciones de FLT3 y IDH1/2.
+                                Mutaciones de FLT3 y IDH1/2
                             </div>
                         </div>
                     </div>
@@ -662,10 +833,10 @@ function mostrarInformacionEstudio(estudio) {
                     <!-- Contenido Menor 75 -->
                     <div id="lmaContMenor75" style="display:none; margin-top:10px;">
                         <div class="row">
-                            <div class="col-4">
+                            <div class="col-6">
                                 Cariotipo<br>
-                                FISH: 5q, 7q, C-8, KMT2A (MLL)
-                                <br>
+                                FISH: 5q, 7q, C-8, 11q23 (KMT2A)
+                                <br><br>
                                 Traslocaciones por qRT-PCR:
                                 <br>
                                 t(15;17) – PML::RARA
@@ -673,9 +844,11 @@ function mostrarInformacionEstudio(estudio) {
                                 t(8;21) – RUNX1::RUNX1T1
                                 <br>
                                 inv(16) – CBFB::MYH11
+                                <br><br>
+                                Expresión WT1
                             </div>
 
-                            <div class="col-4">
+                            <div class="col-6">
                                 Mutaciones:
                                 <br>
                                 - NPM1
@@ -683,10 +856,8 @@ function mostrarInformacionEstudio(estudio) {
                                 - FLT3
                                 <br>
                                 - IDH1/2
-                            </div>
-
-                            <div class="col-4">
-                                Expresión WT1. Panel NGS mieloide.
+                                <br><br>
+                                Panel NGS mieloide
                             </div>
                         </div>
                     </div>
@@ -890,11 +1061,11 @@ function mostrarInformacionEstudio(estudio) {
 
     } else if (estudio === "Leucemia linfática crónica") {
         if (esRecaida) {
-                mensajeHTML = `<strong>Se realizará el estudio si cumple criterios de tratamiento.</strong><br>
+                mensajeHTML = `<strong>Se realizará el estudio si cumple criterios de tratamiento</strong><br>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc1">
                                     <label class="form-check-label" for="llc1">Cariotipo<br> 
-                                    FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53).</label>
+                                    FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53)</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc2">
@@ -914,7 +1085,7 @@ function mostrarInformacionEstudio(estudio) {
                         <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc2">
                         <label class="form-check-label" for="llc2">
                             Antes de tratamiento/recaída: Cariotipo<br>
-                            FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53).<br>
+                            FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53)<br>
                             Mutaciones TP53
                         </label>
                     </div>
@@ -980,13 +1151,13 @@ function mostrarInformacionEstudio(estudio) {
                 Mutaciones TP53 (si se confirma diagnóstico)
             `;
         }
-    } else if (estudio === "Macroglobulinemia de Waldestrom") {
+    } else if (estudio === "Macroglobulinemia de Waldeström") {
         const esRecaida = document.getElementById("recaidaProgresion")?.checked;
 
         if (esRecaida) {
             mensajeHTML = `
                 <strong>Información específica sobre Macroglobulinemia de Waldeström:</strong><br><br>
-                Se realizará el estudio si cumple criterios de tratamiento.<br><br>
+                Se realizará el estudio si cumple criterios de tratamiento<br><br>
 
                 FISH:< del(6q), C-4, del(17p)<br>
                 Mutaciones: de MYD88 y CXCR4<br>
@@ -1084,7 +1255,7 @@ function mostrarInformacionEstudios(estudios) {
                     <div class="row mb-2">
                         <div class="col-6">
                             Cariotipo<br> 
-                            FISH: 5q, 7q, C-8, KMT2A (MLL).
+                            FISH: 5q, 7q, C-8, 11q23 (KMT2A)
                         </div>
                         <div class="col-6">
                             Traslocaciones por qRT-PCR: Si se detectó alguna al diagnóstico
@@ -1115,13 +1286,13 @@ function mostrarInformacionEstudios(estudios) {
                     <div id="lmaContMenor75" style="display:none; margin-top:10px;">
                         <div class="row">
                             <div class="col-4">
-                                Mutaciones de NPM1, FLT3 y IDH1/2.
+                                Mutaciones de NPM1, FLT3 y IDH1/2
                             </div>
                             <div class="col-4">
-                                qRT-PCR: t(15;17), inv(16) y t(8;21) si han pasado más de 2 años desde el diagnóstico.
+                                qRT-PCR: t(15;17), inv(16) y t(8;21) si han pasado más de 2 años desde el diagnóstico
                             </div>
                             <div class="col-4">
-                                Expresión WT1. Si han pasado más de 2 años desde el diagnóstico. Panel NGS mieloide.
+                                Expresión WT1. Si han pasado más de 2 años desde el diagnóstico. Panel NGS mieloide
                             </div>
                         </div>
                     </div>
@@ -1130,7 +1301,7 @@ function mostrarInformacionEstudios(estudios) {
                     <div id="lmaCont7585" style="display:none; margin-top:10px;">
                         <div class="row">
                             <div class="col-6">
-                                Mutaciones de FLT3 y IDH1/2.
+                                Mutaciones de FLT3 y IDH1/2
                             </div>
                             <div class="col-6">
                                 Panel NGS mieloide
@@ -1142,7 +1313,7 @@ function mostrarInformacionEstudios(estudios) {
                     <div id="lmaContMas85" style="display:none; margin-top:10px;">
                         <div class="row">
                             <div class="col-12">
-                                Mutaciones de FLT3 y IDH1/2.
+                                Mutaciones de FLT3 y IDH1/2
                             </div>
                         </div>
                     </div>
@@ -1194,10 +1365,10 @@ function mostrarInformacionEstudios(estudios) {
                     <!-- Contenido Menor 75 -->
                     <div id="lmaContMenor75" style="display:none; margin-top:10px;">
                         <div class="row">
-                            <div class="col-4">
-                                Cariotipo<br> 
-                                FISH: 5q, 7q, C-8, KMT2A (MLL)
-                                <br>
+                            <div class="col-6">
+                                Cariotipo<br>
+                                FISH: 5q, 7q, C-8, 11q23 (KMT2A)
+                                <br><br>
                                 Traslocaciones por qRT-PCR:
                                 <br>
                                 t(15;17) – PML::RARA
@@ -1205,9 +1376,11 @@ function mostrarInformacionEstudios(estudios) {
                                 t(8;21) – RUNX1::RUNX1T1
                                 <br>
                                 inv(16) – CBFB::MYH11
+                                <br><br>
+                                Expresión WT1
                             </div>
 
-                            <div class="col-4">
+                            <div class="col-6">
                                 Mutaciones:
                                 <br>
                                 - NPM1
@@ -1215,10 +1388,8 @@ function mostrarInformacionEstudios(estudios) {
                                 - FLT3
                                 <br>
                                 - IDH1/2
-                            </div>
-
-                            <div class="col-4">
-                                Expresión WT1. Panel NGS mieloide.
+                                <br><br>
+                                Panel NGS mieloide
                             </div>
                         </div>
                     </div>
@@ -1329,9 +1500,9 @@ function mostrarInformacionEstudios(estudios) {
             if (esRecaida) {
                 mensajeHTML = `
                     <strong>Información específica sobre Síndrome mielodisplásico:</strong><br>
-                    Se realizarán los siguientes estudios si hay progresión de la enfermedad de bajo riesgo a alto riesgo.<br>
-                    Cariotipo.<br> 
-                    FISH: 5q, 7q, C-8, 20q.<br>
+                    Se realizarán los siguientes estudios si hay progresión de la enfermedad de bajo riesgo a alto riesgo<br>
+                    Cariotipo<br> 
+                    FISH: 5q, 7q, C-8, 20q<br>
                     Si candidato a ALO-TPH o si está incluido en estudio UMBRELLA: Panel de NGS mieloide<br>
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico2">
@@ -1462,7 +1633,7 @@ function mostrarInformacionEstudios(estudios) {
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc1">
                                     <label class="form-check-label" for="llc1">Cariotipo<br> 
-                                    FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53).</label>
+                                    FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53)</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc2">
@@ -1482,7 +1653,7 @@ function mostrarInformacionEstudios(estudios) {
                             <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc2">
                             <label class="form-check-label" for="llc2">
                                 Antes de tratamiento/recaída: Cariotipo<br> 
-                                FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53).<br>
+                                FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53)<br>
                                 Mutaciones TP53
                             </label>
                         </div>
@@ -1581,14 +1752,14 @@ function mostrarInformacionEstudios(estudios) {
                     Mutaciones TP53 (si se confirma diagnóstico)
                 `;
             }
-        } else if (estudio === "Macroglobulinemia de Waldestrom") {
+        } else if (estudio === "Macroglobulinemia de Waldeström") {
         const esRecaida = document.getElementById("recaidaProgresion")?.checked;
 
         if (esRecaida) {
             mensajeHTML = `
                 <strong>Información específica sobre Macroglobulinemia de Waldeström:</strong><br>
-                Se realizará el estudio si cumple criterios de tratamiento.<br>
-                FISH:< del(6q), C-4, del(17p)<br>
+                Se realizará el estudio si cumple criterios de tratamiento<br>
+                FISH: del(6q), C-4, del(17p)<br>
                 Mutaciones: de MYD88 y CXCR4<br>
                 Mutaciones de TP53
             `;
@@ -1696,7 +1867,7 @@ const contenedorInputs = document.getElementById('inputsDiagnostico');
 
 function mostrarInputs() {
 
-    if (radioSospecha.checked) {
+    if (radioSospecha.checked || radioConfirmado.checked) {
         contenedorInputs.innerHTML = `
         <div class="hemo-field">
             <label>Hb</label>
@@ -2063,32 +2234,41 @@ function validarFormulario() {
         document.getElementById("ensayoClinicoTexto").parentElement.appendChild(error);
     }
 
-    //VALIDAR SELECCIÓN DE ESTUDIOS (OR lógico entre Protocolizados y Otros)
+    // VALIDAR SELECCIÓN DE ESTUDIOS (OR lógico entre Protocolizados y Otros)
     const seleccionadoMomento = document.querySelector('input[name="momentoEvolutivo"]:checked')?.id || '';
-    const protocolizadosPermitidos = (seleccionadoMomento === 'diagnostico' || seleccionadoMomento === 'recaidaProgresion');
+    const protocolizadosPermitidos =
+        (seleccionadoMomento === 'diagnostico' || seleccionadoMomento === 'recaidaProgresion');
 
-    const tieneProtocolizado = (document.getElementById("estudiosSeleccionados")?.value || "").trim() !== "";
-    const otrosMarcados = document.querySelectorAll('input[name="otrosEstudios"]:checked').length > 0;
+    const tieneProtocolizado =
+        (document.getElementById("estudiosSeleccionados")?.value || "").trim() !== "";
+    const otrosMarcados =
+        document.querySelectorAll('input[name="otrosEstudios"]:checked').length > 0;
 
     // limpia mensaje previo (antiduplicados)
     document.getElementById('err-estudios')?.remove();
 
-    let cumple = false;
-    if (protocolizadosPermitidos) {
-        cumple = (tieneProtocolizado || otrosMarcados);
-    } else {
-        // Si no se permiten protocolizados (porque no es Diagnóstico/Recaída), solo cuentan "Otros"
-        cumple = otrosMarcados;
+    // Si el momento evolutivo es EMR, no es obligatorio seleccionar estudios
+    if (seleccionadoMomento !== 'emr') {
+        let cumple = false;
+
+        if (protocolizadosPermitidos) {
+            // Diagnóstico / Recaída: vale tener protocolizados o "Otros"
+            cumple = (tieneProtocolizado || otrosMarcados);
+        } else {
+            // Otros momentos: solo cuentan "Otros estudios"
+            cumple = otrosMarcados;
+        }
+
+        if (!cumple) {
+            const err = document.createElement('span');
+            err.id = 'err-estudios';
+            err.className = 'error-msg';
+            err.textContent = "Debe seleccionar al menos un estudio";
+            (document.querySelector(".tituloParte3") || document.body).appendChild(err);
+            formularioValido = false;
+        }
     }
 
-    if (!cumple) {
-        const err = document.createElement('span');
-        err.id = 'err-estudios';
-        err.className = 'error-msg';
-        err.textContent = "Debe seleccionar al menos un estudio";
-        (document.querySelector(".tituloParte3") || document.body).appendChild(err);
-        formularioValido = false;
-    }
 
     // VALIDAR A CUMPLIMENTAR POR EL LABORATORIO 
     const labAcepto = document.getElementById('labAcepto');
