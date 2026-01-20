@@ -49,7 +49,26 @@ document.addEventListener('DOMContentLoaded', function() {
             "En las muestras de MO se enviará un tubo de EDTA y un tubo de heparina (sódica o litio)"
             );
 
+            // cálculo de tamaño
+            const selected = Array.from(document.querySelectorAll('.colEstudiosProtocolizados .dropdown-item.selected'))
+            .map(x => x.textContent.trim());
+
+            const PESADOS = new Set([
+            "Leucemia mieloblástica aguda",
+            "Leucemia linfoblástica aguda"
+            ]);
+
+            // score base por estudio + extra por pesados
+            let score = selected.length;
+            selected.forEach(n => { if (PESADOS.has(n)) score += 6; });
+
+            document.body.classList.toggle('print-compact', score >= 10);
+            document.body.classList.toggle('print-resumen', score >= 16);
+
             window.print();
+
+            //limpiar las clases
+            document.body.classList.remove('print-compact', 'print-resumen');
 
             // Restaurar los campos después de imprimir
             hemogramaOcultados.forEach(field => {
@@ -343,6 +362,66 @@ document.addEventListener('DOMContentLoaded', function() {
 
     }
 
+    function filtrarProtocolizadosPorMomento() {
+        const momentoId = document.querySelector('input[name="momentoEvolutivo"]:checked')?.id || '';
+        const esRecaida = (momentoId === 'recaidaProgresion');
+
+        // OJO: estos nombres deben coincidir con el texto exacto del dropdown
+        const NO_EN_RECAIDA = new Set([
+            "Aplasia medular",
+            "Citopenias aisladas",
+            "Sospecha de síndrome linfoproliferativo",
+            "Síndrome de VEXAS",
+            "Neoplasias mieloproliferativas crónicas no LMC",
+            "Eosinofilia",
+            "Hemofilia y Von Willebrand",
+            "Trombosis de territorios esplácnicos"
+        ]);
+
+        const items = Array.from(
+            document.querySelectorAll('.colEstudiosProtocolizados .dropdown-item')
+        );
+
+        items.forEach(item => {
+            const nombre = item.textContent.trim();
+            const bloquear = esRecaida && NO_EN_RECAIDA.has(nombre);
+
+            // ocultar/mostrar en la lista (robusto contra el buscador)
+            item.classList.toggle('disabled-estudio', bloquear);
+
+            // si estaba seleccionado y ahora se bloquea -> deseleccionar
+            if (bloquear && item.classList.contains('selected')) {
+            item.classList.remove('selected');
+            }
+        });
+
+        // Si al deseleccionar se quedan estudios seleccionados, refrescar resumen/panel
+        const selectedItems = items
+            .filter(it => it.classList.contains('selected') && it.style.display !== 'none')
+            .map(it => it.textContent.trim());
+
+        const boton = document.getElementById('dropdownEstudios');
+        const input = document.getElementById('estudiosSeleccionados');
+        const textoSeleccionado = document.getElementById('textoSeleccionado');
+        const resumen = document.getElementById('resumenEstudiosSeleccionados');
+
+        if (selectedItems.length > 0) {
+            if (boton) boton.textContent = 'ESTUDIOS PROTOCOLIZADOS ' + selectedItems.join(', ');
+            if (input) input.value = selectedItems.join(',');
+            if (resumen) {
+            resumen.innerHTML = selectedItems.map(n => `<span class="estudio-chip">${n}</span>`).join('');
+            }
+            if (typeof mostrarInformacionEstudios === 'function') {
+            mostrarInformacionEstudios(selectedItems);
+            }
+        } else {
+            if (boton) boton.textContent = 'ESTUDIOS PROTOCOLIZADOS';
+            if (input) input.value = '';
+            if (resumen) resumen.innerHTML = '';
+            if (textoSeleccionado) textoSeleccionado.textContent = 'Selecciona una opción para ver los detalles.';
+        }
+    }
+
     function actualizarAsteriscoEstudios() {
         const momento = document.querySelector('input[name="momentoEvolutivo"]:checked')?.id;
         const tituloEstudios = document.querySelector('.tituloParte3');
@@ -374,6 +453,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // estado inicial
     actualizarVisibilidadProtocolizados();
+
+    document.querySelectorAll('input[name="momentoEvolutivo"]').forEach(r => {
+    r.addEventListener('change', filtrarProtocolizadosPorMomento);
+    });
+
+    filtrarProtocolizadosPorMomento(); // estado inicial
+
 
 
     // Event listeners para los radio buttons de tipo de muestra
@@ -517,6 +603,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+	// Event listener para la opción de OGM
+	const ogmCheckbox = document.getElementById('ogm');
+	const notaOGM = document.getElementById('notaOGM');
+
+	if (ogmCheckbox) {
+  	  ogmCheckbox.addEventListener('change', function () {
+    	    if (this.checked) {
+      	      if (notaOGM) notaOGM.style.display = 'block';
+    	    } else {
+      	      if (notaOGM) notaOGM.style.display = 'none';
+    	    }
+  	  });
+	}
+
+
     document.addEventListener('DOMContentLoaded', () => {
     const checkboxLLA = document.getElementById('lla');
     const bloqueSubtipo = document.getElementById('subtipoLLA');
@@ -560,7 +661,7 @@ function guardarMomentoEvolutivo() {
     momentoEvolutivo = textoMomento ? `Otros: ${textoMomento}` : 'Otros: No especificado';
   } else if (momentoEvolutivo === 'postransplante') {
     const dias = (document.getElementById('postTxDias')?.value || '').trim();
-    momentoEvolutivo = dias ? `Postrasplante: ${dias} días` : 'Postrasplante';
+    momentoEvolutivo = dias ? `Postrasplante-Alo: ${dias} días`: 'Postrasplante-Alo';
   }
 
   document.getElementById('momentoEvolutivoSeleccionado').value = momentoEvolutivo;
@@ -680,8 +781,8 @@ function italicizeGenes(html) {
     "KMT2A","MLL","PML","RARA","RUNX1","RUNX1T1","CBFB","MYH11",
     "NPM1","FLT3","IDH1","IDH2","WT1","BCR","ABL","TCF3","PBX1",
     "AF4","ETV6","PDGFRA","PDGFRB","FGFR1","JAK2","CALR","MPL",
-    "CSF3R","KIT","BRAF","IGHV","BCL2","BCL6","MYC","TP53","SF3B1",
-    "UBA1","SIL", "TAL", "MYD88", "CXCR4", "ATM"
+    "CSF3R","c-kit","BRAF","IGHV","BCL2","BCL6","MYC","TP53","SF3B1",
+    "UBA1","SIL", "TAL", "MYD88", "CXCR4", "ATM", "IGHV", "IgHV"
   ];
 
   // 1) Protege lo que ya esté en <em>...</em> para no re-envolver
@@ -707,7 +808,7 @@ function italicizeGenes(html) {
   return html;
 }
 
-function mostrarInformacionEstudio(estudio) {
+function mostrarInformacionEstudio(estudio){
     const textoSeleccionado = document.getElementById('textoSeleccionado');
     textoSeleccionado.innerHTML = ''; // Limpiar contenido anterior
 
@@ -954,7 +1055,7 @@ function mostrarInformacionEstudio(estudio) {
                     <li>t(9;22) – BCR::ABL</li>
                     <li>t(1;19) – TCF3::PBX1</li>
                     <li>t(4;11) – KMT2A::AF4</li>
-                    <li>t(12;21) – ETV6::RUNX1</li>
+                    <li>t(12;21) – ETV6::RUNX1</li><span style="font-size: 0.85em;">(solo en menores de 45 años)</span><br>
                 </ul>
                 </li>
             </ul>
@@ -962,6 +1063,7 @@ function mostrarInformacionEstudio(estudio) {
 
             <!-- Contenido específico T -->
             <div id="llaContenidoT" style="display:${showT ? 'block' : 'none'}">
+            Cariotipo<br>
             T: SIL::TAL por qRT-PCR
             </div>
         `;
@@ -980,14 +1082,6 @@ function mostrarInformacionEstudio(estudio) {
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico3">
                             <label class="form-check-label" for="sindromeMielodisplasico3">Si eosinofilia: FISH de PDGFRA, PDGFRB, FGFR1, JAK2</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico4">
-                            <label class="form-check-label" for="sindromeMielodisplasico4">Si SMD con del(5q): Mutaciones de TP53</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico5">
-                            <label class="form-check-label" for="sindromeMielodisplasico5">Si bajo % de blastos: Mutaciones de SF3B1</label>
                         </div>
                         <div id="notaSindromeMielodisplasico">
                             Nota: Si al diagnóstico no se conoce esta información, se debe notificar vía mail posteriormente
@@ -1026,9 +1120,8 @@ function mostrarInformacionEstudio(estudio) {
     } else if (estudio === "Leucemia mieloide crónica") {
 
         mensajeHTML = `<strong>Información específica sobre Leucemia mieloide crónica:</strong><br>
-                        FISH: t(9;22)<br>
-                        qRT-PCR: t(9;22) – BCR::ABL<br>
-                        Seguimiento: qRT-PCR de t(9;22) - BCR::ABL`;
+        	Cariotipo<br>
+        	PDGFRβ`;
 
     } else if (estudio === "Eosinofilia") {
         
@@ -1039,19 +1132,25 @@ function mostrarInformacionEstudio(estudio) {
     } else if (estudio === "Leucemia neutrofílica crónica") {
 
         mensajeHTML = `<strong>Información específica sobre Leucemia neutrofílica crónica:</strong><br>
+			Cariotipo<br> 
                         Mutaciones de CSF3R`;
 
     } else if (estudio === "Mastocitosis") {
 
         mensajeHTML = `<strong>Información específica sobre Mastocitosis:</strong><br>
                         Cariotipo<br>
-                        Mutación de KIT`;
+                        Mutación de c-kit`;
 
     } else if (estudio === "Aplasia medular") {
 
         mensajeHTML = `<strong>Información específica sobre Aplasia medular:</strong><br>
                         Cariotipo en médula ósea<br>
-                        Fragilidad cromosómica en sangre periférica`;
+                        Fragilidad cromosómica en sangre periférica
+        		<div class="mt-2" style="font-size: 0.9rem;">
+            			<strong>Nota:</strong> El estudio de fragilidad cromosómica se realiza únicamente en días determinados.
+            			<br>
+            			<strong>Enviar la muestra exclusivamente los lunes o jueves.</strong>
+        		</div>`;
 
     } else if (estudio === "Citopenias aisladas") {
 
@@ -1095,6 +1194,7 @@ function mostrarInformacionEstudio(estudio) {
     } else if (estudio === "Tricoleucemia") {
 
         mensajeHTML = `<strong>Información específica sobre Tricoleucemia:</strong><br>
+			Cariotipo<br> 
                         Mutaciones de BRAF`;
 
     } else if (estudio === "Sospecha de síndrome linfoproliferativo") {
@@ -1116,8 +1216,7 @@ function mostrarInformacionEstudio(estudio) {
 
         mensajeHTML = `<strong>Información específica sobre Linfoma folicular:</strong><br>
                         <div style="color: #666; font-size: 0.9em; margin-bottom: 10px;">
-                            Nota 1: Solo se harán los estudios en tejidos que estén infiltrados por el linfoma (rogamos confirmar % de infiltración)<br>
-                            Nota 2: No se repetirá el estudio de FISH si ya se ha realizado en otro tejido infiltrado de ese paciente, salvo excepción justificada
+                            Nota: Se realizará en muestra/tejido con infiltración<br>
                         </div>
                         Cariotipo<br> 
                         FISH: t(14;18)`;
@@ -1141,7 +1240,7 @@ function mostrarInformacionEstudio(estudio) {
                 <strong>Información específica sobre Mieloma múltiple:</strong><br><br>
 
                 FISH: t(4;14), t(14;16), t(14;20), 1q/1p y 17p<br>
-                Mutaciones: TP53
+                Mutaciones: TP53 (si se confirma recaída)
             `;
         } else {
             
@@ -1161,7 +1260,7 @@ function mostrarInformacionEstudio(estudio) {
 
                 FISH:< del(6q), C-4, del(17p)<br>
                 Mutaciones: de MYD88 y CXCR4<br>
-                Mutaciones de TP53
+                Mutaciones de TP53 (si se confirma recaída)
             `;
         } else {
             mensajeHTML = `
@@ -1220,7 +1319,7 @@ function mostrarInformacionEstudio(estudio) {
         actualizar(); // estado inicial
     }
 }
-// mostrarInformacionEstudios(estudios) no se usa!!
+// mostrarInformacionEstudios(estudios)
 function mostrarInformacionEstudios(estudios) {
     const textoSeleccionado = document.getElementById('textoSeleccionado');
 
@@ -1457,7 +1556,7 @@ function mostrarInformacionEstudios(estudios) {
             const showT = subtipoGuardado === 'T';
 
             mensajeHTML = `
-                <strong>Información específica sobre Leucemia aguda linfoblástica:</strong><br>
+                <strong>Información específica sobre Leucemia linfoblástica aguda:</strong><br>
 
                 <div class="mt-2 mb-2">
                 <label class="form-label d-block mb-1">Subtipo de LLA:</label>
@@ -1480,12 +1579,12 @@ function mostrarInformacionEstudios(estudios) {
                     <li>KMT2A (MLL)</li>
                     <li>t(1;19)</li>
                     <li>t(12;21)</li>
-                    <li>qRT-PCR si positivo por FISH:
+                    <li>qRT-PCR:
                     <ul>
                         <li>t(9;22) – BCR::ABL</li>
                         <li>t(1;19) – TCF3::PBX1</li>
                         <li>t(4;11) – KMT2A::AF4</li>
-                        <li>t(12;21) – ETV6::RUNX1</li>
+                        <li>t(12;21) – ETV6::RUNX1</li><span style="font-size: 0.85em;">(solo en menores de 45 años)</span><br>
                     </ul>
                     </li>
                 </ul>
@@ -1493,6 +1592,7 @@ function mostrarInformacionEstudios(estudios) {
 
                 <!-- Contenido específico T -->
                 <div id="llaContenidoT" style="display:${showT ? 'block' : 'none'}">
+            	Cariotipo<br>
                 T: SIL::TAL por qRT-PCR
                 </div>
             `;
@@ -1512,10 +1612,6 @@ function mostrarInformacionEstudios(estudios) {
                         <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico3">
                         <label class="form-check-label" for="sindromeMielodisplasico3">Si eosinofilia: FISH de PDGFRA, PDGFRB, FGFR1, JAK2</label>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico4">
-                        <label class="form-check-label" for="sindromeMielodisplasico4">Si SMD con del(5q): Mutaciones de TP53</label>
-                    </div>
                 `;
             } else {
                 mensajeHTML = `<strong>Información específica sobre Síndrome mielodisplásico:</strong><br>
@@ -1532,14 +1628,6 @@ function mostrarInformacionEstudios(estudios) {
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico3">
                                     <label class="form-check-label" for="sindromeMielodisplasico3">Si eosinofilia: FISH de PDGFRA, PDGFRB, FGFR1, JAK2</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico4">
-                                    <label class="form-check-label" for="sindromeMielodisplasico4">Si SMD con del(5q): Mutaciones de TP53</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="sindromeMielodisplasicoOpciones" id="sindromeMielodisplasico5">
-                                    <label class="form-check-label" for="sindromeMielodisplasico5">Si bajo % de blastos: Mutaciones de SF3B1</label>
                                 </div>
                                 <div id="notaSindromeMielodisplasico">
                                     Nota: Si al diagnóstico no se conoce esta información, se debe notificar vía mail posteriormente
@@ -1592,9 +1680,8 @@ function mostrarInformacionEstudios(estudios) {
                 } else {
                     mensajeHTML = `
                         <strong>Información específica sobre Leucemia mieloide crónica:</strong><br>
-                        FISH: t(9;22)<br>
-                        qRT-PCR: t(9;22) – BCR::ABL<br>
-                        Seguimiento: qRT-PCR de t(9;22) - BCR::ABL
+        		Cariotipo<br>
+        		PDGFRβ
                     `;
                 }
         } else if (estudio === "Eosinofilia") {
@@ -1604,21 +1691,32 @@ function mostrarInformacionEstudios(estudios) {
                             FISH de PDGFRA y PDGFRB`;
 
         } else if (estudio === "Leucemia neutrofílica crónica") {
-
-            mensajeHTML = `<strong>Información específica sobre Leucemia neutrofílica crónica:</strong><br>
+            if(esRecaida){
+                mensajeHTML = `<strong>Información específica sobre Leucemia neutrofílica crónica:</strong><br>
+			    Cariotipo<br>`;
+            }else{            
+                mensajeHTML = `<strong>Información específica sobre Leucemia neutrofílica crónica:</strong><br>
+			    Cariotipo<br> 
                             Mutaciones de CSF3R`;
+            }
 
         } else if (estudio === "Mastocitosis") {
 
             mensajeHTML = `<strong>Información específica sobre Mastocitosis:</strong><br>
                             Cariotipo<br>
-                            Mutación de KIT`;
+                            Mutación de c-kit`;
 
         } else if (estudio === "Aplasia medular") {
 
-            mensajeHTML = `<strong>Información específica sobre Aplasia medular:</strong><br>
-                            Cariotipo en médula ósea<br>
-                            Fragilidad cromosómica en sangre periférica`;
+        	mensajeHTML = `<strong>Información específica sobre Aplasia medular:</strong><br>
+                        Cariotipo en médula ósea<br>
+                        Fragilidad cromosómica en sangre periférica
+        		<div class="mt-2" style="font-size: 0.9rem;">
+            			<strong>Nota:</strong> El estudio de fragilidad cromosómica se realiza únicamente en días determinados.
+            			<br>
+            			<strong>Enviar la muestra exclusivamente los lunes o jueves.</strong>
+        		</div>`;
+
 
         } else if (estudio === "Citopenias aisladas") {
 
@@ -1646,7 +1744,7 @@ function mostrarInformacionEstudios(estudios) {
                             <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc1">
                             <label class="form-check-label" for="llc1">
                                 Al diagnóstico: Cariotipo<br>
-                                Mutaciones de IGHV
+                                Mutaciones de IgHV
                             </label>
                         </div>
                         <div class="form-check">
@@ -1662,9 +1760,11 @@ function mostrarInformacionEstudios(estudios) {
         } else if (estudio === "Tricoleucemia") {
             if(esRecaida){
                 mensajeHTML = `<strong>Información específica sobre Tricoleucemia:</strong><br>
+		Cariotipo<br>
                 Mutaciones de BRAF y panel de NGS de mutaciones de TP53. Si eran negativas al diagnóstico`;
             }else{
             mensajeHTML = `<strong>Información específica sobre Tricoleucemia:</strong><br>
+			    Cariotipo<br> 
                             Mutaciones de BRAF`;
             }
         } else if (estudio === "Sospecha de síndrome linfoproliferativo") {
@@ -1677,14 +1777,13 @@ function mostrarInformacionEstudios(estudios) {
                 mensajeHTML = `
                     <div>
                         <strong>Linfoma B difuso de célula grande:</strong><br>
-                        Se guardará DNA hasta confirmación de pruebas pertinentes
+                        Se guardará ADN hasta confirmación de pruebas pertinentes
                     </div>
                 `;
             }else{
             mensajeHTML = `<strong>Información específica sobre Linfoma B difuso de célula grande:</strong><br>
                             <div style="color: #666; font-size: 0.9em; margin-bottom: 10px;">
-                                Nota 1: Solo se harán los estudios en tejidos que estén infiltrados por el linfoma (rogamos confirmar % de infiltración)<br>
-                                Nota 2: No se repetirá el estudio de FISH si ya se ha realizado en otro tejido infiltrado de ese paciente, salvo excepción justificada
+                                Nota : Se realizará en muestra/tejido con infiltración<br>
                             </div>
                             Cariotipo<br> 
                             FISH: BCL2, BCL6, MYC y TP53`;
@@ -1694,7 +1793,7 @@ function mostrarInformacionEstudios(estudios) {
             if(esRecaida){
                 mensajeHTML=`<strong>Información específica sobre Linfoma folicular:</strong><br>
                     <div class="row">                  
-                        Se guardará DNA hasta confirmación de pruebas pertinentes<br>
+                        Se guardará ADN hasta confirmación de pruebas pertinentes<br>
                     </div>`;
             }else{
                 mensajeHTML = `<strong>Información específica sobre Linfoma folicular:</strong><br>
@@ -1714,20 +1813,18 @@ function mostrarInformacionEstudios(estudios) {
                     <div class="row">
                         <div class="col-6">
                             Cariotipo y FISH:
-                            del(17p): Si no presentaba del(17p) al diagnóstico
+                            del(17p) si no presentaba del(17p) al diagnóstico
                         </div>
 
                         <div class="col-6">
-                            Panel de NGS de mutaciones de TP53:
-                            Si no presentaba mutaciones de <em>TP53</em> al diagnóstico
+                            Panel de NGS de mutaciones de TP53 si no presentaba mutaciones de <em>TP53</em> al diagnóstico
                         </div>
                     </div>
                 `;
             }else{
                 mensajeHTML = `<strong>Información específica sobre Linfoma de células del manto:</strong><br>
                                 <div style="color: #666; font-size: 0.9em; margin-bottom: 10px;">
-                                    Nota 1: Solo se harán los estudios en tejidos que estén infiltrados por el linfoma (rogamos confirmar % de infiltración)<br>
-                                    Nota 2: No se repetirá el estudio de FISH si ya se ha realizado en otro tejido infiltrado de ese paciente, salvo excepción justificada
+                                    Nota: Se realizará en muestra/tejido con infiltración<br>
                                 </div>
                                 Cariotipo<br> 
                                 FISH: t(11;14) y del(17p)<br>
@@ -1741,15 +1838,14 @@ function mostrarInformacionEstudios(estudios) {
             if (esRecaida) {
                 mensajeHTML = `
                     <strong>Información específica sobre Mieloma múltiple:</strong><br>
-                    FISH: t(4;14), t(14;16), t(14;20), 1q/1p y 17p<br>
-                    Mutaciones: TP53
+                    Los estudios dependerán de los hallazgos detectados en el diagnóstico
                 `;
             } else {
                 
                 mensajeHTML = `
                     <strong>Información específica sobre Mieloma Múltiple:</strong><br>
                     FISH: t(4;14), t(14;16), t(14;20), 1q/1p y 17p<br>
-                    Mutaciones TP53 (si se confirma diagnóstico)
+                    Mutaciones TP53 (se necesita confirmación del diagnóstico de MM)
                 `;
             }
         } else if (estudio === "Macroglobulinemia de Waldeström") {
@@ -1758,17 +1854,14 @@ function mostrarInformacionEstudios(estudios) {
         if (esRecaida) {
             mensajeHTML = `
                 <strong>Información específica sobre Macroglobulinemia de Waldeström:</strong><br>
-                Se realizará el estudio si cumple criterios de tratamiento<br>
-                FISH: del(6q), C-4, del(17p)<br>
-                Mutaciones: de MYD88 y CXCR4<br>
-                Mutaciones de TP53
+                Los estudios dependerán de los hallazgos detectados en el diagnóstico
             `;
         } else {
             mensajeHTML = `
                 <strong>Información específica sobre Macroglobulinemia de Waldeström:</strong><br>
                         FISH: del(6q), C-4, del(17p)<br>
                         Mutaciones de MYD88 y CXCR4<br>
-                        Antes de tratamiento/recaída: Mutaciones de TP53 (si se confirma diagnóstico)
+                        Antes de tratamiento/recaída: Mutaciones de TP53 (se necesita confirmación del diagnóstico de MW)
             `;
         }
         } else if (estudio === "Leucemia de linfocitos grandes granulares") {
@@ -1791,7 +1884,14 @@ function mostrarInformacionEstudios(estudios) {
             mensajeHTML = `<strong>Información específica sobre Hemofilia y Von Willebrand:</strong><br>
                             Panel de NGS de hemofilia y FVW`;
 
-        } else {
+        }else if(estudio == "Leucemia/Linfoma de Burkitt"){
+            mensajeHTML = `
+            <strong>Información específica sobre Leucemia/Linfoma de Burkitt:</strong><br>
+                Cariotipo<br>
+                FISH: MYC<br>
+                t(8;14)
+            `;
+        }else {
 
             mensajeHTML = "Opción no reconocida";
 

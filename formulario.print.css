@@ -51,7 +51,6 @@
         border: none;
         background-color: transparent;
         color: black;
-        font-size: 1rem;
     }
 
     /* Hide elements not relevant for printing */
@@ -523,7 +522,9 @@
         .form-control.inputInfiltracion,
         #otrosInputEvolutivo,
         #otrosInputMuestra,
-        #marcadorMolecular {
+        #marcadorMolecular,
+        .seleccionarCandidato,
+    .seleccionarEnsayo {
             font-size: 0.85rem !important; /* antes 0.9rem */
             line-height: 1.1;
         }
@@ -945,6 +946,83 @@
       }
   }
 
+    @media print {
+        /* Si algo está vacío, que no ocupe nada */
+        .vista-impresion:empty {
+            display: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* El diagnóstico no debe hacer que se vaya a 3 páginas */
+        #vistaDiagnostico {
+            max-height: 85mm !important;  
+            overflow: hidden !important;
+        }
+
+        /* Evita que los recuadros grandes se partan raro */
+        .fila-datos-inicial,
+        #inputsDiagnostico,
+        #vistaDiagnostico {
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
+        }
+    }
+
+    @media print {
+        /*reduce densidad solo si pesa demaisiado */
+        body.print-compact {
+            font-size: 0.86rem !important;
+        }
+        body.print-compact #textoSeleccionado {
+            line-height: 1.15 !important;
+        }
+        body.print-compact .carta {
+            padding: 4mm !important;
+        }
+
+        body.print-resumen #textoSeleccionado {
+            display: none !important;
+        }
+        /* aquí se deja visible solo un listado o una lista simple */
+        body.print-resumen #resumenEstudiosSeleccionados {
+            display: block !important;
+            max-height: none !important;
+        }
+    }
+
+    @media print {
+        #textoSeleccionado {
+            max-height: 165mm !important; /* ajuste fino */
+            overflow: hidden !important;
+        }
+    }
+
+    /* Código del formulario - impresión */
+    @media print {
+        body::after {
+            content: "FORM-PRE-BM-01_01";
+            position: fixed;
+            bottom: 5mm;
+            right: 5mm;
+            font-size: 10px;
+            color: #000;
+        }
+    }
+
+    @media print {
+        /* Quitar icono de calendario en inputs type=date */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            display: none !important;
+            -webkit-appearance: none !important;
+        }
+
+        input[type="date"] {
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: textfield !important;
+        }
+    }
 
 }
 

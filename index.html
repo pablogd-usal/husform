@@ -256,7 +256,7 @@
 
                         <div class="form-group d-flex align-items-center mx-sm-3 my-1 mx-1">
                             <label for="fechaExtraccion" class="mb-0 mr-2 labelFechaExtraccion">FECHA
-                                EXTRACCIÓN</label>
+                                DE PETICIÓN</label>
                             <input type="date" class="form-control inputFechaExtraccion" id="fechaExtraccion"
                                 style="width:auto;">
                         </div>
@@ -349,13 +349,13 @@
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input radioEmr" type="radio"
                                                 name="momentoEvolutivo" id="emr" onclick="mostrarCampoTextoEMR()">
-                                            <label class="form-check-label" for="emr"> EMR </label>
+                                            <label class="form-check-label" for="emr"> EMR/Seguimiento </label>
                                         </div>
 
                                         <!-- Postrasplante -->
                                         <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="radio" name="momentoEvolutivo" id="postransplante" onclick="guardarMomentoEvolutivo()">
-                                        <label class="form-check-label" for="postransplante"> Postrasplante </label>
+                                        <label class="form-check-label" for="postransplante"> Postrasplante-Alo </label>
                                         </div>
 
                                         <div class="form-check form-check-inline">
@@ -563,6 +563,8 @@
                                         <a class="dropdown-item" href="#"
                                             onclick="guardarOpcionEstudio('Leucemia linfática crónica', event)">Leucemia linfática crónica</a>
                                         <a class="dropdown-item" href="#"
+                                            onclick="guardarOpcionEstudio('Leucemia/Linfoma de Burkitt', event)">Leucemia/Linfoma de Burkitt</a>
+                                        <a class="dropdown-item" href="#"
                                             onclick="guardarOpcionEstudio('Leucemia mieloide crónica', event)">Leucemia mieloide crónica</a>
                                         <a class="dropdown-item" href="#"
                                             onclick="guardarOpcionEstudio('Leucemia mielomonocítica crónica', event)">Leucemia mielomonocítica crónica</a>
@@ -690,9 +692,16 @@
                                 </div>
 
                                 <div class="form-check">
-                                    <input class="form-check-input otrosEstudios" type="checkbox" value="Quimerismo" id="quimerismo">
+                                    <input class="form-check-input" type="checkbox" id="quimerismo" name="otrosEstudios" value="Quimerismo">
                                     <label class="form-check-label" for="quimerismo">Quimerismo</label>
                                 </div>
+
+				<div class="form-check">
+  				    <input class="form-check-input" type="checkbox" name="otrosEstudios" id="sf3b1">
+  				    <label class="form-check-label" for="sf3b1">
+    					<em>SF3B1</em>
+  				    </label>
+				</div>
 
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="otrosEstudiosOtros" name="otrosEstudios">
@@ -704,6 +713,11 @@
                                     Nota: Solo se realizará en muestras de médula ósea o si hay una justificación
                                     clínica adecuada
                                 </div>
+
+				<div id="notaOGM"
+  				  style="display: none; color: #666; font-size: 0.9em; margin-top: 5px; margin-left: 20px;">
+  				  Nota: Se requiere un tubo exclusivo de EDTA para este estudio.
+				</div>
 
                                 <div id="justificacionOtrosEstudios" style="display: none;">
 
@@ -739,10 +753,6 @@
 
                             </div>
 
-                        </div>
-
-                        <div id="codigoFormulario" class="textoCodigoFormulario">
-                            FORM-PRE-BM-01_01
                         </div>
 
                     </div>
@@ -782,9 +792,9 @@
                 <ul>
                     <li> La información registrada en el formulario online no quedará almacenada en el sistema de
                         solicitud </li> 
-                    <li>Las ampliaciones de estudios se solicitarán por email</li>
-                    <li> Mails de contacto: hematólogos (citogenbm@saludcastillayleon.onmicrosoft.com), administrativo (rgarciaeg.ibsal@saludcastillayleon.es) </li>  
-                    <li> No se realizarán estudios en MO no infiltrada (rogamos confirmar infiltración) </li>                
+                    <li>Las ampliaciones de estudios se solicitarán por email</li> 
+                    <li> No se realizarán estudios en MO no infiltrada (rogamos confirmar infiltración) </li>
+                    <li> Mails de contacto: hematólogos (citogenbm@saludcastillayleon.onmicrosoft.com), administrativo (rgarciaeg.ibsal@saludcastillayleon.es) </li>                 
                 </ul>
 
             </div>
@@ -813,6 +823,9 @@
 
     </script>
 
+    <div id="codigoFormulario" class="textoCodigoFormulario">
+        FORM-PRE-BM-01_01
+    </div>
 </body>
 
 </html>
