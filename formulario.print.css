@@ -127,8 +127,7 @@
 
     @media print {
       .tituloFormularioPeticion {
-          font-size: 1.3rem;
-          font-weight: bold;
+          font-size: 1rem;
           text-align: center;
           margin-top: 4px;
           margin-bottom: 8px;
@@ -850,9 +849,11 @@
 /* Espacio para anotaciones */
 .lab-notas-linea {
     border-bottom: 1px solid #000;
-    height: 18px;
+    height: 70px;
     margin-top: 4px;
 }
+
+
 
 @media print {
   #textoSeleccionado {
@@ -894,7 +895,8 @@
   /* 'citogenética y biología molecular' centrado en la hoja de impresión */
   .carta h4:first-of-type {
       text-align: center !important;
-      font-size: 1rem !important;
+      font-weight: bold;
+      font-size: 1.3rem !important;
       margin-top: 2px !important;
       margin-bottom: 2px !important;
   }
@@ -1024,5 +1026,166 @@
         }
     }
 
+    @media print {
+        .diag-print-extra {
+            display: none !important;
+        }
+    }
+
 }
 
+/* ====== IMPRESIÓN: 2 COPIAS TAL CUAL ====== */
+@media print {
+  /* Cuando está activo el modo duplicado:
+     ocultamos todo el body excepto el wrapper que contiene las 2 copias */
+  body.print-dup-active > :not(#printDupWrapper) {
+    display: none !important;
+  }
+
+  #printDupWrapper {
+    display: block !important;
+  }
+
+  /* Cada copia empieza en una página nueva */
+  #printDupWrapper .print-copy {
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+
+  #printDupWrapper .print-copy:last-child {
+    page-break-after: auto !important;
+    break-after: auto !important;
+  }
+
+  /* El logo de la Junta y los bloques .solo-impresion ya van por clase,
+     así que se imprimirán también dentro de cada copia */
+  .solo-impresion {
+    display: block !important;
+  }
+
+  /* --- FIX impresión: quitar línea extra tras "Otros Estudios" y evitar duplicados del desplegable --- */
+    @media print {
+    /* El <hr class="solo-imprimir"> genera líneas no deseadas al final del bloque */
+    hr.solo-imprimir { display: none !important; }
+
+    /* En impresión no queremos ver el listado completo del menú desplegable (solo el botón con la selección) */
+    .colEstudiosProtocolizados .dropdown-menu.estudios-menu,
+    .colEstudiosProtocolizados .dropdown-search-wrapper,
+    .colEstudiosProtocolizados .estudios-items-wrapper,
+    #sinResultadosEstudios {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    /* El resumen en chips puede duplicar los nombres ya visibles en el botón */
+    #resumenEstudiosSeleccionados {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    }
+
+    @media print {
+
+    /* 1) En el panel de descripción (#textoSeleccionado), si una línea tiene checkbox no marcado -> ocultar la línea completa */
+    #textoSeleccionado li:has(input[type="checkbox"]:not(:checked)),
+    #textoSeleccionado div:has(input[type="checkbox"]:not(:checked)),
+    #textoSeleccionado p:has(input[type="checkbox"]:not(:checked)),
+    #textoSeleccionado label:has(input[type="checkbox"]:not(:checked)) {
+        display: none !important;
+    }
+
+    /* 2) Para los checkboxes marcados: ocultar la cajita y no reservar espacio */
+    #textoSeleccionado input[type="checkbox"]:checked {
+        position: absolute !important;
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+    }
+
+    /* 3) Por si hubiera sangría reservada por estilos */
+    #textoSeleccionado label,
+    #textoSeleccionado li,
+    #textoSeleccionado p,
+    #textoSeleccionado div {
+        padding-left: 0 !important;
+        margin-left: 0 !important;
+    }
+    }
+
+    @media print {
+
+    /* Información e instrucciones finales:
+        tamaño mínimo legible */
+    .comentarios,
+    .solo-impresion .comentarios,
+    .solo-impresion p,
+    .solo-impresion small,
+    .solo-impresion ul,
+    .solo-impresion li {
+        font-size: 0.6rem !important;
+        line-height: 1.15 !important;
+    }
+
+    /* Evitar márgenes grandes que “comen” espacio */
+    .solo-impresion p,
+    .solo-impresion li {
+        margin-bottom: 2px !important;
+    }
+        .solo-impresion {
+        letter-spacing: -0.1px;
+    }
+    }
+
+    @media print {
+    /* Fila final "Instrucciones/Información": forzar a 1 sola columna en impresión */
+    .row.mb-3:has(> .col-6 > .notasFinales) {
+        display: block !important;
+    }
+
+    .row.mb-3:has(> .col-6 > .notasFinales) > .col-6 {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+    }
+
+    /* compactar separación entre ambos bloques */
+    .row.mb-3:has(> .col-6 > .notasFinales) > .col-6 + .col-6 {
+        margin-top: 2mm !important;
+    }
+    }
+
+    @media print {
+    /* ocultar contenedores vacíos  */
+    .print-hide {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    /* compactar el bloque de opciones para que no deje aire */
+    #textoSeleccionado .form-check,
+    #textoSeleccionado .form-check-inline {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* un poco de separación solo entre opciones marcadas */
+    #textoSeleccionado .form-check-inline {
+        margin-right: 10px !important;
+    }
+
+    /* si en algún bloque queda aire extra por márgenes bootstrap */
+    #textoSeleccionado .mt-2,
+    #textoSeleccionado .mb-2 {
+        margin-top: 4px !important;
+        margin-bottom: 4px !important;
+    }
+
+    #textoSeleccionado hr {
+        margin: 4px 0 !important;
+    }
+    }
+
+}

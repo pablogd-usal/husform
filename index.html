@@ -273,7 +273,9 @@
                                             <input class="form-check-input" type="radio" name="diagnosticoTipo"
                                                 id="diagnosticoConfirmado" value="confirmado">
                                             <label class="form-check-label" for="diagnosticoConfirmado">
-                                                Diagnóstico confirmado (y observaciones)<br /><small>(Según OMS/ICC)</small>
+                                                Diagnóstico confirmado
+                                                <span class="diag-print-extra"> (y observaciones)</span>
+                                                <span class="diag-print-extra"><br /><small>(Según OMS/ICC)</small></span>
                                             </label>
                                         </div>
                                     </div>
@@ -283,7 +285,8 @@
                                             <input class="form-check-input" type="radio" name="diagnosticoTipo"
                                                 id="diagnosticoSospecha" value="sospecha">
                                             <label class="form-check-label" for="diagnosticoSospecha">
-                                                Diagnóstico de Sospecha (y observaciones)<br />
+                                                Diagnóstico de Sospecha
+                                                <span class="diag-print-extra"> (y observaciones)</span>
                                             </label>
                                         </div>
                                     </div>
@@ -292,9 +295,10 @@
 
                                 <!-- Contenedor donde aparecerán los 4 inputs -->
 
-                                <textarea class="form-control diagnosticoTexto" id="diagnosticoTexto"
-                                    oninput="actualizarVista(this, 'vistaDiagnostico')" rows="3"
-                                    placeholder="Especificar diagnóstico.."></textarea>
+                               <textarea class="form-control diagnosticoTexto" id="diagnosticoTexto"
+                                maxlength="350"
+                                oninput="actualizarVista(this, 'vistaDiagnostico')" rows="3"
+                                placeholder="Especificar diagnóstico (350 caracteres máx.)..."></textarea>
 
                                 <div id="vistaDiagnostico" class="vista-impresion"></div>
 
@@ -561,7 +565,7 @@
                                         <a class="dropdown-item" href="#"
                                             onclick="guardarOpcionEstudio('Leucemia de linfocitos grandes granulares', event)">Leucemia de linfocitos grandes granulares</a>
                                         <a class="dropdown-item" href="#"
-                                            onclick="guardarOpcionEstudio('Leucemia linfática crónica', event)">Leucemia linfática crónica</a>
+                                            onclick="guardarOpcionEstudio('Leucemia linfocítica crónica', event)">Leucemia linfocítica crónica</a>
                                         <a class="dropdown-item" href="#"
                                             onclick="guardarOpcionEstudio('Leucemia/Linfoma de Burkitt', event)">Leucemia/Linfoma de Burkitt</a>
                                         <a class="dropdown-item" href="#"
@@ -724,9 +728,10 @@
                                     <label for="justificacionOtrosEstudiosTexto" class="form-label">JUSTIFICACIÓN DE
                                         OTROS ESTUDIOS:</label>
                                     <textarea class="form-control justificacionEstudios"
-                                        id="justificacionOtrosEstudiosTexto"
-                                        oninput="actualizarVista(this, 'vistaJustificacion')" rows="2"
-                                        placeholder="Especificar justificación.."></textarea>
+                                    id="justificacionOtrosEstudiosTexto"
+                                    maxlength="450"
+                                    oninput="actualizarVista(this, 'vistaJustificacion')" rows="2"
+                                    placeholder="Especificar justificación (400 caracteres máx.)..."></textarea>
 
                                     <div id="vistaJustificacion" class="vista-impresion"></div>
 
@@ -776,6 +781,7 @@
                 <ul>
 
                     <li> En las muestras de MO se enviará un tubo de EDTA y un tubo de heparina (sódica o litio) </li>
+                    <li> En las muestras de SP se enviará un tubo de EDTA y en las que necesiten cariotipo también un tubo de heparina</li>
 
                 </ul>
 
@@ -813,14 +819,17 @@
     <script src="formulario.js"></script>
 
     <script>
-
         function actualizarVista(textarea, divId) {
+            // Si hay maxlength, lo respetamos y recortamos por seguridad
+            const max = parseInt(textarea.getAttribute('maxlength') || '0', 10);
+
+            if (max > 0 && textarea.value.length > max) {
+            textarea.value = textarea.value.slice(0, max);
+            }
 
             const vista = document.getElementById(divId);
-            vista.textContent = textarea.value;
-
+            if (vista) vista.textContent = textarea.value;
         }
-
     </script>
 
     <div id="codigoFormulario" class="textoCodigoFormulario">

@@ -1,5 +1,120 @@
 document.addEventListener('DOMContentLoaded', function() {
 
+    // ====== DUPLICAR IMPRESIÓN (2 COPIAS IGUALES) ======
+    (function () {
+        const WRAP_ID = 'printDupWrapper';
+
+        function buildCopiesForPrint() {
+            // Evitar duplicar si ya existe
+            if (document.getElementById(WRAP_ID)) return;
+
+            // 1) Creamos wrapper
+            const wrap = document.createElement('div');
+            wrap.id = WRAP_ID;
+
+            // 2) Creamos 2 "copias"
+            const copy1 = document.createElement('div');
+            copy1.className = 'print-copy';
+
+            const copy2 = document.createElement('div');
+            copy2.className = 'print-copy';
+
+            // 3) Clonamos todo lo imprimible del body (excepto scripts y el propio wrapper)
+            const bodyChildren = Array.from(document.body.children)
+            .filter(el => el.id !== WRAP_ID && el.tagName !== 'SCRIPT');
+
+            bodyChildren.forEach(el => {
+            copy1.appendChild(el.cloneNode(true));
+            copy2.appendChild(el.cloneNode(true));
+            });
+
+            wrap.appendChild(copy1);
+            wrap.appendChild(copy2);
+
+            // Insertamos el wrapper y activamos modo impresión duplicada
+            document.body.appendChild(wrap);
+            document.body.classList.add('print-dup-active');
+        }
+
+        function cleanupAfterPrint() {
+            document.body.classList.remove('print-dup-active');
+            const wrap = document.getElementById(WRAP_ID);
+            if (wrap) wrap.remove();
+        }
+
+        // Importante: beforeprint/afterprint funcionan bien en Chrome/Edge.
+        // Si el usuario imprime desde el diálogo, también se disparan.
+        window.addEventListener('beforeprint', buildCopiesForPrint);
+        window.addEventListener('afterprint', cleanupAfterPrint);
+    })();
+
+    function validarProtocolizadosAntesDeImprimir(selected) {
+    const LLA = "Leucemia linfoblástica aguda";
+    const LMA = "Leucemia mieloblástica aguda";
+
+    const hasLLA = selected.includes(LLA);
+    const hasLMA = selected.includes(LMA);
+
+    // Limpia errores previos
+    const old1 = document.getElementById('err-print-lla');
+    const old2 = document.getElementById('err-print-lma');
+    old1?.remove();
+    old2?.remove();
+
+    let ok = true;
+
+    // --- LLA: exige B/T ---
+    if (hasLLA) {
+        const subtipoHidden = (document.getElementById('subtipoLLASeleccionado')?.value || '').trim();
+        const subtipoChecked = document.querySelector('input[name="subtipoLLA"]:checked')?.value;
+
+        const subtipo = (subtipoChecked || subtipoHidden || '').trim();
+        const tieneSubtipo = (subtipo === 'B' || subtipo === 'T');
+
+
+        if (!tieneSubtipo) {
+        ok = false;
+
+        const msg = document.createElement('div');
+        msg.id = 'err-print-lla';
+        msg.className = 'error-msg';
+        msg.style.fontWeight = 'bold';
+        msg.style.textAlign = 'center';
+        msg.style.marginTop = '10px';
+        msg.textContent = 'Para imprimir: en LLA debes seleccionar subtipo (B o T).';
+
+        document.querySelector('.botones')?.appendChild(msg);
+
+        //enfocar la zona de detalles si existe
+        document.getElementById('textoSeleccionado')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    // --- LMA: exige rango de edad ---
+    if (hasLMA) {
+        const edadChecked = document.querySelector('input[name="lmaEdad"]:checked')?.value;
+
+        if (!edadChecked) {
+        ok = false;
+
+        const msg = document.createElement('div');
+        msg.id = 'err-print-lma';
+        msg.className = 'error-msg';
+        msg.style.fontWeight = 'bold';
+        msg.style.textAlign = 'center';
+        msg.style.marginTop = '6px';
+        msg.textContent = 'Para imprimir: en LMA debes seleccionar rango de edad (<75, 75–85 o >85).';
+
+        document.querySelector('.botones')?.appendChild(msg);
+
+        document.getElementById('textoSeleccionado')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    return ok;
+    }
+
+
     // Event listener para el botón de imprimir
     document.getElementById("imprimirBtn").addEventListener("click", function() {
 
@@ -46,29 +161,63 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Ventana emergente antes de imprimir
             alert(
-            "En las muestras de MO se enviará un tubo de EDTA y un tubo de heparina (sódica o litio)"
+            "En las muestras de MO se enviará un tubo de EDTA y un tubo de heparina (sódica o litio) \nEn las muestras de SP se enviará un tubo de EDTA y en las que necesiten cariotipo también un tubo de heparina"
             );
 
-            // cálculo de tamaño
-            const selected = Array.from(document.querySelectorAll('.colEstudiosProtocolizados .dropdown-item.selected'))
-            .map(x => x.textContent.trim());
+           // cálculo de tamaño
+            const selected = Array.from(
+            document.querySelectorAll('.colEstudiosProtocolizados .dropdown-item.selected')
+            ).map(x => x.textContent.trim());
 
-            const PESADOS = new Set([
-            "Leucemia mieloblástica aguda",
-            "Leucemia linfoblástica aguda"
-            ]);
+            if (!validarProtocolizadosAntesDeImprimir(selected)) {
+            return; // bloquea impresión
+            }
 
-            // score base por estudio + extra por pesados
-            let score = selected.length;
-            selected.forEach(n => { if (PESADOS.has(n)) score += 6; });
+            const LLA = "Leucemia linfoblástica aguda";
+            const LMA = "Leucemia mieloblástica aguda";
 
-            document.body.classList.toggle('print-compact', score >= 10);
-            document.body.classList.toggle('print-resumen', score >= 16);
+            const hasLLA = selected.includes(LLA);
+            const hasLMA = selected.includes(LMA);
+            const total = selected.length;
+            const otros = total - (hasLLA ? 1 : 0) - (hasLMA ? 1 : 0);
+
+            // Reglas para ocultar descripciones (print-resumen)
+            const resumen =
+            (hasLLA && hasLMA) ||                    // LLA + LMA juntos
+            ((hasLLA || hasLMA) && otros >= 2) ||    // LLA o LMA + 2 más
+            (!hasLLA && !hasLMA && total > 5);       // >5 sin LLA/LMA
+
+            // "Encarecer" el resto: cada estudio normal vale más que antes
+            // (esto solo afecta al modo compact, no al resumen, que ya va por reglas)
+            let score = 0;
+            selected.forEach(n => {
+            if (n === LLA || n === LMA) score += 8;  // pesados
+            else score += 3;                         // normales 
+            });
+
+            // Compact cuando hay "carga" pero no llegamos a resumen
+            const compact = !resumen && score >= 12;   // 4 normales (4*3=12) ya compacta
+
+            document.body.classList.toggle('print-compact', compact);
+            document.body.classList.toggle('print-resumen', resumen);
+
+            // --- Quitar espacios en blanco en impresión (LLA/LMA/etc.) ---
+            // Marcamos como "print-hide" los contenedores .form-check cuyo input NO está seleccionado
+            const checksToHide = [];
+            document.querySelectorAll('#textoSeleccionado .form-check').forEach(fc => {
+            const input = fc.querySelector('.form-check-input');
+            if (input && !input.checked) {
+                fc.classList.add('print-hide');
+                checksToHide.push(fc);
+            }
+            });
 
             window.print();
 
             //limpiar las clases
             document.body.classList.remove('print-compact', 'print-resumen');
+
+            checksToHide.forEach(fc => fc.classList.remove('print-hide'));
 
             // Restaurar los campos después de imprimir
             hemogramaOcultados.forEach(field => {
@@ -460,21 +609,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     filtrarProtocolizadosPorMomento(); // estado inicial
 
-
-
-    // Event listeners para los radio buttons de tipo de muestra
-    /*const tipoMuestraRadios = document.querySelectorAll('input[name="tipoMuestra"]');
-    tipoMuestraRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            const inputMuestraDiv = document.querySelector('.inputMuestra');
-            if (this.id === 'otrosTejidos' || this.id === 'liquido' || this.id === 'otrasMuestras') {
-                inputMuestraDiv.style.display = 'block';
-                document.getElementById('otrosInputMuestra').focus();
-            } else {
-                inputMuestraDiv.style.display = 'none';
-            }
-        });
-    });*/
     const checkboxOtras = document.getElementById('otrasMuestras');
     const inputMuestraDiv = document.querySelector('.inputMuestra');
     const otrosInput = document.getElementById('otrosInputMuestra');
@@ -1158,7 +1292,7 @@ function mostrarInformacionEstudio(estudio){
                         Cariotipo<br>
                         Se guarda ADN hasta concretar diagnóstico`;
 
-    } else if (estudio === "Leucemia linfática crónica") {
+    } else if (estudio === "Leucemia linfocítica crónica") {
         if (esRecaida) {
                 mensajeHTML = `<strong>Se realizará el estudio si cumple criterios de tratamiento</strong><br>
                                 <div class="form-check">
@@ -1172,7 +1306,7 @@ function mostrarInformacionEstudio(estudio){
                                 </div>`;
             } else {
                 mensajeHTML = `
-                    <strong>Información específica sobre Leucemia linfática crónica:</strong><br>
+                    <strong>Información específica sobre Leucemia linfocítica crónica:</strong><br>
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc1">
                         <label class="form-check-label" for="llc1">
@@ -1205,18 +1339,18 @@ function mostrarInformacionEstudio(estudio){
     } else if (estudio === "Linfoma B difuso de célula grande") {
 
         mensajeHTML = `<strong>Información específica sobre Linfoma B difuso de célula grande:</strong><br>
+                        FISH: BCL2, BCL6, MYC y TP53
+                        Cariotipo 
                         <div style="color: #666; font-size: 0.9em; margin-bottom: 10px;">
                             Nota 1: Solo se harán los estudios en tejidos que estén infiltrados por el linfoma (rogamos confirmar % de infiltración)<br>
                             Nota 2: No se repetirá el estudio de FISH si ya se ha realizado en otro tejido infiltrado de ese paciente, salvo excepción justificada
-                        </div>
-                        Cariotipo<br> 
-                        FISH: BCL2, BCL6, MYC y TP53`;
+                        </div>`;
 
     } else if (estudio === "Linfoma folicular") {
 
         mensajeHTML = `<strong>Información específica sobre Linfoma folicular:</strong><br>
                         <div style="color: #666; font-size: 0.9em; margin-bottom: 10px;">
-                            Nota: Se realizará en muestra/tejido con infiltración<br>
+                            Nota: Se realizará en muestra/tejido con infiltración
                         </div>
                         Cariotipo<br> 
                         FISH: t(14;18)`;
@@ -1308,7 +1442,7 @@ function mostrarInformacionEstudio(estudio){
         const boxT = div.querySelector('#llaContenidoT');
 
         function actualizar() {
-            const sel = div.querySelector('input[name="subtipoLLA"]:checked')?.value || 'Desconocido';
+            const sel = div.querySelector('input[name="subtipoLLA"]:checked')?.value || '';
             if (hidden) hidden.value = sel;
             // Mostrar sólo lo que toca
             boxB.style.display = sel === 'B' ? 'block' : 'none';
@@ -1349,7 +1483,7 @@ function mostrarInformacionEstudios(estudios) {
             if (esRecaida) {
                 // Versión para recaída/progresión 
                 mensajeHTML = `
-                    <strong>Información específica sobre Leucemia mieloblástica aguda – Seleccione rango de edad:</strong><br><br>
+                    <strong>Información específica sobre Leucemia mieloblástica aguda:</strong><br><br>
 
                     <div class="row mb-2">
                         <div class="col-6">
@@ -1572,22 +1706,30 @@ function mostrarInformacionEstudios(estudios) {
 
                 <!-- Contenido específico B -->
                 <div id="llaContenidoB" style="display:${showB ? 'block' : 'none'}">
-                Cariotipo<br>
-                B: Traslocaciones por FISH:
-                <ul>
-                    <li>t(9;22)</li>
-                    <li>KMT2A (MLL)</li>
-                    <li>t(1;19)</li>
-                    <li>t(12;21)</li>
-                    <li>qRT-PCR:
-                    <ul>
-                        <li>t(9;22) – BCR::ABL</li>
-                        <li>t(1;19) – TCF3::PBX1</li>
-                        <li>t(4;11) – KMT2A::AF4</li>
-                        <li>t(12;21) – ETV6::RUNX1</li><span style="font-size: 0.85em;">(solo en menores de 45 años)</span><br>
-                    </ul>
-                    </li>
-                </ul>
+                    <div class="row">
+                        <div class="col-6">
+                        Cariotipo<br>
+                        B: Traslocaciones por FISH:
+                        <ul>
+                            <li>t(9;22)</li>
+                            <li>KMT2A (MLL)</li>
+                            <li>t(1;19)</li>
+                            <li>t(12;21)</li>
+                        </div>
+                        <div class="col-6">
+                            <br>qRT-PCR:
+                            <ul>
+                                <li>t(9;22) – BCR::ABL</li>
+                                <li>t(4;11) – KMT2A::AF4</li>
+                                <li>t(1;19) – TCF3::PBX1</li>
+                                <div style="color: #666; font-size: 0.9em; margin-bottom: 10px;">
+                                <li>t(12;21) – ETV6::RUNX1</li><span style="font-size: 0.85em;">(solo en menores de 45 años)</span><br>
+                                </div>                       
+                            </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    </div>
                 </div>
 
                 <!-- Contenido específico T -->
@@ -1668,6 +1810,7 @@ function mostrarInformacionEstudios(estudios) {
             if (esRecaida) {
                     mensajeHTML = `
                     <strong>Información específica sobre Leucemia mieloide crónica:</strong><br>
+                    Cariotipo<br>
                         <div class="row">
                             <div class="col-6">
                                 qRT-PCR t(9;22) BCR::ABL
@@ -1708,14 +1851,22 @@ function mostrarInformacionEstudios(estudios) {
 
         } else if (estudio === "Aplasia medular") {
 
-        	mensajeHTML = `<strong>Información específica sobre Aplasia medular:</strong><br>
-                        Cariotipo en médula ósea<br>
-                        Fragilidad cromosómica en sangre periférica
-        		<div class="mt-2" style="font-size: 0.9rem;">
-            			<strong>Nota:</strong> El estudio de fragilidad cromosómica se realiza únicamente en días determinados.
-            			<br>
-            			<strong>Enviar la muestra exclusivamente los lunes o jueves.</strong>
-        		</div>`;
+        	 mensajeHTML = `
+                <strong>Información específica sobre Aplasia medular:</strong><br>
+                <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="aplasiaOpciones" id="aplasiaCariotipo">
+                <label class="form-check-label" for="aplasiaCariotipo">Cariotipo (médula ósea)</label>
+                </div>
+                <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="aplasiaOpciones" id="aplasiaFragilidad">
+                <label class="form-check-label" for="aplasiaFragilidad">Fragilidad cromosómica (sangre periférica)</label>
+                </div>
+                <div class="mt-2" style="color: #666; font-size: 0.9em;" style="font-size: 0.9rem;">
+                <strong>Nota:</strong> El estudio de fragilidad cromosómica se realiza únicamente en días determinados.
+                <br>
+                Enviar la muestra exclusivamente los lunes o jueves.
+                </div>
+            `;
 
 
         } else if (estudio === "Citopenias aisladas") {
@@ -1724,22 +1875,17 @@ function mostrarInformacionEstudios(estudios) {
                             Cariotipo<br>
                             Se guarda ADN hasta concretar diagnóstico`;
 
-        } else if (estudio === "Leucemia linfática crónica") {
+        } else if (estudio === "Leucemia linfocítica crónica") {
 
             if (esRecaida) {
-                    mensajeHTML =`<strong>Se realizará el estudio si cumple criterios de tratamiento.</strong><br>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc1">
-                                    <label class="form-check-label" for="llc1">Cariotipo<br> 
-                                    FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53)</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc2">
-                                    <label class="form-check-label" for="llc2">Mutaciones TP53</label>
-                                </div>`;
+                    mensajeHTML =`<strong>Información específica sobre Leucemia linfocítica crónica:</strong><br>
+                                <strong>Se realizará el estudio si cumple criterios de tratamiento.</strong><br>
+                                Cariotipo<br> 
+                                    FISH: C-12, 14q, 13q, 11q (ATM), 17p(TP53)<br> 
+                                    Mutaciones TP53</label>`;
                 } else {
                     mensajeHTML =`
-                        <strong>Información específica sobre Leucemia linfática crónica:</strong><br>
+                        <strong>Información específica sobre Leucemia linfocítica crónica:</strong><br>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="llcOpciones" id="llc1">
                             <label class="form-check-label" for="llc1">
@@ -1777,38 +1923,38 @@ function mostrarInformacionEstudios(estudios) {
                 mensajeHTML = `
                     <div>
                         <strong>Linfoma B difuso de célula grande:</strong><br>
-                        Se guardará ADN hasta confirmación de pruebas pertinentes
+                        Se guardará ADN hasta confirmación de pruebas pertinentes<br>
+                        Cariotipo
                     </div>
                 `;
             }else{
             mensajeHTML = `<strong>Información específica sobre Linfoma B difuso de célula grande:</strong><br>
-                            <div style="color: #666; font-size: 0.9em; margin-bottom: 10px;">
-                                Nota : Se realizará en muestra/tejido con infiltración<br>
-                            </div>
                             Cariotipo<br> 
-                            FISH: BCL2, BCL6, MYC y TP53`;
+                            FISH: BCL2, BCL6, MYC y TP53
+                            <div style="color: #666; font-size: 0.9em; margin-bottom: 10px;">
+                                Nota : Se realizará en muestra/tejido con infiltración
+                            </div>`;
             }
 
         } else if (estudio === "Linfoma folicular") {
             if(esRecaida){
-                mensajeHTML=`<strong>Información específica sobre Linfoma folicular:</strong><br>
-                    <div class="row">                  
-                        Se guardará ADN hasta confirmación de pruebas pertinentes<br>
-                    </div>`;
+                mensajeHTML=`<strong>Información específica sobre Linfoma folicular:</strong><br>                
+                            Se guardará ADN hasta confirmación de pruebas pertinentes<br>
+                            Cariotipo`;
             }else{
                 mensajeHTML = `<strong>Información específica sobre Linfoma folicular:</strong><br>
+                                Cariotipo<br> 
+                                FISH: t(14;18)
                                 <div style="color: #666; font-size: 0.9em; margin-bottom: 10px;">
                                     Nota 1: Solo se harán los estudios en tejidos que estén infiltrados por el linfoma (rogamos confirmar % de infiltración)<br>
                                     Nota 2: No se repetirá el estudio de FISH si ya se ha realizado en otro tejido infiltrado de ese paciente, salvo excepción justificada
-                                </div>
-                                Cariotipo<br> 
-                                FISH: t(14;18)`;
+                                </div>`;
             }
 
         } else if (estudio === "Linfoma de células del manto") {
             if(esRecaida){
                 mensajeHTML = `
-                    <strong>Información específica sobre Linfoma de células del manto:</strong><br><br>
+                    <strong>Información específica sobre Linfoma de células del manto:</strong>
 
                     <div class="row">
                         <div class="col-6">
@@ -1823,13 +1969,12 @@ function mostrarInformacionEstudios(estudios) {
                 `;
             }else{
                 mensajeHTML = `<strong>Información específica sobre Linfoma de células del manto:</strong><br>
-                                <div style="color: #666; font-size: 0.9em; margin-bottom: 10px;">
-                                    Nota: Se realizará en muestra/tejido con infiltración<br>
-                                </div>
                                 Cariotipo<br> 
                                 FISH: t(11;14) y del(17p)<br>
                                 Mutaciones de TP53
-                                `;
+                                <div style="color: #666; font-size: 0.9em; margin-bottom: 10px;">
+                                    Nota: Se realizará en muestra/tejido con infiltración
+                                </div>`;
             }
 
         } else if (estudio === "Mieloma Múltiple") {
