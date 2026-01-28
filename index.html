@@ -17,6 +17,8 @@
 
 <body>
 
+    <div id="printPage2">
+    
     <div class="container-fluid">
 
         <div class="row justify-content-center mt-5 mb-5">
@@ -252,13 +254,26 @@
 
                         <h4 class="tituloParte2 px-2 required-asterisk"> DATOS DE LA ENFERMEDAD Y DE LA MUESTRA </h4>
 
-                        <!-- FECHA EXTRACCIÓN -->
+                        <!-- FECHAS -->
 
-                        <div class="form-group d-flex align-items-center mx-sm-3 my-1 mx-1">
-                            <label for="fechaExtraccion" class="mb-0 mr-2 labelFechaExtraccion">FECHA
-                                DE PETICIÓN</label>
-                            <input type="date" class="form-control inputFechaExtraccion" id="fechaExtraccion"
-                                style="width:auto;">
+                        <div class="row mx-sm-3 my-1 mx-1" id="filaFechas">
+                        <!-- Fecha de petición (obligatoria) -->
+                        <div class="col-6 d-flex align-items-center">
+                            <label for="fechaPeticion" class="mb-0 mr-2 labelFechaPeticion label-obligatorio">
+                            FECHA DE PETICIÓN
+                            </label>
+                            <input type="date" class="form-control inputFechaPeticion" id="fechaPeticion" style="width:auto;">
+                            <div id="vistaFechaPeticion" class="vista-impresion"></div>
+                        </div>
+
+                        <!-- Fecha de extracción (opcional) -->
+                        <div class="col-6 d-flex align-items-center" id="bloqueFechaExtraccion">
+                            <label for="fechaExtraccion" class="mb-0 mr-2 labelFechaExtraccion">
+                            FECHA DE EXTRACCIÓN
+                            </label>
+                            <input type="date" class="form-control inputFechaExtraccion" id="fechaExtraccion" style="width:auto;">
+                            <div id="vistaFechaExtraccion" class="vista-impresion"></div>
+                        </div>
                         </div>
 
                         <!-- DIAGNOSTICOS -->
@@ -386,10 +401,14 @@
 
                                 </div>
 
+                                <!-- Cuadro de Marcador molecular de seguimiento (oculto por defecto) -->
                                 <div id="emrMarker" class="emrMarker" style="display: none;">
 
-                                    <input type="text" class="form-control inputEmr" id="marcadorMolecular"
-                                        placeholder="Marcador molecular de seguimiento..">
+                                <div class="emr-note no-print">
+                                    Marcador molecular de seguimiento
+                                </div>
+
+                                <input type="text" class="form-control inputEmr" id="marcadorMolecular" placeholder="">
 
                                 </div>
 
@@ -517,7 +536,6 @@
                                 </div>
                             </div>
                         </div>
-
 
                         <h4 class="tituloParte3 required-asterisk"> SOLICITUD DE ESTUDIOS </h4>
 
@@ -700,12 +718,12 @@
                                     <label class="form-check-label" for="quimerismo">Quimerismo</label>
                                 </div>
 
-				<div class="form-check">
-  				    <input class="form-check-input" type="checkbox" name="otrosEstudios" id="sf3b1">
-  				    <label class="form-check-label" for="sf3b1">
-    					<em>SF3B1</em>
-  				    </label>
-				</div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="otrosEstudios" id="sf3b1">
+                                    <label class="form-check-label" for="sf3b1">
+                                        <em>SF3B1</em>
+                                    </label>
+                                </div>
 
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="otrosEstudiosOtros" name="otrosEstudios">
@@ -718,10 +736,10 @@
                                     clínica adecuada
                                 </div>
 
-				<div id="notaOGM"
-  				  style="display: none; color: #666; font-size: 0.9em; margin-top: 5px; margin-left: 20px;">
-  				  Nota: Se requiere un tubo exclusivo de EDTA para este estudio.
-				</div>
+                                <div id="notaOGM"
+                                style="display: none; color: #666; font-size: 0.9em; margin-top: 5px; margin-left: 20px;">
+                                Nota: Se requiere un tubo exclusivo de EDTA para este estudio.
+                                </div>
 
                                 <div id="justificacionOtrosEstudios" style="display: none;">
 
@@ -798,7 +816,6 @@
                 <ul>
                     <li> La información registrada en el formulario online no quedará almacenada en el sistema de
                         solicitud </li> 
-                    <li>Las ampliaciones de estudios se solicitarán por email</li> 
                     <li> No se realizarán estudios en MO no infiltrada (rogamos confirmar infiltración) </li>
                     <li> Mails de contacto: hematólogos (citogenbm@saludcastillayleon.onmicrosoft.com), administrativo (rgarciaeg.ibsal@saludcastillayleon.es) </li>                 
                 </ul>
@@ -806,7 +823,7 @@
             </div>
 
         </div>
-
+        
     </div>
 
     <!-- LOGO JUNTA CASTILLA Y LEÓN – SOLO IMPRESIÓN -->
@@ -835,6 +852,11 @@
     <div id="codigoFormulario" class="textoCodigoFormulario">
         FORM-PRE-BM-01_01
     </div>
+
+    <div id="codigoFormularioPrint" class="codigoFormularioPrint solo-impresion">
+        FORM-PRE-BM-01_01
+    </div>
+    </div><!-- /printPage2 -->
 </body>
 
 </html>

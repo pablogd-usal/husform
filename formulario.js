@@ -1,9 +1,28 @@
+/**
+ * formulario.js
+ * -------------------------------------------------------------------------
+ * Lógica del formulario: UI dinámica, estudios protocolizados, validaciones
+ * e impresión (incluye duplicado a 2 copias mediante beforeprint/afterprint).
+ *
+ * NOTA PARA MANTENIMIENTO
+ * - Muchos elementos se imprimen usando "vistas espejo" (.vista-impresion).
+ * - El CSS de impresión depende de las clases en <body>: print-compact / print-resumen
+ *   y de la infraestructura #printDupWrapper cuando se imprime 2 veces.
+ * - Las funciones usadas desde el HTML (onclick="...") deben seguir existiendo
+ *   en el scope global.
+ */
+
 document.addEventListener('DOMContentLoaded', function() {
 
     // ====== DUPLICAR IMPRESIÓN (2 COPIAS IGUALES) ======
     (function () {
         const WRAP_ID = 'printDupWrapper';
 
+        /**
+         * buildCopiesForPrint()
+         * Crea el contenedor #printDupWrapper con 2 copias del <body> (sin <script>).
+         * Se activa en el evento beforeprint para soportar "Imprimir dos veces".
+         */
         function buildCopiesForPrint() {
             // Evitar duplicar si ya existe
             if (document.getElementById(WRAP_ID)) return;
@@ -36,6 +55,11 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.classList.add('print-dup-active');
         }
 
+        /**
+         * cleanupAfterPrint()
+         * Limpia el contenedor #printDupWrapper y restaura el <body> tras la impresión.
+         * Se ejecuta en el evento afterprint.
+         */
         function cleanupAfterPrint() {
             document.body.classList.remove('print-dup-active');
             const wrap = document.getElementById(WRAP_ID);
@@ -48,6 +72,13 @@ document.addEventListener('DOMContentLoaded', function() {
         window.addEventListener('afterprint', cleanupAfterPrint);
     })();
 
+    /**
+     * validarProtocolizadosAntesDeImprimir(selectedEstudios)
+     * Validación extra antes de imprimir:
+     *  - Si está LLA: obliga a seleccionar subtipo B/T (radio o hidden).
+     *  - Si está LMA: obliga a seleccionar rango de edad.
+     * Devuelve true si todo está OK, false si debe bloquear la impresión.
+     */
     function validarProtocolizadosAntesDeImprimir(selected) {
     const LLA = "Leucemia linfoblástica aguda";
     const LMA = "Leucemia mieloblástica aguda";
@@ -212,7 +243,28 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             });
 
+            const bloqueFechaExtr = document.getElementById('bloqueFechaExtraccion');
+            const inpFechaExtr = document.getElementById('fechaExtraccion');
+            const vistaFechaExtr = document.getElementById('vistaFechaExtraccion');
+
+            // refrescar vistas justo antes de imprimir
+            const inpFechaPet = document.getElementById('fechaPeticion');
+            const vistaFechaPet = document.getElementById('vistaFechaPeticion');
+            if (inpFechaPet && vistaFechaPet) vistaFechaPet.textContent = formatFechaES(inpFechaPet.value);
+            if (inpFechaExtr && vistaFechaExtr) vistaFechaExtr.textContent = formatFechaES(inpFechaExtr.value);
+
+            let ocultoFechaExtr = false;
+            if (bloqueFechaExtr && inpFechaExtr && !inpFechaExtr.value) {
+                bloqueFechaExtr.classList.add('print-hide');
+                ocultoFechaExtr = true;
+            }
+
             window.print();
+
+            // ... después de imprimir, restaurar
+            if (ocultoFechaExtr && bloqueFechaExtr) {
+                bloqueFechaExtr.classList.remove('print-hide');
+            }
 
             //limpiar las clases
             document.body.classList.remove('print-compact', 'print-resumen');
@@ -268,14 +320,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
         let indiceActivo = -1;
 
+        /**
+         * limpiarActivo(items)
+         * Quita la clase de "activo" (navegación con teclado) de los items visibles del listado.
+         */
         function limpiarActivo() {
             obtenerItems().forEach(it => it.classList.remove('active-estudio'));
         }
 
+        /**
+         * obtenerVisibles(items)
+         * Devuelve el array de items de estudio actualmente visibles (no filtrados).
+         */
         function obtenerVisibles() {
             return Array.from(obtenerItems()).filter(it => it.style.display !== 'none');
         }
 
+        /**
+         * marcarActivo(items, index)
+         * Marca como activo (highlight) el item visible indicado por index.
+         * Se usa para navegación con flechas ↑/↓ en el buscador de estudios.
+         */
         function marcarActivo(index) {
             limpiarActivo();
             const visibles = obtenerVisibles();
@@ -290,6 +355,11 @@ document.addEventListener('DOMContentLoaded', function() {
             visibles[indiceActivo].scrollIntoView({ block: 'nearest' });
         }
 
+    /**
+     * aplicarFiltro(texto)
+     * Filtra el listado de estudios del panel (dropdown convertido a panel fijo)
+     * en base al texto del buscador (sin tildes, minúsculas).
+     */
     function aplicarFiltro() {
         const filtro = normalizar(buscador.value.trim());
         const items = obtenerItems();
@@ -370,7 +440,7 @@ document.addEventListener('DOMContentLoaded', function() {
         sync();
     }
 
-    const inpHosp = document.getElementById('hospital');
+    const inpHosp = document.getElementById('5');
     const vistaHosp = document.getElementById('vistaHospital');
     if (inpHosp && vistaHosp) {
         const sync = () => { vistaHosp.textContent = inpHosp.value || ""; };
@@ -393,6 +463,25 @@ document.addEventListener('DOMContentLoaded', function() {
         inpTel.addEventListener('input', sync);
         sync();
     }
+
+    const inpFechaPeticion = document.getElementById('fechaPeticion');
+    const vistaFechaPeticion = document.getElementById('vistaFechaPeticion');
+    if (inpFechaPeticion && vistaFechaPeticion) {
+        const sync = () => { vistaFechaPeticion.textContent = formatFechaES(inpFechaPeticion.value); };
+        inpFechaPeticion.addEventListener('change', sync);
+        inpFechaPeticion.addEventListener('input', sync);
+        sync();
+    }
+
+    const inpFechaExtraccion = document.getElementById('fechaExtraccion');
+    const vistaFechaExtraccion = document.getElementById('vistaFechaExtraccion');
+    if (inpFechaExtraccion && vistaFechaExtraccion) {
+        const sync = () => { vistaFechaExtraccion.textContent = formatFechaES(inpFechaExtraccion.value); };
+        inpFechaExtraccion.addEventListener('change', sync);
+        inpFechaExtraccion.addEventListener('input', sync);
+        sync();
+    }
+
 
     // Event listeners para los checkboxes de sexo
     // document.getElementById("checkboxMasculino").addEventListener("change", actualizarSexoSeleccionado);
@@ -458,6 +547,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // mostrar/ocultar estudios protocolizados según momento evolutivo
+    /**
+     * actualizarVisibilidadProtocolizados()
+     * Muestra/oculta la sección de estudios protocolizados según el momento evolutivo.
+     * Solo permite mostrarla en Diagnóstico o Recaída/Progresión.
+     */
     function actualizarVisibilidadProtocolizados() {
         const seleccionado = document.querySelector('input[name="momentoEvolutivo"]:checked')?.id || '';
         const permite = (seleccionado === 'diagnostico' || seleccionado === 'recaidaProgresion');
@@ -511,6 +605,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     }
 
+    /**
+     * filtrarProtocolizadosPorMomento()
+     * En modo Recaída, oculta/deshabilita estudios que no aplican.
+     * Si alguno estaba seleccionado, lo deselecciona y actualiza estado.
+     */
     function filtrarProtocolizadosPorMomento() {
         const momentoId = document.querySelector('input[name="momentoEvolutivo"]:checked')?.id || '';
         const esRecaida = (momentoId === 'recaidaProgresion');
@@ -571,6 +670,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    /**
+     * actualizarAsteriscoEstudios()
+     * Añade/actualiza el indicador visual de obligatoriedad (asterisco) en la sección
+     * de estudios protocolizados según el estado actual.
+     */
     function actualizarAsteriscoEstudios() {
         const momento = document.querySelector('input[name="momentoEvolutivo"]:checked')?.id;
         const tituloEstudios = document.querySelector('.tituloParte3');
@@ -639,6 +743,11 @@ document.addEventListener('DOMContentLoaded', function() {
         checkboxesMuestra = document.querySelectorAll('input[type="checkbox"][name="tipoMuestra"]');
     }
 
+    /**
+     * actualizarInfiltracion()
+     * Controla si debe mostrarse el bloque de infiltración (SP/MO/Ganglio)
+     * y sincroniza el valor con la vista de impresión.
+     */
     function actualizarInfiltracion() {
         const seleccionadas = Array.from(checkboxesMuestra)
             .filter(ch => ch.checked)
@@ -757,6 +866,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const bloqueSubtipo = document.getElementById('subtipoLLA');
 
     if (checkboxLLA && bloqueSubtipo) {
+        /**
+         * actualizarSubtipoLLA()
+         * Sincroniza el subtipo de LLA (B/T) con el hidden #subtipoLLASeleccionado
+         * para que siempre se imprima aunque se oculte la descripción.
+         */
         function actualizarSubtipoLLA() {
         bloqueSubtipo.style.display = checkboxLLA.checked ? 'block' : 'none';
         if (!checkboxLLA.checked) {
@@ -778,6 +892,11 @@ document.addEventListener('DOMContentLoaded', function() {
 // Variables para almacenar errores y evitar duplicados
 let errorDiagnostico, errorMedico, errorEmail, errorTelefono, errorHospital, errorTratamiento, errorInput, errorEnsayo, errorTipoMuestra, errorSospechaDiagnostico, errorLabDecision;
 
+/**
+ * guardarMomentoEvolutivo()
+ * Guarda el momento evolutivo seleccionado (incluyendo casos especiales
+ * como Postrasplante con días o EMR con marcador) y actualiza vistas.
+ */
 function guardarMomentoEvolutivo() {
   const momentoEvolutivoElement = document.querySelector('input[name="momentoEvolutivo"]:checked');
   let momentoEvolutivo = momentoEvolutivoElement ? momentoEvolutivoElement.id : 'No seleccionado';
@@ -803,6 +922,10 @@ function guardarMomentoEvolutivo() {
 }
 
 
+/**
+ * mostrarCampoTextoMomento()
+ * Muestra el campo de texto para "Otros" en momento evolutivo y marca required.
+ */
 function mostrarCampoTextoMomento() {
     const momentoEvolutivoElement = document.querySelector('input[name="momentoEvolutivo"]:checked');
     const otrosInputDiv = document.querySelector('.otrosInput');
@@ -815,6 +938,11 @@ function mostrarCampoTextoMomento() {
     }
 }
 
+/**
+ * guardarTipoMuestra()
+ * Guarda el tipo de muestra seleccionado, gestiona "Otras muestras"
+ * y actualiza las vistas de impresión relacionadas.
+ */
 function guardarTipoMuestra() {
     const tipoMuestraElement = document.querySelector('input[name="tipoMuestra"]:checked');
     let tipoMuestra = tipoMuestraElement ? tipoMuestraElement.id : 'No seleccionado';
@@ -830,6 +958,10 @@ function guardarTipoMuestra() {
     console.log("Tipo de Muestra Guardado:", tipoMuestra);
 }
 
+/**
+ * mostrarCampoTexto()
+ * Muestra el input de "Otras muestras" y aplica required.
+ */
 function mostrarCampoTexto() {
     const tipoMuestraElement = document.querySelector('input[name="tipoMuestra"]:checked');
     const inputMuestraDiv = document.querySelector('.inputMuestra');
@@ -842,10 +974,22 @@ function mostrarCampoTexto() {
     }
 }
 
+/**
+ * ocultarCampoTexto()
+ * Oculta el input de "Otras muestras", limpia valor y required.
+ */
 function ocultarCampoTexto() {
     document.querySelector('.inputMuestra').style.display = 'none';
 }
 
+/**
+ * guardarOpcionEstudio(opcion, event)
+ * Toggle de selección de un estudio protocolizado.
+ * Actualiza:
+ *  - #estudiosSeleccionados (hidden, CSV)
+ *  - resumen de seleccionados
+ *  - panel #textoSeleccionado (detalles)
+ */
 function guardarOpcionEstudio(opcion, event) {
     event.preventDefault();
     const dropdownItems = document.querySelectorAll('.dropdown-menu .dropdown-item');
@@ -909,6 +1053,11 @@ function guardarOpcionEstudio(opcion, event) {
 }
 
 //Cursiva automática de genes
+/**
+ * italicizeGenes(html)
+ * Aplica cursiva (<em>) a genes/marcadores definidos (p.ej. RUNX1, NPM1, etc.)
+ * evitando doble-italics y protegiendo lo ya envuelto en <em>.
+ */
 function italicizeGenes(html) {
   // Lista de genes/marcadores que aparecen en tus textos
   const GENES = [
@@ -942,6 +1091,11 @@ function italicizeGenes(html) {
   return html;
 }
 
+/**
+ * mostrarInformacionEstudio(estudio)
+ * Renderiza la descripción/detalle de UN estudio en #textoSeleccionado.
+ * Nota: el flujo principal suele usar mostrarInformacionEstudios([...]).
+ */
 function mostrarInformacionEstudio(estudio){
     const textoSeleccionado = document.getElementById('textoSeleccionado');
     textoSeleccionado.innerHTML = ''; // Limpiar contenido anterior
@@ -1454,6 +1608,12 @@ function mostrarInformacionEstudio(estudio){
     }
 }
 // mostrarInformacionEstudios(estudios)
+/**
+ * mostrarInformacionEstudios(estudiosSeleccionados)
+ * Renderiza el panel de detalle (#textoSeleccionado) en base a la lista de estudios
+ * seleccionados. Implementa subopciones (LLA/LMA/LLC/...) y conserva estado
+ * de checkboxes/radios al re-renderizar.
+ */
 function mostrarInformacionEstudios(estudios) {
     const textoSeleccionado = document.getElementById('textoSeleccionado');
 
@@ -2076,6 +2236,10 @@ function mostrarInformacionEstudios(estudios) {
                 nota.style.display = 'none'; // Inicialmente oculta
             }
 
+            /**
+             * actualizarNota(checkboxId, notaId)
+             * Muestra/oculta una nota asociada a un checkbox (p.ej. exon12, OGM).
+             */
             function actualizarNota() {
                 if (nota) {
                     const mostrar = (checkbox2 && checkbox2.checked) || 
@@ -2110,6 +2274,11 @@ const radioConfirmado = document.getElementById('diagnosticoConfirmado');
 const radioSospecha = document.getElementById('diagnosticoSospecha');
 const contenedorInputs = document.getElementById('inputsDiagnostico');
 
+/**
+ * mostrarInputs()
+ * Controla la visibilidad de ciertos inputs condicionales según selección.
+ * (Se usa como función genérica en algunos bloques de estudios).
+ */
 function mostrarInputs() {
 
     if (radioSospecha.checked || radioConfirmado.checked) {
@@ -2148,12 +2317,22 @@ function mostrarInputs() {
 radioConfirmado.addEventListener('change', mostrarInputs);
 radioSospecha.addEventListener('change', mostrarInputs);
 
+/**
+ * guardarOpcion(opcion, tipo, event)
+ * Guardado genérico de opciones de dropdown (p.ej. "Candidato intensivo").
+ * Actualiza texto del botón y el hidden correspondiente.
+ */
 function guardarOpcion(opcion, event) {
     event.preventDefault();
     document.getElementById('tratamientoSeleccionado').value = opcion;
     document.getElementById('tratamiento').textContent = 'CANDIDATO A TRATAMIENTO INTENSIVO: ' + opcion;
 }
 
+/**
+ * guardarOpcionEnsayo(opcion, event)
+ * Guarda la selección del dropdown "Ensayo clínico".
+ * Si opción = Sí, muestra el campo de detalle y lo hace required según lógica.
+ */
 function guardarOpcionEnsayo(opcion, event) {
     event.preventDefault();
     document.getElementById('ensayoSeleccionado').value = opcion;
@@ -2170,24 +2349,6 @@ function guardarOpcionEnsayo(opcion, event) {
         if (ensayoInput) ensayoInput.value = '';   // limpiar texto
     }
 }
-
-
-function guardarMomentoEvolutivo() {
-    document.getElementById('errorMensaje').style.display = 'none';
-}
-
-function guardarTipoMuestra() {
-    document.getElementById('errorMensajeMuestra').style.display = 'none';
-}
-
-function mostrarCampoTexto() {
-    document.querySelector('.inputMuestra').style.display = 'block';
-}
-
-function mostrarCampoTextoMomento() {
-    document.querySelector('.otrosInput').style.display = 'block';
-}
-
 // Función para actualizar el contenido al imprimir
 // function actualizarSexoSeleccionado() {
 //     const masculino = document.getElementById("checkboxMasculino").checked;
@@ -2211,6 +2372,10 @@ function mostrarCampoTextoMomento() {
 //     }
 // }
 
+/**
+ * mostrarCampoTextoEMR()
+ * Muestra el campo de texto del marcador molecular (EMR/seguimiento) y lo marca required.
+ */
 function mostrarCampoTextoEMR() {
     const emrMarkerDiv = document.getElementById('emrMarker');
     // Validación general
@@ -2225,10 +2390,19 @@ function mostrarCampoTextoEMR() {
 }
 
 // Gestión de errores (antiduplicados)
+/**
+ * clearErrors()
+ * Elimina mensajes de error generados dinámicamente (.error-msg).
+ */
 function clearErrors() {
   document.querySelectorAll('.error-msg').forEach(n => n.remove());
 }
 
+/**
+ * getOrCreateError(id, anchorEl)
+ * Crea (o reutiliza) un <span class="error-msg"> con ID fijo junto a anchorEl.
+ * Evita duplicar errores en cada validación.
+ */
 function getOrCreateError(id, anchorEl) {
   let el = document.getElementById(id);
   if (!el) {
@@ -2243,11 +2417,25 @@ function getOrCreateError(id, anchorEl) {
   return el;
 }
 
+/**
+ * removeError(id)
+ * Elimina el error por ID si existe.
+ */
 function removeError(id) {
   const el = document.getElementById(id);
   if (el) el.remove();
 }
 
+/**
+ * validarFormulario()
+ * Validación principal previa a impresión:
+ * - Campos obligatorios del paciente/solicitante
+ * - Diagnóstico (radio + texto)
+ * - Momento evolutivo (y subcampos: EMR/PostTx/Otros)
+ * - Tipo de muestra (y texto de "otras")
+ * - Ensayo clínico (y detalle si aplica)
+ * Devuelve true/false.
+ */
 function validarFormulario() {
     clearErrors();      // limpia todo antes de validar
 
@@ -2308,16 +2496,19 @@ function validarFormulario() {
         document.getElementById("hospital").parentElement.appendChild(errorHospital);
     }
 
-    // VALIDAR FECHA DE EXTRACCIÓN
-    const fecha = document.getElementById("fechaExtraccion").value;
-    if (!fecha) {
-        const anchor = document.getElementById("fechaExtraccion").parentElement; // mismo lugar
-        const err = getOrCreateError('err-fecha', anchor);
-        err.textContent = "La fecha de extracción es obligatoria";
-        formularioValido = false;
+    // VALIDAR FECHA DE PETICIÓN (obligatoria)
+    const inpFechaPeticion = document.getElementById("fechaPeticion");
+    const fechaPeticion = inpFechaPeticion ? inpFechaPeticion.value : "";
+    if (!fechaPeticion) {
+    const anchor = inpFechaPeticion ? inpFechaPeticion.parentElement : document.body;
+    const err = getOrCreateError('err-fecha', anchor);
+    err.textContent = "La fecha de petición es obligatoria";
+    formularioValido = false;
     } else {
-        removeError('err-fecha');
+    removeError('err-fecha');
     }
+
+    // FECHA DE EXTRACCIÓN: opcional (no valida)
 
 
 
@@ -2579,6 +2770,11 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Función para actualizar la nota del síndrome mielodisplásico
+/**
+ * actualizarNotaMielodisplasico()
+ * Muestra/oculta la nota específica del síndrome mielodisplásico
+ * en función de las opciones marcadas.
+ */
 function actualizarNotaMielodisplasico() {
     const checkbox2 = document.getElementById('sindromeMielodisplasico2');
     const checkbox4 = document.getElementById('sindromeMielodisplasico4');
@@ -2608,6 +2804,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const labRechazo = document.getElementById('labRechazo');
 
     if (labAcepto && labRechazo) {
+        /**
+         * hacerExclusivos(ids)
+         * Convierte una lista de checkboxes en "exclusivos" (comportamiento radio):
+         * al marcar uno, desmarca el resto.
+         */
         function hacerExclusivos(origen, otro) {
             if (origen.checked) {
                 otro.checked = false;
@@ -2618,3 +2819,15 @@ document.addEventListener('DOMContentLoaded', function () {
         labRechazo.addEventListener('change', () => hacerExclusivos(labRechazo, labAcepto));
     }
 });
+
+function formatFechaES(isoDate) {
+  if (!isoDate) return "";
+  const parts = String(isoDate).split("-");
+  if (parts.length !== 3) return String(isoDate);
+  const [y, m, d] = parts;
+  return `${d}/${m}/${y}`;
+}
+
+
+
+// --- FIN: formulario.js (limpiado) ---
