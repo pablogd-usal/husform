@@ -1,11 +1,21 @@
-/* MÁRGENES DE IMPRESIÓN */
-@page {
-    size: A4;
-    margin: 5mm !important;
-}
+/* formulario.print.css
+ * -------------------------------------------------------------------------
+ * Estilos de IMPRESIÓN (A4).
+ * - Hace el "swap" entre inputs y .vista-impresion.
+ * - Oculta elementos de UI y deja únicamente lo seleccionado.
+ * - Soporta impresión a 2 copias mediante #printDupWrapper + body.print-dup-active.
+ */
 
+/* MÁRGENES DE IMPRESIÓN */
 /* Ajuste global del body y contenedores para respetar el margen */
 @media print {
+
+    /* Evitar duplicidad del código de formulario:
+    - En pantalla se muestra #codigoFormulario (CSS de pantalla).
+    - En impresión se usa body::after como sello en esquina. */
+    #codigoFormulario { display: none !important; }
+
+
     body {
         margin: 0 !important;
         padding: 0 !important;
@@ -119,19 +129,24 @@
     }*/
 
     @media print {
-      .headerImg {
-          max-width: 70% !important;
-          margin: 0 auto 10px auto !important;
-      }
+        .headerImg {
+            max-width: 70% !important;
+            margin: 0 auto 10px auto !important;
+        }
     }
 
     @media print {
-      .tituloFormularioPeticion {
-          font-size: 1rem;
-          text-align: center;
-          margin-top: 4px;
-          margin-bottom: 8px;
-      }
+        .tituloFormularioPeticion {
+            font-size: 1rem;
+            text-align: center;
+            margin-top: 4px;
+            margin-bottom: 8px;
+        }
+    }
+
+    /* No imprimir nota EMR/Seguimiento */
+    @media print {
+        .no-print { display: none !important; }
     }
 
 
@@ -157,21 +172,26 @@
     .inputEmr,
     .inputEnsayoClinico,
     .inputInfiltracion,
-    .notasFinales,
     .inputMuestra,
     .otrosInput,
     #emrMarker {
         font-size: .9rem;
     }
+
+    .notasFinales {
+        font-size: .65rem;
+    }
+
     /* Override for specific larger fonts */
     .seleccionarEstudio {
         font-size: 14px;
     }
 
-     .tituloFormulario {
-      font-size: 0.8rem !important;
-      line-height: 1.2 !important;
-      }
+    .tituloFormulario {
+        font-size: 0.8rem !important;
+        line-height: 1.2 !important;
+    }
+
     .tituloParte0,
     .tituloParte1,
     .tituloParte2,
@@ -179,6 +199,7 @@
         font-size: 0.85rem;
         padding: .4vw .7vw 2px 4px;
     }
+
     .h4otrosEstudios {
         font-size: 20px;
         margin-left: -10px;
@@ -189,65 +210,82 @@
     #sexoSeleccionado { margin-top: -5px; }
     
     .labelFechaExtraccion { margin-top: 10px; }
+    .labelFechaPeticion { margin-top: 10px; }
     
     .pDiagnostico,
     .pSospechaDiagnostico {
         display: block;
         margin-top: -20px;
     }
+
     .inputDiagnostico {
         margin-top: -46px;
         margin-left: 80px;
     }
+
     .inputSospechaDiagnostico {
         margin-top: -46px;
         margin-left: 155px;
     }
+
     .labelMomentoEvolutivo {
         display: inline-block;
         margin-right: 10px;
     }
+
     .otrosInput {
         margin-left: 300px; /* This conflicts with the other .otrosInput definition; reconsider if both are needed */
         margin-top: 20px;
         width: 200px;
     }
+
     .form-check-inline {
         display: inline-block;
         margin-right: 10px;
     }
+
     .labelInfiltracion { display: block; }
+
     .estudios { margin-top: 10px; }
+
     .labelEstudios {
         display: block;
         margin-top: -20px;
     }
+
     .dividirlosEn4 {
         width: 150%;
         margin-left: 420px;
         margin-top: -135px;
     }
+
     .descripcion {
         margin-top: -10px;
         margin-left: -20px;
     }
+
     .colDerecha { margin-left: 500px; }
+
     .labelFechaExtraccion,
+    .labelFechaPeticion,
     .labelMomentoEvolutivo,
     .labelTipoMuestra,
     .pFechaExtraccion {
         display: block;
     }
+
     .otrosInput {
         margin-left: -5px;
         width: 200px;
         margin-top: -10px;
     }
+
     .pFechaExtraccion {
         margin-top: 20px;
         margin-bottom: 5px;
         page-break-inside: avoid;
     }
+    
     #diagnosticoTexto { margin-left: 4px; }
 
     .form-control {
@@ -374,29 +412,28 @@
 
     @media print {
 
-  /* Mostrar solo las opciones marcadas (radios y checkboxes) */
+        /* Mostrar solo las opciones marcadas (radios y checkboxes) */
 
-  /* Ocultar por completo inputs no seleccionados y sus etiquetas */
-  .form-check-input[type="radio"]:not(:checked),
-  .form-check-input[type="radio"]:not(:checked) + .form-check-label,
-  .form-check-input[type="checkbox"]:not(:checked),
-  .form-check-input[type="checkbox"]:not(:checked) + .form-check-label {
-    display: none !important;
-  }
+        /* Ocultar por completo inputs no seleccionados y sus etiquetas */
+        .form-check-input[type="radio"]:not(:checked),
+        .form-check-input[type="radio"]:not(:checked) + .form-check-label,
+        .form-check-input[type="checkbox"]:not(:checked),
+        .form-check-input[type="checkbox"]:not(:checked) + .form-check-label {
+            display: none !important;
+        }
 
-  /* Para los que SÍ están marcados: escondemos la cajita del input y dejamos solo el texto del label */
-  .form-check-input[type="radio"]:checked,
-  .form-check-input[type="checkbox"]:checked {
-    position: absolute !important;
-    opacity: 0 !important;
-    width: 0 !important;
-    height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: none !important;
-  }
-}
-
+        /* Para los que SÍ están marcados: escondemos la cajita del input y dejamos solo el texto del label */
+        .form-check-input[type="radio"]:checked,
+        .form-check-input[type="checkbox"]:checked {
+            position: absolute !important;
+            opacity: 0 !important;
+            width: 0 !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+        }
+    }
 
     .form-check-label {
         vertical-align: middle;
@@ -495,7 +532,6 @@
         }
     }
 
-
     @media print {
         /* Reducir un punto el tamaño de fuente en las secciones iniciales */
         .tituloParte0,
@@ -510,6 +546,7 @@
         .labelEmail,
         .labelTelefono,
         .labelFechaExtraccion,
+        .labelFechaPeticion,
         .labelMomentoEvolutivo,
         .labelTipoMuestra,
         .form-control.nombre,
@@ -523,7 +560,7 @@
         #otrosInputMuestra,
         #marcadorMolecular,
         .seleccionarCandidato,
-    .seleccionarEnsayo {
+        .seleccionarEnsayo {
             font-size: 0.85rem !important; /* antes 0.9rem */
             line-height: 1.1;
         }
@@ -544,7 +581,17 @@
         /* Forzar que "Solicitud de estudios" empiece en la segunda página */
         .tituloParte3 {
             page-break-before: always !important;
+            break-before: page !important; /* Estándar moderno */
+            display: block !important;
             margin-top: 0.5cm !important;
+        }
+
+        /* 2. FIX PARA FIREFOX: Rompemos el contexto flex en la fila y columna 
+           que contienen el título. Al pasarlo a display: block, Firefox respeta el salto. */
+        .row:has(.tituloParte3),
+        .row:has(.tituloParte3) > .col-12 {
+            display: block !important;
+            width: 100% !important;
         }
 
         /* Evita que su contenido se corte entre páginas */
@@ -566,387 +613,384 @@
 }
 
 @media print {
-  /* Mostrar los espejos y permitir salto de línea */
-  .vista-impresion {
-    display: block !important;
-    white-space: normal !important;     /* permite múltiples líneas */
-    word-wrap: break-word !important;
-    overflow-wrap: break-word !important;
-    line-height: 1.2;                   /* cabe mejor en 2 renglones */
-  }
+    /* Mostrar los espejos y permitir salto de línea */
+    .vista-impresion {
+        display: block !important;
+        white-space: normal !important;     /* permite múltiples líneas */
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        line-height: 1.2;                   /* cabe mejor en 2 renglones */
+    }
 
-  /* Ocultar el input en la hoja impresa */
-  .nombre { 
-    display: none !important;
-  }
+    /* Ocultar el input en la hoja impresa */
+    .nombre { 
+        display: none !important;
+    }
 }
 
 @media print {
-  .vista-impresion {
-    display: block !important;
-    white-space: normal !important;
-    word-wrap: break-word !important;
-    overflow-wrap: break-word !important;
-    line-height: 1.2;
-  }
+    .vista-impresion {
+        display: block !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        line-height: 1.2;
+    }
 
-  /* ocultar inputs en el volante impreso */
-  .inputMedico,
-  .inputHospital,
-  .inputEmail,
-  .inputTelefono {
-    display: none !important;
-  }
+    /* ocultar inputs en el volante impreso */
+    .inputMedico,
+    .inputHospital,
+    .inputEmail,
+    .inputTelefono {
+        display: none !important;
+    }
 }
 
 @media print {
 
-  /* Cada bloque ocupa todo el ancho de la página y se apilan */
-  .colEstudiosProtocolizados,
-  .colOtrosEstudios {
-    display: block !important;
-    float: none !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
+    /* Cada bloque ocupa todo el ancho de la página y se apilan */
+    .colEstudiosProtocolizados,
+    .colOtrosEstudios {
+        display: block !important;
+        float: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
 
-  /* Que otros estudios solo ocupe lo marcado */
-  .colOtrosEstudios .form-check {
-    margin: 0 !important;
-    padding: 0 !important;
-    min-height: 0 !important;  /* anula el min-height de bootstrap */
-  }
+    /* Que otros estudios solo ocupe lo marcado */
+    .colOtrosEstudios .form-check {
+        margin: 0 !important;
+        padding: 0 !important;
+        min-height: 0 !important;  /* anula el min-height de bootstrap */
+    }
 
-  /* Bloque superior: estudios prot. */
-  .colEstudiosProtocolizados {
-    border: 1px solid #000;
-    padding: 4px 6px;
-    margin-bottom: 0.4cm;
-  }
+    /* Bloque superior: estudios prot. */
+    .colEstudiosProtocolizados {
+        border: 1px solid #000;
+        padding: 4px 6px;
+        margin-bottom: 0.4cm;
+    }
 
-  #textoSeleccionado {
-    margin-top: 4px !important;
-    margin-bottom: 0 !important;
-  }
+    #textoSeleccionado {
+        margin-top: 4px !important;
+        margin-bottom: 0 !important;
+    }
 
-  /* Bloque inferior: Ootros estudios */
-  .colOtrosEstudios {
-    border: 1px solid #000;
-    padding: 4px 6px;
-    margin-top: 0.1cm;
-  }
+    /* Bloque inferior: Ootros estudios */
+    .colOtrosEstudios {
+        border: 1px solid #000;
+        padding: 4px 6px;
+        margin-top: 0.1cm;
+    }
 
-  .colOtrosEstudios .pOtrosEstudios {
-    margin-bottom: 4px;
-  }
+    .colOtrosEstudios .pOtrosEstudios {
+        margin-bottom: 4px;
+    }
 
-  .colOtrosEstudios .form-check {
-    margin-bottom: 0;         
-  }
+    .colOtrosEstudios .form-check {
+        margin-bottom: 0;         
+    }
 
-  .colOtrosEstudios .form-check label {
-    line-height: 1.1;
-  }
+    .colOtrosEstudios .form-check label {
+        line-height: 1.1;
+    }
 
-  #justificacionOtrosEstudios {
-    margin-top: 4px;
-  }
+    #justificacionOtrosEstudios {
+        margin-top: 4px;
+    }
 
-  #justificacionOtrosEstudiosTexto {
-    min-height: 40px !important;  
-    height: auto !important;
-    padding: 4px 6px;
-  }
+    #justificacionOtrosEstudiosTexto {
+        min-height: 40px !important;  
+        height: auto !important;
+        padding: 4px 6px;
+    }
 
-  #vistaJustificacion {
-    margin-top: 2px;
-  }
+    #vistaJustificacion {
+        margin-top: 2px;
+    }
 }
 
 
 @media print {
-  /* Reducir 3 puntos la letra y el interlineado en "Instrucciones y datos" */
-  .textito {
-    font-size: 12px !important;   /* antes 15px → baja 3 puntos */
-    line-height: 1.2 !important;  /* interlineado más compacto */
-    margin-top: 2mm;
-  }
+    /* Reducir 3 puntos la letra y el interlineado en "Instrucciones y datos" */
+    .textito {
+        font-size: 12px !important;   /* antes 15px → baja 3 puntos */
+        line-height: 1.2 !important;  /* interlineado más compacto */
+        margin-top: 2mm;
+    }
 
-  /* Ajustar también el texto dentro si lo hubiera */
-  .textito p,
-  .textito li,
-  .textito .estudio-item {
-    font-size: 12px !important;
-    line-height: 1.2 !important;
-  }
+    /* Ajustar también el texto dentro si lo hubiera */
+    .textito p,
+    .textito li,
+    .textito .estudio-item {
+        font-size: 12px !important;
+        line-height: 1.2 !important;
+    }
 }
 
 /*  Ajuste de márgenes globales para impresión */
 @page {
-  size: A4;
-  margin: 10mm 12mm 10mm 12mm;
+    size: A4;
+    /*margin: 10mm 12mm 10mm 12mm;*/
+    margin: 0; /* Ponerlo a 0 es el truco para que el navegador oculte la URL y fecha */
 }
 
 @media print {
-  /* Ajuste general del body */
-  body {
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  /* Contenedor principal del formulario */
-  .container,
-  .container-fluid,
-  .contenedor-principal {
-    margin: 0 !important;
-    padding: 4mm 6mm !important; 
-    width: 100% !important;
-  }
-
-  /* Elimina márgenes de filas y columnas */
-  .row {
-    margin-right: 0 !important;
-    margin-left: 0 !important;
-  }
-  [class*="col-"] {
-    padding-right: 4px !important;
-    padding-left: 4px !important;
-  }
-
-  @media print {
-  /* Hemograma en una sola línea al imprimir */
-  #inputsDiagnostico {
-    display: flex !important;
-    flex-wrap: nowrap !important;  
-    align-items: flex-end !important;
-    gap: 6pt !important;
-    page-break-inside: avoid !important;
-  }
-
-  #inputsDiagnostico .hemo-field {
-    display: flex !important;
-    flex-direction: column !important;
-    width: 80pt !important;         
-  }
-
-  #inputsDiagnostico .hemo-field label {
-    margin: 0 0 2pt 0 !important;
-    font-size: 9pt !important;
-    line-height: 1.1 !important;
-  }
-
-  /* Ocultar en la impresión los campos de hemograma vacíos */
-  #inputsDiagnostico .hemo-field.hemo-empty-print {
-      display: none !important;
-  }
-
-  #inputsDiagnostico .hemo-field input {
-    width: 100% !important;
-    text-align: center !important;
-    font-size: 9pt !important;
-    line-height: 1.1 !important;
-    padding: 2pt 4pt !important;
-  }
-
-  /* Plaquetas suele necesitar algo más de ancho */
-  #inputsDiagnostico #plaquetasValor {
-    width: 92% !important; /* dentro de su .hemo-field */
-  }
-}
-
-@media print {
-    /* Diagnóstico y justificación en recuadro, sin fondo azul */
-    #vistaDiagnostico,
-    #vistaJustificacion {
-        background-color: transparent !important;
-        border: 1px solid #000;
-        padding: 4px 6px;
-        margin-top: 6px;
-        margin-bottom: 8px;
-        border-radius: 3px;
-    }
-}
-
-  @media print {
-      /* Ocultar los mensajes de error */
-      .error-msg,
-      #errorGeneral,
-      #errorMensaje,
-      #errorMensajeMuestra,
-      #err-posttx,
-      #err-otros-muestra,
-      [id^="err-hemo-"] {
-          display: none !important;
-          visibility: hidden !important;
-          height: 0 !important;
-          margin: 0 !important;
-          padding: 0 !important;
-      }
-  }
-
-  @media print {
-
-    /* Mostrar input y texto de infiltración en una sola línea */
-    #bloqueInfiltracion {
-        display: none !important;
-        align-items: center !important;
-        gap: 10px !important;
-        visibility: hidden !important;
-    }
-
-    #bloqueInfiltracion .inputInfiltracion {
-        width: 60px !important;   /* tamaño compacto para que el texto quepa */
-        margin: 0 !important;
-    }
-
-    #bloqueInfiltracion label {
+    /* Ajuste general del body */
+    body {
         margin: 0 !important;
         padding: 0 !important;
-        white-space: nowrap !important; /* Evita que el texto salte de línea */
     }
-}
 
-@media print {
-    #codigoFormulario {
-        text-align: center;
-        font-size: 0.7rem;
-        margin-top: 20px;
-        color: #000;
-        width: 100%;
-        display: block;
-        padding-top: 5px;
+    /* Contenedor principal del formulario */
+    .container,
+    .container-fluid,
+    .contenedor-principal {
+        margin: 0 !important;
+        padding: 4mm 6mm !important; 
+        width: 100% !important;
     }
-}
 
-@media print {
-
-    #labAcepto,
-    #labRechazo {
-        transform: scale(0.8);
+    /* Elimina márgenes de filas y columnas */
+    .row {
+        margin-right: 0 !important;
+        margin-left: 0 !important;
     }
-}
-
-/* Bloques que solo existen en la hoja impresa */
-.solo-impresion {
-    display: block !important;
-}
-
-/* Acepto / Rechazo */
-.lab-opciones {
-    display: flex;
-    justify-content: flex-start;
-    gap: 40px;         
-    align-items: center;
-}
-
-.lab-opcion {
-    font-size: 0.9rem;
-    white-space: nowrap;
-}
-
-/* Espacio para anotaciones */
-.lab-notas-linea {
-    border-bottom: 1px solid #000;
-    height: 70px;
-    margin-top: 4px;
-}
-
-
-
-@media print {
-  #textoSeleccionado {
-    border: none !important;          
-    background: transparent !important;
-    padding: 0 !important;            
-    margin-top: 4px !important;
-    margin-bottom: 0 !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-  }
-}
-
-/* Quitar fondo azul en los datos del paciente y solicitante */
-@media print {
-    .vista-impresion {
-        background-color: transparent !important;
+    
+    [class*="col-"] {
+        padding-right: 4px !important;
+        padding-left: 4px !important;
     }
-}
 
-@media print {
+    @media print {
+        /* Hemograma en una sola línea al imprimir */
+        #inputsDiagnostico {
+            display: flex !important;
+            flex-wrap: nowrap !important;  
+            align-items: flex-end !important;
+            gap: 6pt !important;
+            page-break-inside: avoid !important;
+        }
 
-    #logoJuntaImpresion {
+        #inputsDiagnostico .hemo-field {
+            display: flex !important;
+            flex-direction: column !important;
+            width: 80pt !important;         
+        }
+
+        #inputsDiagnostico .hemo-field label {
+            margin: 0 0 2pt 0 !important;
+            font-size: 9pt !important;
+            line-height: 1.1 !important;
+        }
+
+        /* Ocultar en la impresión los campos de hemograma vacíos */
+        #inputsDiagnostico .hemo-field.hemo-empty-print {
+            display: none !important;
+        }
+
+        #inputsDiagnostico .hemo-field input {
+            width: 100% !important;
+            text-align: center !important;
+            font-size: 9pt !important;
+            line-height: 1.1 !important;
+            padding: 2pt 4pt !important;
+        }
+
+        /* Plaquetas suele necesitar algo más de ancho */
+        #inputsDiagnostico #plaquetasValor {
+            width: 92% !important; /* dentro de su .hemo-field */
+        }
+    }
+
+    @media print {
+        /* Diagnóstico y justificación en recuadro, sin fondo azul */
+        #vistaDiagnostico,
+        #vistaJustificacion {
+            background-color: transparent !important;
+            border: 1px solid #000;
+            padding: 4px 6px;
+            margin-top: 6px;
+            margin-bottom: 8px;
+            border-radius: 3px;
+        }
+    }
+
+    @media print {
+        /* Ocultar los mensajes de error */
+        .error-msg,
+        #errorGeneral,
+        #errorMensaje,
+        #errorMensajeMuestra,
+        #err-posttx,
+        #err-otros-muestra,
+        [id^="err-hemo-"] {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+    }
+
+    @media print {
+
+        /* Mostrar input y texto de infiltración en una sola línea */
+        #bloqueInfiltracion {
+            display: none !important;
+            align-items: center !important;
+            gap: 10px !important;
+            visibility: hidden !important;
+        }
+
+        #bloqueInfiltracion .inputInfiltracion {
+            width: 60px !important;   /* tamaño compacto para que el texto quepa */
+            margin: 0 !important;
+        }
+
+        #bloqueInfiltracion label {
+            margin: 0 !important;
+            padding: 0 !important;
+            white-space: nowrap !important; /* Evita que el texto salte de línea */
+        }
+    }
+
+    @media print {
+        #codigoFormulario {
+            text-align: center;
+            font-size: 0.7rem;
+            margin-top: 20px;
+            color: #000;
+            width: 100%;
+            display: block;
+            padding-top: 5px;
+        }
+    }
+
+    @media print {
+        #labAcepto,
+        #labRechazo {
+            transform: scale(0.8);
+        }
+    }
+
+    /* Bloques que solo existen en la hoja impresa */
+    .solo-impresion {
         display: block !important;
-        text-align: center;
-        margin-top: 20px;
-        page-break-inside: avoid;
     }
 
-    .logoJuntaImg {
-        width: 120px;       
-        height: auto;
-        margin: 0 auto;
-        display: block;
+    /* Acepto / Rechazo */
+    .lab-opciones {
+        display: flex;
+        justify-content: flex-start;
+        gap: 40px;         
+        align-items: center;
     }
-}
 
-@media print {
-  /* 'citogenética y biología molecular' centrado en la hoja de impresión */
-  .carta h4:first-of-type {
-      text-align: center !important;
-      font-weight: bold;
-      font-size: 1.3rem !important;
-      margin-top: 2px !important;
-      margin-bottom: 2px !important;
-  }
-}
+    .lab-opcion {
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
 
-  @media print {
+    /* Espacio para anotaciones */
+    .lab-notas-linea {
+        border-bottom: 1px solid #000;
+        height: 70px;
+        margin-top: 4px;
+    }
 
-      /* Igualar altura solo en la fila de datos inicial (paciente / solicitante) */
-      .row.mt-2.fila-datos-inicial {
-          display: flex !important;
-          align-items: stretch !important;
-          margin-bottom: 8px !important;  /* separación con el bloque de debajo */
-      }
+    @media print {
+        #textoSeleccionado {
+            border: none !important;          
+            background: transparent !important;
+            padding: 0 !important;            
+            margin-top: 4px !important;
+            margin-bottom: 0 !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+    }
 
-      .row.mt-2.fila-datos-inicial > .col-6 {
-          display: flex !important;
-      }
+    /* Quitar fondo azul en los datos del paciente y solicitante */
+    @media print {
+        .vista-impresion {
+            background-color: transparent !important;
+        }
+    }
 
-      .row.mt-2.fila-datos-inicial > .col-6 .cuadrado {
-          flex: 1 1 auto !important;
-          height: 100% !important;
-          display: flex !important;
-          flex-direction: column !important;
-      }
+    @media print {
+        #logoJuntaImpresion {
+            display: block !important;
+            text-align: center;
+            margin-top: 20px;
+            page-break-inside: avoid;
+        }
 
-      /* Separación inferior entre los recuadros superiores y el bloque siguiente */
-      .fila-datos-inicial {
-          margin-bottom: 10px !important;
-          padding-bottom: 5px !important;
-      }
-  }
+        .logoJuntaImg {
+            width: 120px;       
+            height: auto;
+            margin: 0 auto;
+            display: block;
+        }
+    }
 
-  @media print {
+    @media print {
+        /* 'citogenética y biología molecular' centrado en la hoja de impresión */
+        .carta h4:first-of-type {
+            text-align: center !important;
+            font-weight: bold;
+            font-size: 1.3rem !important;
+            margin-top: 2px !important;
+            margin-bottom: 2px !important;
+        }
+    }
 
-      /* La carta no ocupa todo el ancho físico de la hoja */
-      .carta {
-          max-width: 180mm !important;   /* algo más estrecha que el A4 (210mm) */
-          margin: 0 auto !important;     /* centrada */
-          padding-left: 6mm !important;
-          padding-right: 6mm !important;
-      }
+    @media print {
+        /* Igualar altura solo en la fila de datos inicial (paciente / solicitante) */
+        .row.mt-2.fila-datos-inicial {
+            display: flex !important;
+            align-items: stretch !important;
+            margin-bottom: 8px !important;  /* separación con el bloque de debajo */
+        }
 
-      /* Títulos de secciones sin márgenes laterales extra */
-      .tituloParte2,
-      .tituloParte3 {
-          margin-left: 0 !important;
-          margin-right: 0 !important;
-          width: 100% !important;
-      }
-  }
+        .row.mt-2.fila-datos-inicial > .col-6 {
+            display: flex !important;
+        }
+
+        .row.mt-2.fila-datos-inicial > .col-6 .cuadrado {
+            flex: 1 1 auto !important;
+            height: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+        /* Separación inferior entre los recuadros superiores y el bloque siguiente */
+        .fila-datos-inicial {
+            margin-bottom: 10px !important;
+            padding-bottom: 5px !important;
+        }
+    }
+
+    @media print {
+
+        /* La carta no ocupa todo el ancho físico de la hoja */
+        .carta {
+            max-width: 180mm !important;   /* algo más estrecha que el A4 (210mm) */
+            margin: 0 auto !important;     /* centrada */
+            padding-left: 6mm !important;
+            padding-right: 6mm !important;
+        }
+
+        /* Títulos de secciones sin márgenes laterales extra */
+        .tituloParte2,
+        .tituloParte3 {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            width: 100% !important;
+        }
+    }
 
     @media print {
         /* Si algo está vacío, que no ocupe nada */
@@ -986,6 +1030,7 @@
         body.print-resumen #textoSeleccionado {
             display: none !important;
         }
+
         /* aquí se deja visible solo un listado o una lista simple */
         body.print-resumen #resumenEstudiosSeleccionados {
             display: block !important;
@@ -1034,158 +1079,276 @@
 
 }
 
+
 /* ====== IMPRESIÓN: 2 COPIAS TAL CUAL ====== */
 @media print {
-  /* Cuando está activo el modo duplicado:
-     ocultamos todo el body excepto el wrapper que contiene las 2 copias */
-  body.print-dup-active > :not(#printDupWrapper) {
-    display: none !important;
-  }
-
-  #printDupWrapper {
-    display: block !important;
-  }
-
-  /* Cada copia empieza en una página nueva */
-  #printDupWrapper .print-copy {
-    page-break-after: always !important;
-    break-after: page !important;
-  }
-
-  #printDupWrapper .print-copy:last-child {
-    page-break-after: auto !important;
-    break-after: auto !important;
-  }
-
-  /* El logo de la Junta y los bloques .solo-impresion ya van por clase,
-     así que se imprimirán también dentro de cada copia */
-  .solo-impresion {
-    display: block !important;
-  }
-
-  /* --- FIX impresión: quitar línea extra tras "Otros Estudios" y evitar duplicados del desplegable --- */
-    @media print {
-    /* El <hr class="solo-imprimir"> genera líneas no deseadas al final del bloque */
-    hr.solo-imprimir { display: none !important; }
-
-    /* En impresión no queremos ver el listado completo del menú desplegable (solo el botón con la selección) */
-    .colEstudiosProtocolizados .dropdown-menu.estudios-menu,
-    .colEstudiosProtocolizados .dropdown-search-wrapper,
-    .colEstudiosProtocolizados .estudios-items-wrapper,
-    #sinResultadosEstudios {
-        display: none !important;
-        visibility: hidden !important;
-    }
-
-    /* El resumen en chips puede duplicar los nombres ya visibles en el botón */
-    #resumenEstudiosSeleccionados {
-        display: none !important;
-        visibility: hidden !important;
-    }
-    }
-
-    @media print {
-
-    /* 1) En el panel de descripción (#textoSeleccionado), si una línea tiene checkbox no marcado -> ocultar la línea completa */
-    #textoSeleccionado li:has(input[type="checkbox"]:not(:checked)),
-    #textoSeleccionado div:has(input[type="checkbox"]:not(:checked)),
-    #textoSeleccionado p:has(input[type="checkbox"]:not(:checked)),
-    #textoSeleccionado label:has(input[type="checkbox"]:not(:checked)) {
+    /* Cuando está activo el modo duplicado:
+        ocultamos todo el body excepto el wrapper que contiene las 2 copias */
+    body.print-dup-active > :not(#printDupWrapper) {
         display: none !important;
     }
 
-    /* 2) Para los checkboxes marcados: ocultar la cajita y no reservar espacio */
-    #textoSeleccionado input[type="checkbox"]:checked {
-        position: absolute !important;
-        opacity: 0 !important;
-        width: 0 !important;
-        height: 0 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        border: none !important;
-    }
-
-    /* 3) Por si hubiera sangría reservada por estilos */
-    #textoSeleccionado label,
-    #textoSeleccionado li,
-    #textoSeleccionado p,
-    #textoSeleccionado div {
-        padding-left: 0 !important;
-        margin-left: 0 !important;
-    }
-    }
-
-    @media print {
-
-    /* Información e instrucciones finales:
-        tamaño mínimo legible */
-    .comentarios,
-    .solo-impresion .comentarios,
-    .solo-impresion p,
-    .solo-impresion small,
-    .solo-impresion ul,
-    .solo-impresion li {
-        font-size: 0.6rem !important;
-        line-height: 1.15 !important;
-    }
-
-    /* Evitar márgenes grandes que “comen” espacio */
-    .solo-impresion p,
-    .solo-impresion li {
-        margin-bottom: 2px !important;
-    }
-        .solo-impresion {
-        letter-spacing: -0.1px;
-    }
-    }
-
-    @media print {
-    /* Fila final "Instrucciones/Información": forzar a 1 sola columna en impresión */
-    .row.mb-3:has(> .col-6 > .notasFinales) {
+    #printDupWrapper {
         display: block !important;
     }
 
-    .row.mb-3:has(> .col-6 > .notasFinales) > .col-6 {
-        width: 100% !important;
-        max-width: 100% !important;
-        flex: 0 0 100% !important;
+    /* Cada copia empieza en una página nueva */
+    #printDupWrapper .print-copy {
+        page-break-after: always !important;
+        break-after: page !important;
     }
 
-    /* compactar separación entre ambos bloques */
-    .row.mb-3:has(> .col-6 > .notasFinales) > .col-6 + .col-6 {
-        margin-top: 2mm !important;
+    #printDupWrapper .print-copy:last-child {
+        page-break-after: auto !important;
+        break-after: auto !important;
     }
+
+    /* El logo de la Junta y los bloques .solo-impresion ya van por clase,
+       así que se imprimirán también dentro de cada copia */
+    .solo-impresion {
+        display: block !important;
+    }
+
+    /* --- FIX impresión: quitar línea extra tras "Otros Estudios" y evitar duplicados del desplegable --- */
+    @media print {
+        /* El <hr class="solo-imprimir"> genera líneas no deseadas al final del bloque */
+        hr.solo-imprimir { display: none !important; }
+
+        /* En impresión no queremos ver el listado completo del menú desplegable (solo el botón con la selección) */
+        .colEstudiosProtocolizados .dropdown-menu.estudios-menu,
+        .colEstudiosProtocolizados .dropdown-search-wrapper,
+        .colEstudiosProtocolizados .estudios-items-wrapper,
+        #sinResultadosEstudios {
+            display: none !important;
+            visibility: hidden !important;
+        }
+
+        /* El resumen en chips puede duplicar los nombres ya visibles en el botón */
+        #resumenEstudiosSeleccionados {
+            display: none !important;
+            visibility: hidden !important;
+        }
     }
 
     @media print {
-    /* ocultar contenedores vacíos  */
-    .print-hide {
-        display: none !important;
-        visibility: hidden !important;
+
+        /* 1) En el panel de descripción (#textoSeleccionado): ocultar solo
+        cada opción (.form-check) si su checkbox está sin marcar. Esto evita
+        que se oculte un contenedor que agrupe varias opciones. */
+        #textoSeleccionado .form-check:has(input[type="checkbox"]:not(:checked)) {
+            display: none !important;
+        }
+
+        /* 2) Para los checkboxes marcados: ocultar la cajita y no reservar espacio */
+        #textoSeleccionado input[type="checkbox"]:checked {
+            position: absolute !important;
+            opacity: 0 !important;
+            width: 0 !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+        }
+
+        /* 3) Por si hubiera sangría reservada por estilos */
+        #textoSeleccionado label,
+        #textoSeleccionado li,
+        #textoSeleccionado p,
+        #textoSeleccionado div {
+            padding-left: 0 !important;
+            margin-left: 0 !important;
+        }
     }
 
-    /* compactar el bloque de opciones para que no deje aire */
-    #textoSeleccionado .form-check,
-    #textoSeleccionado .form-check-inline {
+    @media print {
+
+        /* Información e instrucciones finales:
+            tamaño mínimo legible */
+        .comentarios,
+        .solo-impresion .comentarios,
+        .solo-impresion p,
+        .solo-impresion small,
+        .solo-impresion ul,
+        .solo-impresion li {
+            font-size: 0.6rem !important;
+            line-height: 1.15 !important;
+        }
+
+        /* Evitar márgenes grandes que “comen” espacio */
+        .solo-impresion p,
+        .solo-impresion li {
+            margin-bottom: 2px !important;
+        }
+            .solo-impresion {
+            letter-spacing: -0.1px;
+        }
+    }
+
+    @media print {
+        /* Fila final "Instrucciones/Información": forzar a 1 sola columna en impresión */
+        .row.mb-3:has(> .col-6 > .notasFinales) {
+            display: block !important;
+        }
+
+        .row.mb-3:has(> .col-6 > .notasFinales) > .col-6 {
+            width: 100% !important;
+            max-width: 100% !important;
+            flex: 0 0 100% !important;
+        }
+
+        /* compactar separación entre ambos bloques */
+        .row.mb-3:has(> .col-6 > .notasFinales) > .col-6 + .col-6 {
+            margin-top: 2mm !important;
+        }
+    }
+
+    @media print {
+        /* ocultar contenedores vacíos  */
+        .print-hide {
+            display: none !important;
+            visibility: hidden !important;
+        }
+
+        /* compactar el bloque de opciones para que no deje aire */
+        #textoSeleccionado .form-check,
+        #textoSeleccionado .form-check-inline {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* un poco de separación solo entre opciones marcadas */
+        #textoSeleccionado .form-check-inline {
+            margin-right: 10px !important;
+        }
+
+        /* si en algún bloque queda aire extra por márgenes bootstrap */
+        #textoSeleccionado .mt-2,
+        #textoSeleccionado .mb-2 {
+            margin-top: 4px !important;
+            margin-bottom: 4px !important;
+        }
+
+        #textoSeleccionado hr {
+            margin: 4px 0 !important;
+        }
+    }
+
+    @media print {
+        #fechaPeticion,
+        #fechaExtraccion,
+        .fechaNacimiento,
+        .inputFechaPeticion,
+        .inputFechaExtraccion {
+            display: none !important;
+        }
+    }
+
+    @media print {
+        .label-obligatorio::after {
+            content: "" !important;   /* quita el * rojo */
+        }
+    }
+
+    @media print {
+        /* Mantener cada fecha en una línea (label + valor) */
+        #filaFechas .col-6 {
+            display: flex !important;
+            align-items: baseline !important;
+            gap: 6px !important;
+        }
+
+        /* En la fila de fechas, NO queremos labels en bloque */
+        #filaFechas .labelFechaPeticion,
+        #filaFechas .labelFechaExtraccion {
+            display: inline-block !important;
+            margin: 0 !important;
+        }
+
+        /* La “vista” de fecha en línea y sin ocupar todo el ancho */
+        #filaFechas .vista-impresion {
+            display: inline-block !important;
+            width: auto !important;
+            background-color: transparent !important; /* por si se hereda el fondo azul */
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+    }
+
+    /* ====== CÓDIGO DE FORMULARIO: SOLO EN ÚLTIMA PÁGINA (PÁGINA 2) DE CADA COPIA ====== */
+    @media print {
+        /* Desactivar el sello global (si existe) que lo repetiría en todas las páginas */
+        body::after { content: none !important; }
+
+        /* En impresión NO usamos el #codigoFormulario de pantalla */
+        #codigoFormulario { display: none !important; }
+
+        /* La “página 2” actúa como contenedor para anclar el footer al borde inferior */
+        #printPage2 {
+            position: relative !important;
+            min-height: 260mm !important;     /* rellena aprox el alto de A4 imprimible */
+            box-sizing: border-box !important;
+            padding-bottom: 10mm !important;  /* evita pisar el contenido */
+        }
+
+        /* Código en esquina inferior derecha SOLO al final de la página 2 */
+        #codigoFormularioPrint {
+            display: block !important;
+            position: absolute !important;
+            right: 5mm !important;
+            bottom: 5mm !important;
+            font-size: 10px !important;
+            color: #000 !important;
+            line-height: 1 !important;
+            white-space: nowrap !important;
+        }
+    }
+}
+
+/* =======================================================================
+   FIX DEFINITIVO: MÁRGENES, URL, FONDO AZUL Y NOTAS FINALES
+   ======================================================================= */
+
+/* 1. Quitamos los márgenes físicos al papel para ocultar URL y Fecha */
+@page {
+    size: A4;
+    margin: 0 !important; 
+}
+
+@media print {
+    /* 2. Le damos el margen directamente a TODO el documento. 
+          Así, las notas finales también tendrán margen lateral. */
+    body {
         margin: 0 !important;
-        padding: 0 !important;
+        padding: 10mm 12mm !important; /* 10mm margen superior/inferior, 12mm laterales */
+        box-sizing: border-box !important;
     }
 
-    /* un poco de separación solo entre opciones marcadas */
-    #textoSeleccionado .form-check-inline {
-        margin-right: 10px !important;
+    /* 3. Limpiamos los márgenes laterales de la carta y contenedores 
+          para que no se sumen al del body y no encojan el contenido. */
+    .container,
+    .container-fluid,
+    .contenedor-principal,
+    .carta {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
     }
 
-    /* si en algún bloque queda aire extra por márgenes bootstrap */
-    #textoSeleccionado .mt-2,
-    #textoSeleccionado .mb-2 {
-        margin-top: 4px !important;
-        margin-bottom: 4px !important;
+    /* 4. Truco del borde transparente: Empuja el título hacia abajo en 
+          la página 2, pero sin hacer más grande el fondo azul. */
+    .tituloParte3 {
+        page-break-before: always !important;
+        break-before: page !important;
+        display: block !important;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+        border-top: 15mm solid transparent !important;
+        background-clip: padding-box !important;
     }
 
-    #textoSeleccionado hr {
-        margin: 4px 0 !important;
+    /* Añadir el margen superior perdido a la segunda copia (y siguientes si las hubiera) */
+    .print-copy + .print-copy {
+        border-top: 10mm solid transparent !important; /* Iguala los 10mm del body */
     }
-    }
-
 }
